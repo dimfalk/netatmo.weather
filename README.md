@@ -1,2 +1,4 @@
 # netatmoR
-tba
+
+https://dev.netatmo.com/apidocumentation/oauth
+
