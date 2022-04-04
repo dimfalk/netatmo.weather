@@ -6,7 +6,7 @@ library(sf)
 endpoint <- httr::oauth_endpoint(authorize = "https://api.netatmo.net/oauth2/authorize",
                                  access = "https://api.netatmo.net/oauth2/token")
 
-cfg <- jsonlite::fromJSON("oauth.conf")
+cfg <- jsonlite::fromJSON("oauth.cfg")
 
 app <- httr::oauth_app(appname = cfg[["appname"]],
                        key = cfg[["key"]],
