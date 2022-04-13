@@ -12,10 +12,46 @@ base_url <- "https://api.netatmo.com/api/getmeasure"
 
 #
 query <- list(
-  device_id  = "70:ee:50:13:54:bc",
+  device_id  = "70:ee:50:04:ce:cc",
   scale = "30min",
   type = "pressure",
-  date_begin = (Sys.time() - 60*60*24) %>% as.integer(),
+  date_begin = (Sys.time() - 60*60*24*5) %>% as.integer(),
+  date_end = Sys.time() %>% as.integer(),
+  limit = 1024,
+  optimize = "false",
+  real_time = "false"
+)
+
+query <- list(
+  device_id  = "70:ee:50:04:ce:cc",
+  module_id  = "02:00:00:34:01:d2",
+  scale = "30min",
+  type = "humidity",
+  date_begin = (Sys.time() - 60*60*24*5) %>% as.integer(),
+  date_end = Sys.time() %>% as.integer(),
+  limit = 1024,
+  optimize = "false",
+  real_time = "false"
+)
+
+query <- list(
+  device_id  = "70:ee:50:04:ce:cc",
+  module_id  = "06:00:00:01:ca:5e",
+  scale = "30min",
+  type = "windangle",
+  date_begin = (Sys.time() - 60*60*24*5) %>% as.integer(),
+  date_end = Sys.time() %>% as.integer(),
+  limit = 1024,
+  optimize = "false",
+  real_time = "false"
+)
+
+query <- list(
+  device_id  = "70:ee:50:04:ce:cc",
+  module_id  = "05:00:00:00:bc:26",
+  scale = "30min",
+  type = "rain",
+  date_begin = (Sys.time() - 60*60*24*20) %>% as.integer(),
   date_end = Sys.time() %>% as.integer(),
   limit = 1024,
   optimize = "false",
@@ -25,16 +61,21 @@ query <- list(
 #
 resp <- httr::GET(url = base_url, query = query, sig)
 
+resp$status_code
+
+
+
 # parse response
 resp_text <- httr::content(resp, "text")
 
 # parse text to json
 resp_json <- jsonlite::fromJSON(resp_text)
 
+# parse json to df
+resp_df <- data.frame(datetimes = resp_json$body %>% names() %>% as.numeric() %>% as.POSIXct(origin="1970-01-01"),
+                      values = resp_json$body %>% as.numeric())
+
 # parse json to tibble
-resp_tibble <- tibble::as_tibble(x = resp_json$body)
+resp_tibble <- tibble::as_tibble(resp_df)
 
-datetimes <- rownames(t) %>% as.numeric() %>% as.POSIXct(origin="1970-01-01")
-values <- t(resp_tibble)
-
-plot(datetimes, values)
+plot(resp_tibble$datetimes, resp_tibble$values)

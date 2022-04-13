@@ -8,9 +8,9 @@ endpoint <- httr::oauth_endpoint(authorize = "https://api.netatmo.net/oauth2/aut
 
 cfg <- jsonlite::fromJSON("oauth.cfg")
 
-app <- httr::oauth_app(appname = cfg[["appname"]],
-                       key = cfg[["key"]],
-                       secret = cfg[["secret"]])
+app <- httr::oauth_app(appname = cfg[["app_name"]],
+                       key = cfg[["client_ID"]],
+                       secret = cfg[["client_secret"]])
 
 af_token <- httr::oauth2.0_token(endpoint,
                                  app,

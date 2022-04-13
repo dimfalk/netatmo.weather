@@ -30,9 +30,9 @@ resp <- httr::GET(url = base_url, query = query, sig)
 
 
 # parse response
-resp_raw <- httr::content(resp, "raw")
+# resp_raw <- httr::content(resp, "raw")
 resp_text <- httr::content(resp, "text")
-resp_parsed <- httr::content(resp, "parsed")
+# resp_parsed <- httr::content(resp, "parsed")
 
 # parse text to json
 resp_json <- jsonlite::fromJSON(resp_text)
@@ -60,3 +60,6 @@ stations <- sf::st_sfc(
 ggplot() +
   geom_sf(data = gem) +
   geom_sf(data = stations, mapping = aes(col="red"))
+
+
+resp_json <- jsonlite::fromJSON("gpd_example.json")
