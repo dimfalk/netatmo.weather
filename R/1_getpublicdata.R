@@ -41,8 +41,8 @@ resp_json <- jsonlite::fromJSON(resp_text)
 # parse json to tibble
 resp_df <- data.frame(id = resp_json$body$`_id`,
                       place = resp_json$body$place,
-                      mark = resp_json$body$mark,
-                      modules = resp_json$body$modules)
+                      mark = resp_json$body$mark)
+                      # modules = resp_json$body$modules)
                       # module_types = resp_json$body$module_types)
 
 meas <- resp_json$body$measures
@@ -60,6 +60,3 @@ stations <- sf::st_sfc(
 ggplot() +
   geom_sf(data = gem) +
   geom_sf(data = stations, mapping = aes(col="red"))
-
-
-resp_json <- jsonlite::fromJSON("gpd_example.json")
