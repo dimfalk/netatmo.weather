@@ -1,34 +1,60 @@
 
-library(magrittr)
-library(ggplot2)
-library(sf)
+#' Title
+#'
+#' @param file
+#'
+#' @return request: Auth token: Token2.0
+#' @export
+#'
+#' @examples sig <- get_oauth2_token("oauth.cfg")
+get_oauth2_token <- function(file) {
 
-endpoint <- httr::oauth_endpoint(authorize = "https://api.netatmo.net/oauth2/authorize",
-                                 access = "https://api.netatmo.net/oauth2/token")
+  endpoint <- httr::oauth_endpoint(authorize = "https://api.netatmo.net/oauth2/authorize",
+                                   access = "https://api.netatmo.net/oauth2/token")
 
-cfg <- jsonlite::fromJSON("oauth.cfg")
+  cfg <- jsonlite::fromJSON(file)
 
-app <- httr::oauth_app(appname = cfg[["app_name"]],
-                       key = cfg[["client_ID"]],
-                       secret = cfg[["client_secret"]])
+  app <- httr::oauth_app(appname = cfg[["app_name"]],
+                         key = cfg[["client_ID"]],
+                         secret = cfg[["client_secret"]])
 
-af_token <- httr::oauth2.0_token(endpoint,
-                                 app,
-                                 scope = "read_station")
+  af_token <- httr::oauth2.0_token(endpoint,
+                                   app,
+                                   scope = "read_station")
 
-# Use a local file ('.httr-oauth'), to cache OAuth access credentials between R sessions?
+  httr::config(token = af_token)
+}
 
-#  Do you authorize application [appname] to access your account [e-mail] data?
 
-# Yes, I accept.
 
-# Authentication complete. Please close this page and return to R.
+#' Title
+#'
+#' @param token
+#'
+#' @return
+#' @export
+#'
+#' @examples print_access_token(sig)
+print_access_token <- function(token) {
 
-# `.httr-oauth` created.
+  paste("&access_token=",
+        token$auth_token$credentials$access_token,
+        sep = "") %>% cat()
+}
 
-# all configuration options are per request, not per handle.
 
-# manual exec e.g.
-# paste("&access_token=", af_token$credentials$access_token, sep = "")
 
-sig <- httr::config(token = af_token)
+#' Title
+#'
+#' @param token
+#'
+#' @return
+#' @export
+#'
+#' @examples print_refresh_token(sig)
+print_refresh_token <- function(token) {
+
+  paste("&refresh_token=",
+        token$auth_token$credentials$refresh_token,
+        sep = "") %>% cat()
+}
