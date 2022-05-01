@@ -1,11 +1,15 @@
 
 #' Title
 #'
-#' @return
+#' @return tibble
 #' @export
 #'
-#' @examples
+#' @examples stations <- get_public_data(sig)
 get_public_data <- function(token) {
+
+  # debugging
+
+  # token <- sig
 
   #
   if (is_expired(token)) {
@@ -36,23 +40,16 @@ get_public_data <- function(token) {
     filter = "false"
   )
 
-
   # Send request
-  resp <- httr::GET(url = base_url, query = query, sig)
-
-
+  resp <- httr::GET(url = base_url, query = query, token)
 
   # parse response
-  # resp_raw <- httr::content(resp, "raw")
   resp_text <- httr::content(resp, "text")
-  # resp_parsed <- httr::content(resp, "parsed")
 
   # parse text to json
   resp_json <- jsonlite::fromJSON(resp_text)
 
-
-
-  # parse json to tibble
+  #
   n_stations <- dim(resp_json$body)[1]
 
   temp <- data.frame(status = character(n_stations))
@@ -81,10 +78,7 @@ get_public_data <- function(token) {
 
   table(temp["n_modules"])
 
-
   ind <- temp[["n_modules"]] %>% cumsum()
-
-
 
   for (i in 1:n_stations) {
 
@@ -110,17 +104,12 @@ get_public_data <- function(token) {
     }
   }
 
-  tibble::as_tibble(temp)
+  tibble::as_tibble(temp) %>% sf::st_as_sf(coords = c("x", "y"), crs = 4326)
 }
 
 
-
-# #
-# stations <- sf::st_sfc(
-#   lapply(resp_tibble$body$place$location, sf::st_point),
-#   crs = 4326
-# )
+# ggplot2::ggplot() +
+#   ggplot2::geom_sf(data = gem) +
+#   ggplot2::geom_sf(data = stations, mapping = ggplot2::aes(col="red"))
 #
-# ggplot() +
-#   geom_sf(data = gem) +
-#   geom_sf(data = stations, mapping = aes(col="red"))
+# mapview::mapview(stations)
