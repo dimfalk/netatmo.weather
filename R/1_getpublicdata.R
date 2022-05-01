@@ -5,7 +5,13 @@
 #' @export
 #'
 #' @examples
-get_public_data <- function() {
+get_public_data <- function(token) {
+
+  #
+  if (is_expired(token)) {
+
+    refresh_access_token(token)
+  }
 
   # sf
   dvg1gem <- sf::st_read("inst/exdata/dvg1gem/dvg1gem_nw.shp")
