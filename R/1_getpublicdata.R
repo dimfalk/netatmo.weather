@@ -1,6 +1,8 @@
 
 #' Title
 #'
+#' @param token
+#'
 #' @return tibble
 #' @export
 #'

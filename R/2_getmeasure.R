@@ -1,6 +1,26 @@
 
 
-get_measure <- function() {
+#' Title
+#'
+#' @param stations sf object
+#' @param parameter character
+#' @param from date
+#' @param to date
+#' @param limit integer
+#'
+#' @return xts
+#' @export
+#'
+#' @examples
+get_measure <- function(stations,
+                        parameter = "rain",
+                        from = x,
+                        to = y,
+                        limit = 1024) {
+
+  # pre-processing --------------
+
+  # stations[!is.na(stations[["NAModule3"]]), ]
 
   #
   base_url <- "https://api.netatmo.com/api/getmeasure"
@@ -13,61 +33,98 @@ get_measure <- function() {
   #   "rain", "min_rain", "max_rain", "sum_rain", "date_min_rain", "date_max_rain",
   #   "windstrength", "windangle", "guststrength", "gustangle", "date_min_gust", "date_max_gust")
 
-  # base station
-  query <- list(
-    device_id  = "70:ee:50:04:ce:cc",
-    scale = "30min",
-    type = "pressure",
-    date_begin = (Sys.time() - 60*60*24*5) %>% as.integer(),
-    date_end = Sys.time() %>% as.integer(),
-    limit = 1024,
-    optimize = "false",
-    real_time = "false"
-  )
+  if (parameter == "temperature") {
 
-  # "NAModule1" --> outdoor module
-  query <- list(
-    device_id  = "70:ee:50:04:ce:cc",
-    module_id  = "02:00:00:34:01:d2",
-    scale = "30min",
-    type = "humidity",
-    date_begin = (Sys.time() - 60*60*24*5) %>% as.integer(),
-    date_end = Sys.time() %>% as.integer(),
-    limit = 1024,
-    optimize = "false",
-    real_time = "false"
-  )
+    # "NAModule1" --> outdoor module
+    query <- list(
+      device_id = stations$base_station[2],
+      module_id = stations$NAModule1[2],
+      scale = "30min",
+      type = "temperature",
+      date_begin = (Sys.time() - 60*60*24*5) %>% as.integer(),
+      date_end = Sys.time() %>% as.integer(),
+      limit = 1024,
+      optimize = "false",
+      real_time = "false"
+    )
 
-  # "NAModule2" --> wind module
-  query <- list(
-    device_id  = "70:ee:50:04:ce:cc",
-    module_id  = "06:00:00:01:ca:5e",
-    scale = "30min",
-    type = "windangle",
-    date_begin = (Sys.time() - 60*60*24*5) %>% as.integer(),
-    date_end = Sys.time() %>% as.integer(),
-    limit = 1024,
-    optimize = "false",
-    real_time = "false"
-  )
+  } else if (parameter == "humidity") {
 
-  # "NAModule3" --> rain module
-  query <- list(
-    device_id  = "70:ee:50:04:ce:cc",
-    module_id  = "05:00:00:00:bc:26",
-    scale = "30min",
-    type = "rain",
-    date_begin = (Sys.time() - 60*60*24*20) %>% as.integer(),
-    date_end = Sys.time() %>% as.integer(),
-    limit = 1024,
-    optimize = "false",
-    real_time = "false"
-  )
+    # "NAModule1" --> outdoor module
+    query <- list(
+      device_id = stations$base_station[2],
+      module_id = stations$NAModule1[2],
+      scale = "30min",
+      type = "humidity",
+      date_begin = (Sys.time() - 60*60*24*5) %>% as.integer(),
+      date_end = Sys.time() %>% as.integer(),
+      limit = 1024,
+      optimize = "false",
+      real_time = "false"
+    )
+
+  } else if (parameter == "pressure") {
+
+    # base station
+    query <- list(
+      device_id = stations$base_station[2],
+      scale = "30min",
+      type = "pressure",
+      date_begin = (Sys.time() - 60*60*24*5) %>% as.integer(),
+      date_end = Sys.time() %>% as.integer(),
+      limit = 1024,
+      optimize = "false",
+      real_time = "false"
+    )
+
+  } else if (parameter == "rain") {
+
+    # "NAModule3" --> rain module
+    query <- list(
+      device_id = stations$base_station[6],
+      module_id = stations$NAModule3[6],
+      scale = "30min",
+      type = "rain",
+      date_begin = (Sys.time() - 60*60*24*20) %>% as.integer(),
+      date_end = Sys.time() %>% as.integer(),
+      limit = 1024,
+      optimize = "false",
+      real_time = "false"
+    )
+
+  } else if (parameter == "windstrength") {
+
+    # "NAModule2" --> wind module
+    query <- list(
+      device_id = stations$base_station[2],
+      module_id = stations$NAModule2[2],
+      scale = "30min",
+      type = "windstrength",
+      date_begin = (Sys.time() - 60*60*24*5) %>% as.integer(),
+      date_end = Sys.time() %>% as.integer(),
+      limit = 1024,
+      optimize = "false",
+      real_time = "false"
+    )
+
+  } else if (parameter == "windangle") {
+
+    # "NAModule2" --> wind module
+    query <- list(
+      device_id = stations$base_station[2],
+      module_id = stations$NAModule2[2],
+      scale = "30min",
+      type = "windangle",
+      date_begin = (Sys.time() - 60*60*24*5) %>% as.integer(),
+      date_end = Sys.time() %>% as.integer(),
+      limit = 1024,
+      optimize = "false",
+      real_time = "false"
+    )
+  }
 
   #
   resp <- httr::GET(url = base_url, query = query, sig)
-
-  resp$status_code
 
   # parse response
   resp_text <- httr::content(resp, "text")
@@ -80,7 +137,11 @@ get_measure <- function() {
                         values = resp_json$body %>% as.numeric())
 
   # parse json to tibble
-  tibble::as_tibble(resp_df)
+  # resp_tibble <- tibble::as_tibble(resp_df)
+
+  #
+  xts::xts(resp_df$values, order.by = resp_df$datetimes)
 }
 
 # plot(resp_tibble$datetimes, resp_tibble$values)
+# plot(xts_pressure)
