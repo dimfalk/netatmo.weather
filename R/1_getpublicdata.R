@@ -9,11 +9,11 @@
 #' @examples stations <- get_public_data(sig)
 get_public_data <- function(token) {
 
-  # debugging
+  # debugging ---------------------
 
   # token <- sig
 
-  #
+  # main --------------------------
   if (is_expired(token)) {
 
     refresh_access_token(token)
@@ -33,11 +33,20 @@ get_public_data <- function(token) {
 
   base_url <- "https://api.netatmo.com/api/getpublicdata"
 
+  # query <- list(
+  #   lat_ne = bbox["ymax"] %>% as.numeric(),
+  #   lon_ne = bbox["xmax"] %>% as.numeric(),
+  #   lat_sw = bbox["ymin"] %>% as.numeric(),
+  #   lon_sw = bbox["xmin"] %>% as.numeric(),
+  #   required_data = "temperature",
+  #   filter = "false"
+  # )
+
   query <- list(
-    lat_ne = bbox["ymax"] %>% as.numeric(),
-    lon_ne = bbox["xmax"] %>% as.numeric(),
-    lat_sw = bbox["ymin"] %>% as.numeric(),
-    lon_sw = bbox["xmin"] %>% as.numeric(),
+    lat_ne = 51.55,
+    lon_ne = 7.2,
+    lat_sw = 51.50,
+    lon_sw = 7.1,
     required_data = "temperature",
     filter = "false"
   )
@@ -115,3 +124,26 @@ get_public_data <- function(token) {
 #   ggplot2::geom_sf(data = stations, mapping = ggplot2::aes(col="red"))
 #
 # mapview::mapview(stations)
+
+bbox <- sf::st_bbox(gem)
+
+grid <- sf::st_make_grid(bbox,
+                         cellsize = 0.02,
+                         crs = 4326,
+                         square = TRUE)
+
+ggplot2::ggplot() +
+  ggplot2::geom_sf(data = gem) +
+  ggplot2::geom_sf(data = grid) +
+  ggplot2::geom_sf(data = stations, mapping = ggplot2::aes(col="red"))
+
+sf::st_bbox(grid[1])
+
+
+plot(grid)
+plot(sf::st_geometry(gem), add = TRUE)
+
+plot(grid[gem], col = '#ff000088', add = TRUE)
+
+
+
