@@ -1,122 +1,138 @@
 
 #' Title
 #'
-#' @param token
+#' @param bbox
+#' @param use_tiles
 #'
 #' @return tibble
 #' @export
 #'
-#' @examples stations <- get_public_data(sig)
-get_public_data <- function(token) {
+#' @examples get_public_data(bbox = "Essen", use_tiles = FALSE)
+get_public_data <- function(bbox,
+                            use_tiles = FALSE) {
 
-  # debugging ---------------------
+  # debugging ------------------------------------------------------------------
 
-  # token <- sig
+  # bbox <- "Essen"
+  # bbox <- c(6.89, 51.34, 7.13, 51.53)
+  # use_tiles = TRUE
 
-  # main --------------------------
-  if (is_expired(token)) {
+  # pre-processing -------------------------------------------------------------
 
-    refresh_access_token(token)
+  # refresh access token if expired (3 hours after request)
+  if (is_expired(.sig)) {
+
+    refresh_access_token(.sig)
   }
 
-  # sf
+  # read community polygons as sf
   dvg1gem <- sf::st_read("inst/exdata/dvg1gem/dvg1gem_nw.shp")
 
-  ggplot2::ggplot() +
-    ggplot2::geom_sf(data = dvg1gem)
+  # construct bbox based on passed input, string or vector of numerics
+  if (inherits(bbox, "character") & length(bbox) == 1) {
 
-  gem <- dvg1gem %>% dplyr::filter(GN == "Essen")
+    stopifnot(bbox %in% dvg1gem[["GN"]])
 
-  gem <- sf::st_transform(gem, 4326)
+    gem <- dvg1gem %>% dplyr::filter(GN == bbox) %>% sf::st_transform(4326)
 
-  bbox <- sf::st_bbox(gem)
+    bbox_full <- sf::st_bbox(gem)
 
-  base_url <- "https://api.netatmo.com/api/getpublicdata"
+  } else if (inherits(bbox, "numeric") & length(bbox) == 4) {
 
-  # query <- list(
-  #   lat_ne = bbox["ymax"] %>% as.numeric(),
-  #   lon_ne = bbox["xmax"] %>% as.numeric(),
-  #   lat_sw = bbox["ymin"] %>% as.numeric(),
-  #   lon_sw = bbox["xmin"] %>% as.numeric(),
-  #   required_data = "temperature",
-  #   filter = "false"
-  # )
+    coordinates <- rbind(c(bbox[1], bbox[2]),
+                         c(bbox[3], bbox[2]),
+                         c(bbox[3], bbox[4]),
+                         c(bbox[1], bbox[4]),
+                         c(bbox[1], bbox[2]))
 
-  query <- list(
-    lat_ne = 51.55,
-    lon_ne = 7.2,
-    lat_sw = 51.50,
-    lon_sw = 7.1,
-    required_data = "temperature",
-    filter = "false"
-  )
-
-  # Send request
-  resp <- httr::GET(url = base_url, query = query, token)
-
-  # parse response
-  resp_text <- httr::content(resp, "text")
-
-  # parse text to json
-  resp_json <- jsonlite::fromJSON(resp_text)
-
-  #
-  n_stations <- dim(resp_json$body)[1]
-
-  temp <- data.frame(status = character(n_stations))
-
-  temp["status"] <- resp_json$status
-  temp["time_server"] <- resp_json$time_server %>% as.POSIXct(origin = "1970-01-01")
-
-  temp["base_station"] <- resp_json$body$`_id`
-
-  temp["x"] <- resp_json$body$place$location %>% purrr::map_chr(1) %>% as.numeric()
-  temp["y"] <- resp_json$body$place$location %>% purrr::map_chr(2) %>% as.numeric()
-  temp["timezone"] <- resp_json$body$place$timezone
-  temp["country"] <- resp_json$body$place$country
-  temp["altitude"] <- resp_json$body$place$altitude
-  temp["city"] <- resp_json$body$place$city
-  temp["street"] <- resp_json$body$place$street
-
-  temp["mark"] <- resp_json$body$mark
-
-  temp["n_modules"] <- purrr::map(resp_json$body$modules, length) %>% unlist()
-
-  temp["NAModule1"] <- NA
-  temp["NAModule2"] <- NA
-  temp["NAModule3"] <- NA
-  temp["NAModule4"] <- NA
-
-  table(temp["n_modules"])
-
-  ind <- temp[["n_modules"]] %>% cumsum()
-
-  for (i in 1:n_stations) {
-
-    module_mac <- resp_json$body$modules[[i]]
-
-    n_modules <- module_mac %>% length()
-
-    if (i == 1) {
-
-      seq <- 1 : ind[i]
-
-    } else {
-
-      seq <- (ind[i-1]+1) : ind[i]
-    }
-
-    for (j in seq) {
-
-      # e.g. "NAModule1"
-      module_type <- resp_json$body$module_types[[i, j]]
-
-      temp[[module_type]][i] <- module_mac[which(seq == j)]
-    }
+    bbox_full <- list(coordinates) %>% sf::st_polygon() %>% sf::st_bbox()
   }
 
-  tibble::as_tibble(temp) %>% sf::st_as_sf(coords = c("x", "y"), crs = 4326)
+  # main -----------------------------------------------------------------------
+
+  # url definition
+  base_url <- "https://api.netatmo.com/api/getpublicdata"
+
+  if (use_tiles == FALSE) {
+
+    # query definition
+    query <- list(
+      lat_ne = bbox_full["ymax"] %>% as.numeric(),
+      lon_ne = bbox_full["xmax"] %>% as.numeric(),
+      lat_sw = bbox_full["ymin"] %>% as.numeric(),
+      lon_sw = bbox_full["xmin"] %>% as.numeric(),
+      required_data = "temperature",
+      filter = "false"
+    )
+
+    # send request
+    r_raw <- httr::GET(url = base_url, query = query, .sig)
+
+    # parse raw response to sf object
+    gpd_raw2sf(r_raw)
+
+  } else if (use_tiles == TRUE) {
+
+    # construct grid for query slicing
+    grid <- sf::st_make_grid(bbox_full,
+                             cellsize = 0.02,
+                             crs = 4326,
+                             square = TRUE)
+
+    # how many tiles needed to cover the user-defined bbox?
+    n_tiles <- length(grid)
+
+    for (i in 1:n_tiles) {
+
+      # get bbox of the current tile
+      bbox_tile <- sf::st_bbox(grid[i])
+
+      # query definition
+      query <- list(
+        lat_ne = bbox_tile["ymax"] %>% as.numeric(),
+        lon_ne = bbox_tile["xmax"] %>% as.numeric(),
+        lat_sw = bbox_tile["ymin"] %>% as.numeric(),
+        lon_sw = bbox_tile["xmin"] %>% as.numeric(),
+        required_data = "temperature",
+        filter = "false"
+      )
+
+      # send request
+      r_raw <- httr::GET(url = base_url, query = query, .sig)
+
+      # sleep 1 sec to prevent server ban for iterating too fast
+      Sys.sleep(1)
+
+      # parse raw response to sf object
+      if (i == 1) {
+
+        temp <- gpd_raw2sf(r_raw)
+
+      } else {
+
+        temp <- rbind(temp, gpd_raw2sf(r_raw))
+      }
+    }
+
+    # return overall sf object
+    temp
+  }
 }
+
+# ------------ >>>
+
+tic()
+stations_without_tiles <- get_public_data(bbox = "Essen",
+                                          use_tiles = FALSE)
+toc()
+
+
+
+tic()
+stations_with_tiles <- get_public_data(bbox = "Essen",
+                                       use_tiles = TRUE)
+toc()
+
 
 
 # ggplot2::ggplot() +
@@ -124,6 +140,8 @@ get_public_data <- function(token) {
 #   ggplot2::geom_sf(data = stations, mapping = ggplot2::aes(col="red"))
 #
 # mapview::mapview(stations)
+dvg1gem <- sf::st_read("inst/exdata/dvg1gem/dvg1gem_nw.shp")
+gem <- dvg1gem %>% dplyr::filter(GN == "Essen") %>% sf::st_transform(4326)
 
 bbox <- sf::st_bbox(gem)
 
@@ -135,15 +153,20 @@ grid <- sf::st_make_grid(bbox,
 ggplot2::ggplot() +
   ggplot2::geom_sf(data = gem) +
   ggplot2::geom_sf(data = grid) +
-  ggplot2::geom_sf(data = stations, mapping = ggplot2::aes(col="red"))
-
-sf::st_bbox(grid[1])
+  ggplot2::geom_sf(data = stations_with_tiles, mapping = ggplot2::aes(col="red"))
 
 
 plot(grid)
 plot(sf::st_geometry(gem), add = TRUE)
 
 plot(grid[gem], col = '#ff000088', add = TRUE)
+
+#
+sf::st_write(stations_without_tiles,
+             "stations_without_tiles.shp")
+
+sf::st_write(stations_with_tiles,
+             "stations_with_tiles.shp")
 
 
 

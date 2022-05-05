@@ -6,7 +6,7 @@
 #' @return request: Auth token: Token2.0
 #' @export
 #'
-#' @examples sig <- get_oauth2_token("oauth.cfg")
+#' @examples .sig <- get_oauth2_token("oauth.cfg")
 get_oauth2_token <- function(file) {
 
   endpoint <- httr::oauth_endpoint(authorize = "https://api.netatmo.net/oauth2/authorize",
@@ -34,7 +34,7 @@ get_oauth2_token <- function(file) {
 #' @return
 #' @export
 #'
-#' @examples print_access_token(sig)
+#' @examples print_access_token(.sig)
 print_access_token <- function(token) {
 
   paste("&access_token=",
@@ -51,7 +51,7 @@ print_access_token <- function(token) {
 #' @return
 #' @export
 #'
-#' @examples print_refresh_token(sig)
+#' @examples print_refresh_token(.sig)
 print_refresh_token <- function(token) {
 
   paste("&refresh_token=",
@@ -68,7 +68,7 @@ print_refresh_token <- function(token) {
 #' @return
 #' @export
 #'
-#' @examples is_expired(sig)
+#' @examples is_expired(.sig)
 is_expired <- function(token) {
 
   base_url <- "https://api.netatmo.com/api/getpublicdata"
