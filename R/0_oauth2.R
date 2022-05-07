@@ -34,11 +34,11 @@ get_oauth2_token <- function(file) {
 #' @return
 #' @export
 #'
-#' @examples print_access_token(.sig)
-print_access_token <- function(token) {
+#' @examples print_access_token()
+print_access_token <- function() {
 
   paste("&access_token=",
-        token$auth_token$credentials$access_token,
+        .sig$auth_token$credentials$access_token,
         sep = "") %>% print()
 }
 
@@ -46,16 +46,14 @@ print_access_token <- function(token) {
 
 #' Title
 #'
-#' @param token
-#'
 #' @return
 #' @export
 #'
-#' @examples print_refresh_token(.sig)
-print_refresh_token <- function(token) {
+#' @examples print_refresh_token()
+print_refresh_token <- function() {
 
   paste("&refresh_token=",
-        token$auth_token$credentials$refresh_token,
+        .sig$auth_token$credentials$refresh_token,
         sep = "") %>% print()
 }
 
@@ -63,13 +61,11 @@ print_refresh_token <- function(token) {
 
 #' Title
 #'
-#' @param token
-#'
 #' @return
 #' @export
 #'
-#' @examples is_expired(.sig)
-is_expired <- function(token) {
+#' @examples is_expired()
+is_expired <- function() {
 
   base_url <- "https://api.netatmo.com/api/getpublicdata"
 
@@ -83,16 +79,13 @@ is_expired <- function(token) {
   )
 
   # send request
-  resp <- httr::GET(url = base_url, query = query, sig)
+  r_raw <- httr::GET(url = base_url, query = query, .sig)
 
-  # parse response
-  resp_text <- httr::content(resp, "text")
-
-  # parse text to json
-  resp_json <- jsonlite::fromJSON(resp_text)
+  # parse response to json
+  r_json <- httr::content(r_raw, "text") %>% jsonlite::fromJSON()
 
   # return boolean
-  if (resp$status_code == 403 && resp_json$error$message == "Access token expired") {
+  if (r_raw$status_code == 403 && r_json$error$message == "Access token expired") {
 
     TRUE
 
@@ -106,13 +99,11 @@ is_expired <- function(token) {
 
 #' Title
 #'
-#' @param token
-#'
 #' @return
 #' @export
 #'
-#' @examples
-refresh_access_token <- function(token) {
+#' @examples refresh_access_token()
+refresh_access_token <- function() {
 
-  token$auth_token$refresh()
+  .sig$auth_token$refresh()
 }

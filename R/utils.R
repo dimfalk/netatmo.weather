@@ -10,6 +10,12 @@
 #' @examples gpd_raw2sf(r_raw)
 gpd_raw2sf <- function(response) {
 
+  # debugging ------------------------------------------------------------------
+
+  # response <- r_raw
+
+  # pre-processing -------------------------------------------------------------
+
   # parse response
   r_json <- httr::content(response, "text") %>% jsonlite::fromJSON()
 
@@ -41,7 +47,7 @@ gpd_raw2sf <- function(response) {
   temp["NAModule3"] <- NA
   temp["NAModule4"] <- NA
 
-  # table(temp["n_modules"])
+  # main -----------------------------------------------------------------------
 
   ind <- temp[["n_modules"]] %>% cumsum()
 

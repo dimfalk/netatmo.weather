@@ -20,13 +20,13 @@ get_public_data <- function(bbox,
   # pre-processing -------------------------------------------------------------
 
   # refresh access token if expired (3 hours after request)
-  if (is_expired(.sig)) {
+  if (is_expired()) {
 
-    refresh_access_token(.sig)
+    refresh_access_token()
   }
 
   # read community polygons as sf
-  dvg1gem <- sf::st_read("inst/exdata/dvg1gem/dvg1gem_nw.shp")
+  dvg1gem <- sf::st_read("inst/exdata/dvg1gem/dvg1gem_nw.shp", )
 
   # construct bbox based on passed input, string or vector of numerics
   if (inherits(bbox, "character") & length(bbox) == 1) {
@@ -68,14 +68,17 @@ get_public_data <- function(bbox,
     # send request
     r_raw <- httr::GET(url = base_url, query = query, .sig)
 
-    # parse raw response to sf object
-    gpd_raw2sf(r_raw)
+    # parse raw response to sf object and return
+    sf <- gpd_raw2sf(r_raw)
+
+    # return sf object
+    sf
 
   } else if (use_tiles == TRUE) {
 
     # construct grid for query slicing
     grid <- sf::st_make_grid(bbox_full,
-                             cellsize = 0.02,
+                             cellsize = 0.05,
                              crs = 4326,
                              square = TRUE)
 
@@ -100,73 +103,73 @@ get_public_data <- function(bbox,
       # send request
       r_raw <- httr::GET(url = base_url, query = query, .sig)
 
-      # sleep 1 sec to prevent server ban for iterating too fast
-      Sys.sleep(1)
+      # sleep to prevent server ban for iterating too fast
+      # Sys.sleep(1)
 
       # parse raw response to sf object
+      sf <- gpd_raw2sf(r_raw)
+
+      # write sf objects to disk for debugging purposes
+      # sf::st_write(sf, paste0("tile_no_", i, ".shp"))
+
+      #
       if (i == 1) {
 
-        temp <- gpd_raw2sf(r_raw)
+        temp <- sf
 
       } else {
 
-        temp <- rbind(temp, gpd_raw2sf(r_raw))
+        temp <- rbind(temp, sf)
       }
     }
 
-    # return overall sf object
-    temp
+    # overwrite time_server values of individual iterations
+    temp[["time_server"]] <- temp[["time_server"]] %>% max()
+
+    # return cleaned sf object
+    dplyr::distinct(temp)
   }
 }
 
 # ------------ >>>
 
-tic()
-stations_without_tiles <- get_public_data(bbox = "Essen",
-                                          use_tiles = FALSE)
-toc()
-
-
-
-tic()
-stations_with_tiles <- get_public_data(bbox = "Essen",
-                                       use_tiles = TRUE)
-toc()
-
-
-
+# tic()
+# stations_tiles_false <- get_public_data(bbox = "Essen",
+#                                         use_tiles = FALSE)
+# toc()
+# sf::st_write(stations_tiles_false, "stations_tiles_false.shp")
+#
+#
+#
+# tic()
+# stations_tiles_true <- get_public_data(bbox = "Essen",
+#                                        use_tiles = TRUE)
+# toc()
+# sf::st_write(stations_tiles_true, "stations_tiles_true_unique.shp")
+#
+#
+#
+#
+# dvg1gem <- sf::st_read("inst/exdata/dvg1gem/dvg1gem_nw.shp")
+# gem <- dvg1gem %>% dplyr::filter(GN == "Essen") %>% sf::st_transform(4326)
+#
+# bbox <- sf::st_bbox(gem)
+#
+# grid <- sf::st_make_grid(bbox,
+#                          cellsize = 0.05,
+#                          crs = 4326,
+#                          square = TRUE)
+# sf::st_write(grid, "grid_005.shp")
+#
 # ggplot2::ggplot() +
 #   ggplot2::geom_sf(data = gem) +
-#   ggplot2::geom_sf(data = stations, mapping = ggplot2::aes(col="red"))
+#   ggplot2::geom_sf(data = grid) +
+#   ggplot2::geom_sf(data = stations_with_tiles, mapping = ggplot2::aes(col="red"))
 #
 # mapview::mapview(stations)
-dvg1gem <- sf::st_read("inst/exdata/dvg1gem/dvg1gem_nw.shp")
-gem <- dvg1gem %>% dplyr::filter(GN == "Essen") %>% sf::st_transform(4326)
-
-bbox <- sf::st_bbox(gem)
-
-grid <- sf::st_make_grid(bbox,
-                         cellsize = 0.02,
-                         crs = 4326,
-                         square = TRUE)
-
-ggplot2::ggplot() +
-  ggplot2::geom_sf(data = gem) +
-  ggplot2::geom_sf(data = grid) +
-  ggplot2::geom_sf(data = stations_with_tiles, mapping = ggplot2::aes(col="red"))
-
-
-plot(grid)
-plot(sf::st_geometry(gem), add = TRUE)
-
-plot(grid[gem], col = '#ff000088', add = TRUE)
-
 #
-sf::st_write(stations_without_tiles,
-             "stations_without_tiles.shp")
-
-sf::st_write(stations_with_tiles,
-             "stations_with_tiles.shp")
-
-
-
+#
+# plot(grid)
+# plot(sf::st_geometry(gem), add = TRUE)
+#
+# plot(grid[gem], col = '#ff000088', add = TRUE)
