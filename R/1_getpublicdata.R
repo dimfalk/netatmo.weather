@@ -3,19 +3,22 @@
 #'
 #' @param bbox
 #' @param use_tiles
+#' @param cellsize
 #'
 #' @return tibble
 #' @export
 #'
 #' @examples get_public_data(bbox = "Essen", use_tiles = FALSE)
 get_public_data <- function(bbox,
-                            use_tiles = FALSE) {
+                            use_tiles = FALSE,
+                            cellsize = 0.05) {
 
   # debugging ------------------------------------------------------------------
 
   # bbox <- "Essen"
   # bbox <- c(6.89, 51.34, 7.13, 51.53)
   # use_tiles = TRUE
+  # cellsize = 0.05
 
   # pre-processing -------------------------------------------------------------
 
@@ -68,8 +71,11 @@ get_public_data <- function(bbox,
     # send request
     r_raw <- httr::GET(url = base_url, query = query, .sig)
 
+    # parse response
+    r_json <- httr::content(r_raw, "text") %>% jsonlite::fromJSON()
+
     # parse raw response to sf object and return
-    sf <- gpd_raw2sf(r_raw)
+    sf <- gpd_json2sf(r_json)
 
     # return sf object
     sf
@@ -78,7 +84,7 @@ get_public_data <- function(bbox,
 
     # construct grid for query slicing
     grid <- sf::st_make_grid(bbox_full,
-                             cellsize = 0.05,
+                             cellsize = cellsize,
                              crs = 4326,
                              square = TRUE)
 
@@ -103,11 +109,22 @@ get_public_data <- function(bbox,
       # send request
       r_raw <- httr::GET(url = base_url, query = query, .sig)
 
-      # sleep to prevent server ban for iterating too fast
-      # Sys.sleep(1)
+      # parse response
+      r_json <- httr::content(r_raw, "text") %>% jsonlite::fromJSON()
+
+      # skip iteration if no objects are returned
+      if (r_json[["body"]] %>% length() == 0) {
+
+        paste0("Note: Query response from tile #", i, " was returned empty.") %>% message()
+
+        next
+      }
+
+      # sleep to prevent http 429: too many requests
+      Sys.sleep(0.2)
 
       # parse raw response to sf object
-      sf <- gpd_raw2sf(r_raw)
+      sf <- gpd_json2sf(r_json)
 
       # write sf objects to disk for debugging purposes
       # sf::st_write(sf, paste0("tile_no_", i, ".shp"))
@@ -133,38 +150,43 @@ get_public_data <- function(bbox,
 
 # ------------ >>>
 
-# tic()
-# stations_tiles_false <- get_public_data(bbox = "Essen",
-#                                         use_tiles = FALSE)
-# toc()
+tic()
+stations_tiles_false <- get_public_data(bbox = "Essen",
+                                        use_tiles = FALSE)
+toc()
 # sf::st_write(stations_tiles_false, "stations_tiles_false.shp")
-#
-#
-#
-# tic()
-# stations_tiles_true <- get_public_data(bbox = "Essen",
-#                                        use_tiles = TRUE)
-# toc()
+
+
+
+tic()
+stations_tiles_true <- get_public_data(bbox = "Essen",
+                                       use_tiles = TRUE,
+                                       cellsize = 0.01)
+toc()
 # sf::st_write(stations_tiles_true, "stations_tiles_true_unique.shp")
-#
-#
-#
-#
-# dvg1gem <- sf::st_read("inst/exdata/dvg1gem/dvg1gem_nw.shp")
-# gem <- dvg1gem %>% dplyr::filter(GN == "Essen") %>% sf::st_transform(4326)
-#
-# bbox <- sf::st_bbox(gem)
-#
-# grid <- sf::st_make_grid(bbox,
-#                          cellsize = 0.05,
-#                          crs = 4326,
-#                          square = TRUE)
+
+
+
+dvg1gem <- sf::st_read("inst/exdata/dvg1gem/dvg1gem_nw.shp")
+gem <- dvg1gem %>% dplyr::filter(GN == "Essen") %>% sf::st_transform(4326)
+# sf::st_write(gem, "gem_Essen.shp")
+bbox <- sf::st_bbox(gem)
+
+# bbox %>% sf::st_as_sfc() %>% sf::st_write("bbox_gem_Essen.shp")
+
+
+
+grid <- sf::st_make_grid(bbox,
+                         cellsize = 0.01,
+                         crs = 4326,
+                         square = TRUE)
+length(grid)
 # sf::st_write(grid, "grid_005.shp")
-#
-# ggplot2::ggplot() +
-#   ggplot2::geom_sf(data = gem) +
-#   ggplot2::geom_sf(data = grid) +
-#   ggplot2::geom_sf(data = stations_with_tiles, mapping = ggplot2::aes(col="red"))
+
+ggplot2::ggplot() +
+  ggplot2::geom_sf(data = gem) +
+  ggplot2::geom_sf(data = grid) +
+  ggplot2::geom_sf(data = stations_tiles_true, mapping = ggplot2::aes(col="red"))
 #
 # mapview::mapview(stations)
 #
@@ -173,3 +195,6 @@ get_public_data <- function(bbox,
 # plot(sf::st_geometry(gem), add = TRUE)
 #
 # plot(grid[gem], col = '#ff000088', add = TRUE)
+#
+# plot(sf::st_geometry(stations_tiles_true), col = "blue", add = TRUE)
+
