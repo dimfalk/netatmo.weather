@@ -28,27 +28,14 @@ get_public_data <- function(bbox,
     refresh_access_token()
   }
 
-  # read community polygons as sf
-  dvg1gem <- sf::st_read("inst/exdata/dvg1gem/dvg1gem_nw.shp", )
-
   # construct bbox based on passed input, string or vector of numerics
   if (inherits(bbox, "character") & length(bbox) == 1) {
 
-    stopifnot(bbox %in% dvg1gem[["GN"]])
-
-    gem <- dvg1gem %>% dplyr::filter(GN == bbox) %>% sf::st_transform(4326)
-
-    bbox_full <- sf::st_bbox(gem)
+    bbox_full <- bbox_derive(bbox)
 
   } else if (inherits(bbox, "numeric") & length(bbox) == 4) {
 
-    coordinates <- rbind(c(bbox[1], bbox[2]),
-                         c(bbox[3], bbox[2]),
-                         c(bbox[3], bbox[4]),
-                         c(bbox[1], bbox[4]),
-                         c(bbox[1], bbox[2]))
-
-    bbox_full <- list(coordinates) %>% sf::st_polygon() %>% sf::st_bbox()
+    bbox_full <- bbox_built(bbox[1], bbox[2], bbox[3], bbox[4])
   }
 
   # main -----------------------------------------------------------------------
