@@ -23,6 +23,8 @@ get_oauth2_token <- function(file) {
                                    scope = "read_station")
 
   assign(".sig", httr::config(token = af_token), envir = .GlobalEnv)
+
+  message("OAuth 2.0 token has been successfully created.")
 }
 
 
