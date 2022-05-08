@@ -64,8 +64,8 @@ get_public_data <- function(bbox,
     # parse raw response to sf object and return
     sf <- gpd_json2sf(r_json)
 
-    # return sf object
-    sf
+    # trim stations to original bounding box again, return sf object
+    sf::st_as_sfc(bbox_full) %>% sf::st_intersection(sf, .)
 
   } else if (use_tiles == TRUE) {
 
@@ -102,7 +102,7 @@ get_public_data <- function(bbox,
       # skip iteration if no objects are returned
       if (r_json[["body"]] %>% length() == 0) {
 
-        paste0("Note: Query response from tile #", i, " was returned empty.") %>% message()
+        paste0("Note: Query response from tile #", i, " was returned without content.") %>% message()
 
         next
       }
@@ -130,6 +130,9 @@ get_public_data <- function(bbox,
     # overwrite time_server values of individual iterations
     temp[["time_server"]] <- temp[["time_server"]] %>% max()
 
+    # trim stations due to overlapping tiles to original bounding box again
+    temp <- sf::st_as_sfc(bbox_full) %>% sf::st_intersection(temp, .)
+
     # return cleaned sf object
     dplyr::distinct(temp)
   }
@@ -137,6 +140,7 @@ get_public_data <- function(bbox,
 
 # ------------ >>>
 
+library(tictoc)
 tic()
 stations_tiles_false <- get_public_data(bbox = "Essen",
                                         use_tiles = FALSE)
@@ -145,12 +149,20 @@ toc()
 
 
 
-tic()
-stations_tiles_true <- get_public_data(bbox = "Essen",
-                                       use_tiles = TRUE,
-                                       cellsize = 0.01)
-toc()
-# sf::st_write(stations_tiles_true, "stations_tiles_true_unique.shp")
+
+
+for (i in seq(from = 0.2, to = 0.01, by = -0.01)) {
+
+  tic()
+  stations_tiles_true <- get_public_data(bbox = "Essen",
+                                         use_tiles = TRUE,
+                                         cellsize = i)
+  paste0(dim(stations_tiles_true)[1], " stations found with a cellsize of ", i, " degree.\n") %>% cat()
+  toc()
+  # sf::st_write(stations_tiles_true, "stations_tiles_true.shp")
+}
+
+
 
 
 

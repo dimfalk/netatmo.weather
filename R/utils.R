@@ -41,7 +41,7 @@ bbox_derive <- function(name) {
   dvg1gem <- sf::st_read("inst/exdata/dvg1gem/dvg1gem_nw.shp")
 
   #
-  stopifnot(bbox %in% dvg1gem[["GN"]])
+  stopifnot(name %in% dvg1gem[["GN"]])
 
   #
   dvg1gem %>% dplyr::filter(GN == name) %>% sf::st_transform(4326) %>% sf::st_bbox(gem)
