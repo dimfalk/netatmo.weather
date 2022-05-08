@@ -6,7 +6,7 @@
 #' @return request: Auth token: Token2.0
 #' @export
 #'
-#' @examples .sig <- get_oauth2_token("oauth.cfg")
+#' @examples get_oauth2_token("oauth.cfg")
 get_oauth2_token <- function(file) {
 
   endpoint <- httr::oauth_endpoint(authorize = "https://api.netatmo.net/oauth2/authorize",
@@ -22,7 +22,7 @@ get_oauth2_token <- function(file) {
                                    app,
                                    scope = "read_station")
 
-  httr::config(token = af_token)
+  assign(".sig", httr::config(token = af_token), envir = .GlobalEnv)
 }
 
 
