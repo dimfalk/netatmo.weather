@@ -1,5 +1,4 @@
 
-
 #' Title
 #'
 #' @param stations sf object
@@ -12,15 +11,24 @@
 #' @export
 #'
 #' @examples
+#' get_measure(stations, parameter = "rain")
+#' get_measure(stations, parameter = "rain", from = "2022-04-01", to = "2022-04-20")
 get_measure <- function(stations,
                         parameter = "rain",
-                        from = x,
-                        to = y,
+                        from,
+                        to,
+                        resolution = "30min",
                         limit = 1024) {
 
-  # pre-processing --------------
+  # debugging ------------------------------------------------------------------
 
-  # stations[!is.na(stations[["NAModule3"]]), ]
+  # parameter = "rain"
+  # from = "2022-04-01"
+  # to = "2022-04-20"
+  # resolution = "30min"
+  # limit = 1024
+
+  # pre-processing -------------------------------------------------------------
 
   #
   base_url <- "https://api.netatmo.com/api/getmeasure"
@@ -33,115 +41,160 @@ get_measure <- function(stations,
   #   "rain", "min_rain", "max_rain", "sum_rain", "date_min_rain", "date_max_rain",
   #   "windstrength", "windangle", "guststrength", "gustangle", "date_min_gust", "date_max_gust")
 
-  if (parameter == "temperature") {
+  # parameter mapping
+  if (parameter == "pressure") {
 
-    # "NAModule1" --> outdoor module
-    query <- list(
-      device_id = stations$base_station[2],
-      module_id = stations$NAModule1[2],
-      scale = "30min",
-      type = "temperature",
-      date_begin = (Sys.time() - 60*60*24*5) %>% as.integer(),
-      date_end = Sys.time() %>% as.integer(),
-      limit = 1024,
-      optimize = "false",
-      real_time = "false"
-    )
+    relevant <- "base_station"
 
-  } else if (parameter == "humidity") {
+  } else if (parameter == "temperature" || parameter == "humidity") {
 
-    # "NAModule1" --> outdoor module
-    query <- list(
-      device_id = stations$base_station[2],
-      module_id = stations$NAModule1[2],
-      scale = "30min",
-      type = "humidity",
-      date_begin = (Sys.time() - 60*60*24*5) %>% as.integer(),
-      date_end = Sys.time() %>% as.integer(),
-      limit = 1024,
-      optimize = "false",
-      real_time = "false"
-    )
+    relevant <- "NAModule1"
 
-  } else if (parameter == "pressure") {
+  } else if (parameter == "windstrengh" || parameter == "windangle") {
 
-    # base station
-    query <- list(
-      device_id = stations$base_station[2],
-      scale = "30min",
-      type = "pressure",
-      date_begin = (Sys.time() - 60*60*24*5) %>% as.integer(),
-      date_end = Sys.time() %>% as.integer(),
-      limit = 1024,
-      optimize = "false",
-      real_time = "false"
-    )
+    relevant <- "NAModule2"
 
   } else if (parameter == "rain") {
 
-    # "NAModule3" --> rain module
-    query <- list(
-      device_id = stations$base_station[6],
-      module_id = stations$NAModule3[6],
-      scale = "30min",
-      type = "rain",
-      date_begin = (Sys.time() - 60*60*24*20) %>% as.integer(),
-      date_end = Sys.time() %>% as.integer(),
-      limit = 1024,
-      optimize = "false",
-      real_time = "false"
-    )
-
-  } else if (parameter == "windstrength") {
-
-    # "NAModule2" --> wind module
-    query <- list(
-      device_id = stations$base_station[2],
-      module_id = stations$NAModule2[2],
-      scale = "30min",
-      type = "windstrength",
-      date_begin = (Sys.time() - 60*60*24*5) %>% as.integer(),
-      date_end = Sys.time() %>% as.integer(),
-      limit = 1024,
-      optimize = "false",
-      real_time = "false"
-    )
-
-  } else if (parameter == "windangle") {
-
-    # "NAModule2" --> wind module
-    query <- list(
-      device_id = stations$base_station[2],
-      module_id = stations$NAModule2[2],
-      scale = "30min",
-      type = "windangle",
-      date_begin = (Sys.time() - 60*60*24*5) %>% as.integer(),
-      date_end = Sys.time() %>% as.integer(),
-      limit = 1024,
-      optimize = "false",
-      real_time = "false"
-    )
+    relevant <- "NAModule3"
   }
 
-  #
-  resp <- httr::GET(url = base_url, query = query, sig)
+  # subset stations
+  stations_subset <- stations[!is.na(stations[[relevant]]), ]
 
-  # parse response
-  resp_text <- httr::content(resp, "text")
+  # timespan definition
+  if (missing(from) && missing(to)) {
 
-  # parse text to json
-  resp_json <- jsonlite::fromJSON(resp_text)
+    start <- (Sys.time() - 60 * 60 * 24 * 21) %>% as.integer()
+    end <- Sys.time() %>% as.integer()
 
-  # parse json to df
-  resp_df <- data.frame(datetimes = resp_json$body %>% names() %>% as.numeric() %>% as.POSIXct(origin="1970-01-01"),
-                        values = resp_json$body %>% as.numeric())
+  } else if (inherits(c(from, to), "character") && nchar(c(from, to)) == c(10, 10)) {
 
-  # parse json to tibble
-  # resp_tibble <- tibble::as_tibble(resp_df)
+    start <- from %>% strptime("%Y-%m-%d") %>% as.POSIXct() %>% as.numeric()
+    end <- to %>% strptime("%Y-%m-%d") %>% as.POSIXct() %>% as.numeric()
+  }
 
-  #
-  xts::xts(resp_df$values, order.by = resp_df$datetimes)
+  # loop over all relevant mac addresses and get measurements
+  n <- dim(stations_subset)[1]
+
+  for (i in 1:n) {
+
+    # query construction
+    if (parameter == "pressure") {
+
+      # base station
+      query <- list(
+        device_id = stations_subset[[i, "base_station"]],
+        scale = resolution,
+        type = "pressure",
+        date_begin = start,
+        date_end = end,
+        limit = 1024,
+        optimize = "false",
+        real_time = "false"
+      )
+
+    } else if (parameter == "temperature") {
+
+      # "NAModule1" --> outdoor module
+      query <- list(
+        device_id = stations_subset[[i, "base_station"]],
+        module_id = stations_subset[[i, relevant]],
+        scale = resolution,
+        type = "temperature",
+        date_begin = start,
+        date_end = end,
+        limit = 1024,
+        optimize = "false",
+        real_time = "false"
+      )
+
+    } else if (parameter == "humidity") {
+
+      # "NAModule1" --> outdoor module
+      query <- list(
+        device_id = stations_subset[[i, "base_station"]],
+        module_id = stations_subset[[i, relevant]],
+        scale = resolution,
+        type = "humidity",
+        date_begin = start,
+        date_end = end,
+        limit = 1024,
+        optimize = "false",
+        real_time = "false"
+      )
+
+    } else if (parameter == "windstrength") {
+
+      # "NAModule2" --> wind module
+      query <- list(
+        device_id = stations_subset[[i, "base_station"]],
+        module_id = stations_subset[[i, relevant]],
+        scale = resolution,
+        type = "windstrength",
+        date_begin = start,
+        date_end = end,
+        limit = 1024,
+        optimize = "false",
+        real_time = "false"
+      )
+
+    } else if (parameter == "windangle") {
+
+      # "NAModule2" --> wind module
+      query <- list(
+        device_id = stations_subset[[i, "base_station"]],
+        module_id = stations_subset[[i, relevant]],
+        scale = resolution,
+        type = "windangle",
+        date_begin = start,
+        date_end = end,
+        limit = 1024,
+        optimize = "false",
+        real_time = "false"
+      )
+
+    } else if (parameter == "rain") {
+
+      # "NAModule3" --> rain module
+      query <- list(
+        device_id = stations_subset[[i, "base_station"]],
+        module_id = stations_subset[[i, relevant]],
+        scale = resolution,
+        type = "rain",
+        date_begin = start,
+        date_end = end,
+        limit = 1024,
+        optimize = "false",
+        real_time = "false"
+      )
+    }
+
+    # main -----------------------------------------------------------------------
+
+    # send request
+    r_raw <- httr::GET(url = base_url, query = query, .sig)
+
+    # parse response
+    r_json <- httr::content(r_raw, "text") %>% jsonlite::fromJSON()
+
+    # parse json to df
+    r_df <- data.frame(datetimes = r_json[["body"]] %>% names() %>% as.numeric() %>% as.POSIXct(origin="1970-01-01"),
+                       values = r_json[["body"]] %>% as.numeric())
+
+    if (i == 1) {
+
+      xts <- xts::xts(r_df[["values"]], order.by = r_df[["datetimes"]])
+
+    } else {
+
+      xts <- cbind(xts, xts::xts(r_df[["values"]], order.by = r_df[["datetimes"]]))
+    }
+  }
+
+  # definition of unique colnames
+  colnames(xts) <- stations_subset[["base_station"]]
+
+  # return xts object
+  xts
 }
-
-# plot(resp_tibble$datetimes, resp_tibble$values)
-# plot(xts_pressure)
