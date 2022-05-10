@@ -182,9 +182,34 @@ get_measure <- function(stations,
     r_df <- data.frame(datetimes = r_json[["body"]] %>% names() %>% as.numeric() %>% as.POSIXct(origin="1970-01-01"),
                        values = r_json[["body"]] %>% as.numeric())
 
-    # initialize and fill list with xts objects
+    # create xts
     xts <- xts::xts(r_df[["values"]], order.by = r_df[["datetimes"]])
 
+    # meta data definition
+    attr(xts, "STAT_ID") <- stations_subset[["base_station"]][i]
+
+    attr(xts, "X") <- sf::st_coordinates(stations_subset[i, ])[1]
+    attr(xts, "Y") <- sf::st_coordinates(stations_subset[i, ])[2]
+    attr(xts, "Z") <- stations_subset[["altitude"]][i]
+    attr(xts, "CRS_EPSG") <- "4326"
+    attr(xts, "TZONE") <- stations[["timezone"]][i]
+
+    attr(xts, "OPERATOR") <- "Netatmo"
+    attr(xts, "SENS_ID") <- stations_subset[[relevant]][i]
+
+    attr(xts, "PARAMETER") <- parameter
+
+    attr(xts, "TS_TYPE") <- "measurement"
+
+    attr(xts, "MEAS_UNIT") <- "mm"
+    attr(xts, "MEAS_INTERVALTYPE") <- TRUE
+    attr(xts, "MEAS_RESOLUTION") <- 30
+    attr(xts, "MEAS_BLOCKING") <- "right"
+    attr(xts, "MEAS_STATEMENT") <- "sum"
+
+    attr(xts, "REMARKS") <- NA
+
+    # initialize and fill list with xts objects
     if (i == 1) {
 
       xtslist <- list(xts)

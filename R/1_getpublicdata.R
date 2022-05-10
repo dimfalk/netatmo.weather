@@ -8,7 +8,9 @@
 #' @return tibble
 #' @export
 #'
-#' @examples get_public_data(bbox = "Essen", use_tiles = FALSE)
+#' @examples
+#' get_public_data(bbox = "Essen", use_tiles = FALSE)
+#' get_public_data(bbox = "Essen", use_tiles = TRUE)
 get_public_data <- function(bbox,
                             use_tiles = FALSE,
                             cellsize = 0.05) {
