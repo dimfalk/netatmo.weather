@@ -29,11 +29,11 @@ get_public_data <- function(bbox,
   }
 
   # construct bbox based on passed input, string or vector of numerics
-  if (inherits(bbox, "character") & length(bbox) == 1) {
+  if (inherits(bbox, "character") && length(bbox) == 1) {
 
     bbox_full <- bbox_derive(bbox)
 
-  } else if (inherits(bbox, "numeric") & length(bbox) == 4) {
+  } else if (inherits(bbox, "numeric") && length(bbox) == 4) {
 
     bbox_full <- bbox_built(bbox[1], bbox[2], bbox[3], bbox[4])
   }

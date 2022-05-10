@@ -38,7 +38,7 @@ bbox_built <- function(xmin, ymin, xmax, ymax) {
 bbox_derive <- function(name) {
 
   # read community polygons as sf
-  dvg1gem <- sf::st_read("inst/exdata/dvg1gem/dvg1gem_nw.shp")
+  dvg1gem <- sf::st_read("inst/exdata/dvg1gem/dvg1gem_nw.shp", quiet = TRUE)
 
   #
   stopifnot(name %in% dvg1gem[["GN"]])
@@ -121,5 +121,8 @@ gpd_json2sf <- function(json) {
     }
   }
 
-  tibble::as_tibble(temp) %>% sf::st_as_sf(coords = c("x", "y"), crs = 4326)
+  # return sf object
+  tibble::as_tibble(temp) %>% sf::st_as_sf(coords = c("x", "y"),
+                                           crs = 4326,
+                                           agr = "identity")
 }

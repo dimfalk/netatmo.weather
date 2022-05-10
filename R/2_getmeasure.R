@@ -182,19 +182,22 @@ get_measure <- function(stations,
     r_df <- data.frame(datetimes = r_json[["body"]] %>% names() %>% as.numeric() %>% as.POSIXct(origin="1970-01-01"),
                        values = r_json[["body"]] %>% as.numeric())
 
+    # initialize and fill list with xts objects
+    xts <- xts::xts(r_df[["values"]], order.by = r_df[["datetimes"]])
+
     if (i == 1) {
 
-      xts <- xts::xts(r_df[["values"]], order.by = r_df[["datetimes"]])
+      xtslist <- list(xts)
 
     } else {
 
-      xts <- cbind(xts, xts::xts(r_df[["values"]], order.by = r_df[["datetimes"]]))
+      xtslist[[i]] <- xts
     }
   }
 
-  # definition of unique colnames
-  colnames(xts) <- stations_subset[["base_station"]]
+  # definition of unique names
+  names(xtslist) <- stations_subset[["base_station"]]
 
-  # return xts object
-  xts
+  # return list of xts objects
+  xtslist
 }
