@@ -44,7 +44,7 @@ bbox_derive <- function(name) {
   stopifnot(name %in% dvg1gem[["GN"]])
 
   #
-  dvg1gem %>% dplyr::filter(GN == name) %>% sf::st_transform(4326) %>% sf::st_bbox(gem)
+  dvg1gem %>% dplyr::filter(GN == name) %>% sf::st_transform(4326) %>% sf::st_bbox()
 }
 
 

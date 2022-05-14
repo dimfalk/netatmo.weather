@@ -9,8 +9,8 @@
 #' @examples get_oauth2_token("oauth.cfg")
 get_oauth2_token <- function(file) {
 
-  endpoint <- httr::oauth_endpoint(authorize = "https://api.netatmo.net/oauth2/authorize",
-                                   access = "https://api.netatmo.net/oauth2/token")
+  ep <- httr::oauth_endpoint(authorize = "https://api.netatmo.net/oauth2/authorize",
+                             access = "https://api.netatmo.net/oauth2/token")
 
   cfg <- jsonlite::fromJSON(file)
 
@@ -18,7 +18,7 @@ get_oauth2_token <- function(file) {
                          key = cfg[["client_ID"]],
                          secret = cfg[["client_secret"]])
 
-  af_token <- httr::oauth2.0_token(endpoint,
+  af_token <- httr::oauth2.0_token(ep,
                                    app,
                                    scope = "read_station")
 

@@ -17,7 +17,7 @@ get_measure <- function(stations,
                         parameter = "rain",
                         from,
                         to,
-                        resolution = "30min",
+                        resolution = "5min",
                         limit = 1024) {
 
   # debugging ------------------------------------------------------------------
@@ -25,7 +25,7 @@ get_measure <- function(stations,
   # parameter = "rain"
   # from = "2022-04-01"
   # to = "2022-04-20"
-  # resolution = "30min"
+  # resolution = "5min"
   # limit = 1024
 
   # pre-processing -------------------------------------------------------------
@@ -186,6 +186,7 @@ get_measure <- function(stations,
     xts <- xts::xts(r_df[["values"]], order.by = r_df[["datetimes"]])
 
     # meta data definition
+    # subset of basis parameters from `timeseriesIO::xts_init()`
     attr(xts, "STAT_ID") <- stations_subset[["base_station"]][i]
 
     attr(xts, "X") <- sf::st_coordinates(stations_subset[i, ])[1]
@@ -196,16 +197,16 @@ get_measure <- function(stations,
 
     attr(xts, "OPERATOR") <- "Netatmo"
     attr(xts, "SENS_ID") <- stations_subset[[relevant]][i]
-
     attr(xts, "PARAMETER") <- parameter
-
+    attr(xts, "TS_START") <- as.POSIXct(NA)
+    attr(xts, "TS_END") <- as.POSIXct(NA)
     attr(xts, "TS_TYPE") <- "measurement"
 
-    attr(xts, "MEAS_UNIT") <- "mm"
     attr(xts, "MEAS_INTERVALTYPE") <- TRUE
-    attr(xts, "MEAS_RESOLUTION") <- 30
     attr(xts, "MEAS_BLOCKING") <- "right"
-    attr(xts, "MEAS_STATEMENT") <- "sum"
+    attr(xts, "MEAS_UNIT") <- "mm" # TODO
+    attr(xts, "MEAS_RESOLUTION") <- 30 # TODO
+    attr(xts, "MEAS_STATEMENT") <- "sum" # TODO
 
     attr(xts, "REMARKS") <- NA
 
