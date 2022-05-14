@@ -12,7 +12,7 @@
 #'
 #' @examples
 #' get_measure(stations, parameter = "rain")
-#' get_measure(stations, parameter = "rain", from = "2022-04-01", to = "2022-04-20")
+#' get_measure(stations, parameter = "rain", from = "2022-04-04", to = "2022-04-06", resolution = "5min")
 get_measure <- function(stations,
                         parameter = "rain",
                         from,
@@ -29,6 +29,12 @@ get_measure <- function(stations,
   # limit = 1024
 
   # pre-processing -------------------------------------------------------------
+
+  # refresh access token if expired (3 hours after request)
+  if (is_expired()) {
+
+    refresh_access_token()
+  }
 
   #
   base_url <- "https://api.netatmo.com/api/getmeasure"
@@ -170,7 +176,7 @@ get_measure <- function(stations,
       )
     }
 
-    # main -----------------------------------------------------------------------
+    # main ---------------------------------------------------------------------
 
     # send request
     r_raw <- httr::GET(url = base_url, query = query, .sig)
@@ -184,6 +190,11 @@ get_measure <- function(stations,
 
     # create xts
     xts <- xts::xts(r_df[["values"]], order.by = r_df[["datetimes"]])
+
+    # post-processing ----------------------------------------------------------
+
+    # sleep to prevent http 429: too many requests
+    Sys.sleep(0.2)
 
     # meta data definition
     # subset of basis parameters from `timeseriesIO::xts_init()`
