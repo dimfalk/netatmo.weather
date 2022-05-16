@@ -5,7 +5,7 @@
 #' @param parameter character
 #' @param from date
 #' @param to date
-#' @param limit integer
+#' @param resolution
 #'
 #' @return xts
 #' @export
@@ -17,16 +17,14 @@ get_measure <- function(stations,
                         parameter = "rain",
                         from,
                         to,
-                        resolution = "5min",
-                        limit = 1024) {
+                        resolution = "5min") {
 
   # debugging ------------------------------------------------------------------
 
   # parameter = "rain"
-  # from = "2022-04-01"
-  # to = "2022-04-20"
+  # from = "2022-04-04"
+  # to = "2022-04-06"
   # resolution = "5min"
-  # limit = 1024
 
   # pre-processing -------------------------------------------------------------
 
@@ -48,22 +46,14 @@ get_measure <- function(stations,
   #   "windstrength", "windangle", "guststrength", "gustangle", "date_min_gust", "date_max_gust")
 
   # parameter mapping
-  if (parameter == "pressure") {
+  relevant <- switch(parameter,
 
-    relevant <- "base_station"
-
-  } else if (parameter == "temperature" || parameter == "humidity") {
-
-    relevant <- "NAModule1"
-
-  } else if (parameter == "windstrengh" || parameter == "windangle") {
-
-    relevant <- "NAModule2"
-
-  } else if (parameter == "rain") {
-
-    relevant <- "NAModule3"
-  }
+                     "pressure" = "base_station",
+                     "temperature" = "NAModule1",
+                     "humidity" = "NAModule1",
+                     "windstrengh" = "NAModule2",
+                     "windangle" = "NAModule2",
+                     "rain" = "NAModule3")
 
   # subset stations
   stations_subset <- stations[!is.na(stations[[relevant]]), ]
@@ -86,95 +76,79 @@ get_measure <- function(stations,
   for (i in 1:n) {
 
     # query construction
-    if (parameter == "pressure") {
+    query <- switch(parameter,
 
-      # base station
-      query <- list(
-        device_id = stations_subset[[i, "base_station"]],
-        scale = resolution,
-        type = "pressure",
-        date_begin = start,
-        date_end = end,
-        limit = 1024,
-        optimize = "false",
-        real_time = "false"
-      )
+                    "pressure" = list(
+                      device_id = stations_subset[[i, "base_station"]],
+                      scale = resolution,
+                      type = "pressure",
+                      date_begin = start,
+                      date_end = end,
+                      limit = 1024,
+                      optimize = "false",
+                      real_time = "true"
+                    ),
 
-    } else if (parameter == "temperature") {
+                    "temperature" = list(
+                      device_id = stations_subset[[i, "base_station"]],
+                      module_id = stations_subset[[i, relevant]],
+                      scale = resolution,
+                      type = "temperature",
+                      date_begin = start,
+                      date_end = end,
+                      limit = 1024,
+                      optimize = "false",
+                      real_time = "true"
+                    ),
 
-      # "NAModule1" --> outdoor module
-      query <- list(
-        device_id = stations_subset[[i, "base_station"]],
-        module_id = stations_subset[[i, relevant]],
-        scale = resolution,
-        type = "temperature",
-        date_begin = start,
-        date_end = end,
-        limit = 1024,
-        optimize = "false",
-        real_time = "false"
-      )
+                    "humidity" = list(
+                      device_id = stations_subset[[i, "base_station"]],
+                      module_id = stations_subset[[i, relevant]],
+                      scale = resolution,
+                      type = "humidity",
+                      date_begin = start,
+                      date_end = end,
+                      limit = 1024,
+                      optimize = "false",
+                      real_time = "true"
+                    ),
 
-    } else if (parameter == "humidity") {
+                    "windstrengh" = list(
+                      device_id = stations_subset[[i, "base_station"]],
+                      module_id = stations_subset[[i, relevant]],
+                      scale = resolution,
+                      type = "windstrength",
+                      date_begin = start,
+                      date_end = end,
+                      limit = 1024,
+                      optimize = "false",
+                      real_time = "true"
+                    ),
 
-      # "NAModule1" --> outdoor module
-      query <- list(
-        device_id = stations_subset[[i, "base_station"]],
-        module_id = stations_subset[[i, relevant]],
-        scale = resolution,
-        type = "humidity",
-        date_begin = start,
-        date_end = end,
-        limit = 1024,
-        optimize = "false",
-        real_time = "false"
-      )
+                    "windangle" = list(
+                      device_id = stations_subset[[i, "base_station"]],
+                      module_id = stations_subset[[i, relevant]],
+                      scale = resolution,
+                      type = "windangle",
+                      date_begin = start,
+                      date_end = end,
+                      limit = 1024,
+                      optimize = "false",
+                      real_time = "true"
+                    ),
 
-    } else if (parameter == "windstrength") {
-
-      # "NAModule2" --> wind module
-      query <- list(
-        device_id = stations_subset[[i, "base_station"]],
-        module_id = stations_subset[[i, relevant]],
-        scale = resolution,
-        type = "windstrength",
-        date_begin = start,
-        date_end = end,
-        limit = 1024,
-        optimize = "false",
-        real_time = "false"
-      )
-
-    } else if (parameter == "windangle") {
-
-      # "NAModule2" --> wind module
-      query <- list(
-        device_id = stations_subset[[i, "base_station"]],
-        module_id = stations_subset[[i, relevant]],
-        scale = resolution,
-        type = "windangle",
-        date_begin = start,
-        date_end = end,
-        limit = 1024,
-        optimize = "false",
-        real_time = "false"
-      )
-
-    } else if (parameter == "rain") {
-
-      # "NAModule3" --> rain module
-      query <- list(
-        device_id = stations_subset[[i, "base_station"]],
-        module_id = stations_subset[[i, relevant]],
-        scale = resolution,
-        type = "rain",
-        date_begin = start,
-        date_end = end,
-        limit = 1024,
-        optimize = "false",
-        real_time = "false"
-      )
-    }
+                    "rain" = list(
+                      device_id = stations_subset[[i, "base_station"]],
+                      module_id = stations_subset[[i, relevant]],
+                      scale = resolution,
+                      type = "rain",
+                      date_begin = start,
+                      date_end = end,
+                      limit = 1024,
+                      optimize = "false",
+                      real_time = "true"
+                    )
+    )
 
     # main ---------------------------------------------------------------------
 
@@ -209,15 +183,39 @@ get_measure <- function(stations,
     attr(xts, "OPERATOR") <- "Netatmo"
     attr(xts, "SENS_ID") <- stations_subset[[relevant]][i]
     attr(xts, "PARAMETER") <- parameter
-    attr(xts, "TS_START") <- as.POSIXct(NA)
-    attr(xts, "TS_END") <- as.POSIXct(NA)
+    attr(xts, "TS_START") <- as.POSIXct(NA) # TODO
+    attr(xts, "TS_END") <- as.POSIXct(NA) # TODO
     attr(xts, "TS_TYPE") <- "measurement"
 
     attr(xts, "MEAS_INTERVALTYPE") <- TRUE
     attr(xts, "MEAS_BLOCKING") <- "right"
-    attr(xts, "MEAS_UNIT") <- "mm" # TODO
-    attr(xts, "MEAS_RESOLUTION") <- 30 # TODO
-    attr(xts, "MEAS_STATEMENT") <- "sum" # TODO
+
+    attr(xts, "MEAS_RESOLUTION") <- switch(resolution,
+
+                                           "5min" = 5,
+                                           "30min" = 30,
+                                           "1hour" = 60,
+                                           "3hours" = 3 * 60,
+                                           "6hours" = 6 * 60,
+                                           "1day" = 24 * 60)
+
+    attr(xts, "MEAS_UNIT") <- switch(parameter,
+
+                                     "pressure" = "bar",
+                                     "temperature" = "°C",
+                                     "humidity" = "%",
+                                     "windstrengh" = "m/s",
+                                     "windangle" = "°",
+                                     "rain" = "mm")
+
+    attr(xts, "MEAS_STATEMENT") <- switch(parameter,
+
+                                          "pressure" = "mean",
+                                          "temperature" = "mean",
+                                          "humidity" = "mean",
+                                          "windstrengh" = "mean",
+                                          "windangle" = "mean",
+                                          "rain" = "sum")
 
     attr(xts, "REMARKS") <- NA
 
