@@ -3,28 +3,31 @@
 #'
 #' @param stations sf object
 #' @param parameter character
+#' @param resolution
 #' @param from date
 #' @param to date
-#' @param resolution
+#' @param limit
 #'
 #' @return xts
 #' @export
 #'
 #' @examples
 #' get_measure(stations, parameter = "rain")
-#' get_measure(stations, parameter = "rain", from = "2022-04-04", to = "2022-04-06", resolution = "5min")
+#' get_measure(stations, parameter = "rain", resolution = 5, from = "2022-04-04", to = "2022-04-06")
 get_measure <- function(stations,
                         parameter = "rain",
+                        resolution = 5,
                         from,
                         to,
-                        resolution = "5min") {
+                        limit = 1024) {
 
   # debugging ------------------------------------------------------------------
 
-  # parameter = "rain"
-  # from = "2022-04-04"
-  # to = "2022-04-06"
-  # resolution = "5min"
+  # parameter <- "rain"
+  # resolution <- 5
+  # from <- "2022-04-04"
+  # to <- "2022-04-06"
+  # limit <- 1024
 
   # pre-processing -------------------------------------------------------------
 
@@ -33,9 +36,6 @@ get_measure <- function(stations,
 
     refresh_access_token()
   }
-
-  #
-  base_url <- "https://api.netatmo.com/api/getmeasure"
 
   # c("temperature", "min_temp", "max_temp", "date_min_temp", "date_max_temp",
   #   "humidity", "min_hum", "max_hum", "date_min_hum", "date_max_hum",
@@ -55,13 +55,22 @@ get_measure <- function(stations,
                      "windangle" = "NAModule2",
                      "rain" = "NAModule3")
 
+  resolution_code <- switch(as.character(resolution),
+
+                            "5" = "5min",
+                            "30" = "30min",
+                            "60" = "1hour",
+                            "180" = "3hours",
+                            "360" = "6hours",
+                            "1440" = "1day")
+
   # subset stations
   stations_subset <- stations[!is.na(stations[[relevant]]), ]
 
   # timespan definition
   if (missing(from) && missing(to)) {
 
-    start <- (Sys.time() - 60 * 60 * 24 * 21) %>% as.integer()
+    start <- (Sys.time() - 60 * resolution * limit) %>% as.integer()
     end <- Sys.time() %>% as.integer()
 
   } else if (inherits(c(from, to), "character") && nchar(c(from, to)) == c(10, 10)) {
@@ -69,6 +78,9 @@ get_measure <- function(stations,
     start <- from %>% strptime("%Y-%m-%d") %>% as.POSIXct() %>% as.numeric()
     end <- to %>% strptime("%Y-%m-%d") %>% as.POSIXct() %>% as.numeric()
   }
+
+  #
+  base_url <- "https://api.netatmo.com/api/getmeasure"
 
   # loop over all relevant mac addresses and get measurements
   n <- dim(stations_subset)[1]
@@ -80,11 +92,11 @@ get_measure <- function(stations,
 
                     "pressure" = list(
                       device_id = stations_subset[[i, "base_station"]],
-                      scale = resolution,
+                      scale = resolution_code,
                       type = "pressure",
                       date_begin = start,
                       date_end = end,
-                      limit = 1024,
+                      limit = limit,
                       optimize = "false",
                       real_time = "true"
                     ),
@@ -92,11 +104,11 @@ get_measure <- function(stations,
                     "temperature" = list(
                       device_id = stations_subset[[i, "base_station"]],
                       module_id = stations_subset[[i, relevant]],
-                      scale = resolution,
+                      scale = resolution_code,
                       type = "temperature",
                       date_begin = start,
                       date_end = end,
-                      limit = 1024,
+                      limit = limit,
                       optimize = "false",
                       real_time = "true"
                     ),
@@ -104,11 +116,11 @@ get_measure <- function(stations,
                     "humidity" = list(
                       device_id = stations_subset[[i, "base_station"]],
                       module_id = stations_subset[[i, relevant]],
-                      scale = resolution,
+                      scale = resolution_code,
                       type = "humidity",
                       date_begin = start,
                       date_end = end,
-                      limit = 1024,
+                      limit = limit,
                       optimize = "false",
                       real_time = "true"
                     ),
@@ -116,11 +128,11 @@ get_measure <- function(stations,
                     "windstrengh" = list(
                       device_id = stations_subset[[i, "base_station"]],
                       module_id = stations_subset[[i, relevant]],
-                      scale = resolution,
+                      scale = resolution_code,
                       type = "windstrength",
                       date_begin = start,
                       date_end = end,
-                      limit = 1024,
+                      limit = limit,
                       optimize = "false",
                       real_time = "true"
                     ),
@@ -128,11 +140,11 @@ get_measure <- function(stations,
                     "windangle" = list(
                       device_id = stations_subset[[i, "base_station"]],
                       module_id = stations_subset[[i, relevant]],
-                      scale = resolution,
+                      scale = resolution_code,
                       type = "windangle",
                       date_begin = start,
                       date_end = end,
-                      limit = 1024,
+                      limit = limit,
                       optimize = "false",
                       real_time = "true"
                     ),
@@ -140,11 +152,11 @@ get_measure <- function(stations,
                     "rain" = list(
                       device_id = stations_subset[[i, "base_station"]],
                       module_id = stations_subset[[i, relevant]],
-                      scale = resolution,
+                      scale = resolution_code,
                       type = "rain",
                       date_begin = start,
                       date_end = end,
-                      limit = 1024,
+                      limit = limit,
                       optimize = "false",
                       real_time = "true"
                     )
@@ -190,14 +202,7 @@ get_measure <- function(stations,
     attr(xts, "MEAS_INTERVALTYPE") <- TRUE
     attr(xts, "MEAS_BLOCKING") <- "right"
 
-    attr(xts, "MEAS_RESOLUTION") <- switch(resolution,
-
-                                           "5min" = 5,
-                                           "30min" = 30,
-                                           "1hour" = 60,
-                                           "3hours" = 3 * 60,
-                                           "6hours" = 6 * 60,
-                                           "1day" = 24 * 60)
+    attr(xts, "MEAS_RESOLUTION") <- resolution
 
     attr(xts, "MEAS_UNIT") <- switch(parameter,
 

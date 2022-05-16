@@ -19,8 +19,8 @@ get_public_data <- function(bbox,
 
   # bbox <- "Essen"
   # bbox <- c(6.89, 51.34, 7.13, 51.53)
-  # use_tiles = TRUE
-  # cellsize = 0.05
+  # use_tiles <- TRUE
+  # cellsize <- 0.05
 
   # pre-processing -------------------------------------------------------------
 
