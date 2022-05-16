@@ -25,7 +25,7 @@ get_measure <- function(stations,
 
   # parameter <- "rain"
   # resolution <- 5
-  # from <- "2022-04-04"
+  # from <- "2022-04-01"
   # to <- "2022-04-06"
   # limit <- 1024
 
@@ -77,6 +77,20 @@ get_measure <- function(stations,
 
     start <- from %>% strptime("%Y-%m-%d") %>% as.POSIXct() %>% as.numeric()
     end <- to %>% strptime("%Y-%m-%d") %>% as.POSIXct() %>% as.numeric()
+
+    timediff_min <- (end - start) / 60
+
+    values_queried <- timediff_min / resolution
+
+    # throw warning if limit is exceeded
+    if (values_queried > limit) {
+
+      warning(
+        paste0("Based on the defined period ", from, "/", to, " and the chosen resolution (", resolution, " min),
+        you are trying to access ", values_queried, " values. Allowed maximum is ", limit, ". The result may be incomplete.")
+      )
+
+    }
   }
 
   #
