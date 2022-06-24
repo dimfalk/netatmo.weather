@@ -9,22 +9,29 @@
 #' @examples get_oauth2_token("oauth.cfg")
 get_oauth2_token <- function(file) {
 
-  ep <- httr::oauth_endpoint(authorize = "https://api.netatmo.net/oauth2/authorize",
-                             access = "https://api.netatmo.net/oauth2/token")
+  if (file.exists(file)) {
 
-  cfg <- jsonlite::fromJSON(file)
+    ep <- httr::oauth_endpoint(authorize = "https://api.netatmo.net/oauth2/authorize",
+                               access = "https://api.netatmo.net/oauth2/token")
 
-  app <- httr::oauth_app(appname = cfg[["app_name"]],
-                         key = cfg[["client_ID"]],
-                         secret = cfg[["client_secret"]])
+    cfg <- jsonlite::fromJSON(file)
 
-  af_token <- httr::oauth2.0_token(ep,
-                                   app,
-                                   scope = "read_station")
+    app <- httr::oauth_app(appname = cfg[["app_name"]],
+                           key = cfg[["client_ID"]],
+                           secret = cfg[["client_secret"]])
 
-  assign(".sig", httr::config(token = af_token), envir = .GlobalEnv)
+    af_token <- httr::oauth2.0_token(ep,
+                                     app,
+                                     scope = "read_station")
 
-  message("OAuth 2.0 token has been successfully created.")
+    assign(".sig", httr::config(token = af_token), envir = .GlobalEnv)
+
+    message("Success: OAuth 2.0 token has been successfully created.")
+
+  } else {
+
+    paste0("Error: File does not exist: '", file, "'.") %>% message()
+  }
 }
 
 
