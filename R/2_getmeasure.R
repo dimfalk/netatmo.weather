@@ -73,7 +73,7 @@ get_measure <- function(stations,
     start <- (Sys.time() - 60 * resolution * limit) %>% as.integer()
     end <- Sys.time() %>% as.integer()
 
-  } else if (inherits(c(from, to), "character") && nchar(c(from, to)) == c(10, 10)) {
+  } else if (inherits(c(from, to), "character") && all.equal(nchar(c(from, to)), c(10, 10))) {
 
     start <- from %>% strptime("%Y-%m-%d") %>% as.POSIXct() %>% as.numeric()
     end <- to %>% strptime("%Y-%m-%d") %>% as.POSIXct() %>% as.numeric()
@@ -193,8 +193,9 @@ get_measure <- function(stations,
 
     # post-processing ----------------------------------------------------------
 
-    # sleep to prevent http 429: too many requests
-    Sys.sleep(0.2)
+    # sleep to prevent http 429: too many requests and
+    # http 403 (error code 26): user usage reached (50 req. per 10 s)
+    Sys.sleep(0.21)
 
     # meta data definition
     # subset of basis parameters from `timeseriesIO::xts_init()`

@@ -109,8 +109,9 @@ get_public_data <- function(bbox,
         next
       }
 
-      # sleep to prevent http 429: too many requests
-      Sys.sleep(0.2)
+      # sleep to prevent http 429: too many requests and
+      # http 403 (error code 26): user usage reached (50 req. per 10 s)
+      Sys.sleep(0.21)
 
       # parse raw response to sf object
       sf <- gpd_json2sf(r_json)
