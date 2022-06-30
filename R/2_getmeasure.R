@@ -13,6 +13,7 @@
 #'
 #' @examples
 #' get_measure(stations, parameter = "rain")
+#' get_measure(stations, parameter = "temperature", resolution = 5)
 #' get_measure(stations, parameter = "rain", resolution = 5, from = "2022-04-04", to = "2022-04-06")
 get_measure <- function(stations,
                         parameter = "rain",
@@ -70,13 +71,13 @@ get_measure <- function(stations,
   # timespan definition
   if (missing(from) && missing(to)) {
 
-    start <- (Sys.time() - 60 * resolution * limit) %>% as.integer()
-    end <- Sys.time() %>% as.integer()
+    start <- (Sys.time() - 60 * resolution * limit) |> as.integer()
+    end <- Sys.time() |> as.integer()
 
   } else if (inherits(c(from, to), "character") && all.equal(nchar(c(from, to)), c(10, 10))) {
 
-    start <- from %>% strptime("%Y-%m-%d") %>% as.POSIXct() %>% as.numeric()
-    end <- to %>% strptime("%Y-%m-%d") %>% as.POSIXct() %>% as.numeric()
+    start <- from |> strptime(format = "%Y-%m-%d") |> as.POSIXct() |> as.numeric()
+    end <- to |> strptime(format = "%Y-%m-%d") |> as.POSIXct() |> as.numeric()
 
     timediff_min <- (end - start) / 60
 
@@ -182,11 +183,11 @@ get_measure <- function(stations,
     r_raw <- httr::GET(url = base_url, query = query, .sig)
 
     # parse response
-    r_json <- httr::content(r_raw, "text") %>% jsonlite::fromJSON()
+    r_json <- httr::content(r_raw, "text") |> jsonlite::fromJSON()
 
     # parse json to df
-    r_df <- data.frame(datetimes = r_json[["body"]] %>% names() %>% as.numeric() %>% as.POSIXct(origin="1970-01-01"),
-                       values = r_json[["body"]] %>% as.numeric())
+    r_df <- data.frame(datetimes = r_json[["body"]] |> names() |> as.numeric() |> as.POSIXct(origin = "1970-01-01"),
+                       values = r_json[["body"]] |> as.numeric())
 
     # create xts
     xts <- xts::xts(r_df[["values"]], order.by = r_df[["datetimes"]])

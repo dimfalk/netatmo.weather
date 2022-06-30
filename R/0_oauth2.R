@@ -30,7 +30,7 @@ get_oauth2_token <- function(file) {
 
   } else {
 
-    paste0("Error: File does not exist: '", file, "'.") %>% message()
+    paste0("Error: File does not exist: '", file, "'.") |> message()
   }
 }
 
@@ -48,7 +48,7 @@ print_access_token <- function() {
 
   paste("&access_token=",
         .sig$auth_token$credentials$access_token,
-        sep = "") %>% print()
+        sep = "") |> print()
 }
 
 
@@ -63,7 +63,7 @@ print_refresh_token <- function() {
 
   paste("&refresh_token=",
         .sig$auth_token$credentials$refresh_token,
-        sep = "") %>% print()
+        sep = "") |> print()
 }
 
 
@@ -91,7 +91,7 @@ is_expired <- function() {
   r_raw <- httr::GET(url = base_url, query = query, .sig)
 
   # parse response to json
-  r_json <- httr::content(r_raw, "text") %>% jsonlite::fromJSON()
+  r_json <- httr::content(r_raw, "text") |> jsonlite::fromJSON()
 
   # return boolean
   if (r_raw$status_code == 403 && r_json$error$message == "Access token expired") {

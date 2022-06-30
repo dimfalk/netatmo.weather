@@ -49,10 +49,10 @@ get_public_data <- function(bbox,
 
     # query definition
     query <- list(
-      lat_ne = bbox_full["ymax"] %>% as.numeric(),
-      lon_ne = bbox_full["xmax"] %>% as.numeric(),
-      lat_sw = bbox_full["ymin"] %>% as.numeric(),
-      lon_sw = bbox_full["xmin"] %>% as.numeric(),
+      lat_ne = bbox_full["ymax"] |> as.numeric(),
+      lon_ne = bbox_full["xmax"] |> as.numeric(),
+      lat_sw = bbox_full["ymin"] |> as.numeric(),
+      lon_sw = bbox_full["xmin"] |> as.numeric(),
       required_data = "temperature",
       filter = "false"
     )
@@ -61,13 +61,13 @@ get_public_data <- function(bbox,
     r_raw <- httr::GET(url = base_url, query = query, .sig)
 
     # parse response
-    r_json <- httr::content(r_raw, "text") %>% jsonlite::fromJSON()
+    r_json <- httr::content(r_raw, "text") |> jsonlite::fromJSON()
 
     # parse raw response to sf object and return
     sf <- gpd_json2sf(r_json)
 
     # trim stations to original bounding box again, return sf object
-    sf::st_as_sfc(bbox_full) %>% sf::st_intersection(sf, .)
+    sf::st_as_sfc(bbox_full) |> sf::st_intersection(x = sf, y = _)
 
   } else if (use_tiles == TRUE) {
 
@@ -87,10 +87,10 @@ get_public_data <- function(bbox,
 
       # query definition
       query <- list(
-        lat_ne = bbox_tile["ymax"] %>% as.numeric(),
-        lon_ne = bbox_tile["xmax"] %>% as.numeric(),
-        lat_sw = bbox_tile["ymin"] %>% as.numeric(),
-        lon_sw = bbox_tile["xmin"] %>% as.numeric(),
+        lat_ne = bbox_tile["ymax"] |> as.numeric(),
+        lon_ne = bbox_tile["xmax"] |> as.numeric(),
+        lat_sw = bbox_tile["ymin"] |> as.numeric(),
+        lon_sw = bbox_tile["xmin"] |> as.numeric(),
         required_data = "temperature",
         filter = "false"
       )
@@ -99,12 +99,12 @@ get_public_data <- function(bbox,
       r_raw <- httr::GET(url = base_url, query = query, .sig)
 
       # parse response
-      r_json <- httr::content(r_raw, "text") %>% jsonlite::fromJSON()
+      r_json <- httr::content(r_raw, "text") |> jsonlite::fromJSON()
 
       # skip iteration if no objects are returned
-      if (r_json[["body"]] %>% length() == 0) {
+      if (r_json[["body"]] |> length() == 0) {
 
-        paste0("Note: Query response from tile #", i, " was returned without content.") %>% message()
+        paste0("Note: Query response from tile #", i, " was returned without content.") |> message()
 
         next
       }
@@ -131,10 +131,10 @@ get_public_data <- function(bbox,
     }
 
     # overwrite time_server values of individual iterations
-    temp[["time_server"]] <- temp[["time_server"]] %>% max()
+    temp[["time_server"]] <- temp[["time_server"]] |> max()
 
     # trim stations due to overlapping tiles to original bounding box again
-    temp <- sf::st_as_sfc(bbox_full) %>% sf::st_intersection(temp, .)
+    temp <- sf::st_as_sfc(bbox_full) |> sf::st_intersection(x = temp, y = _)
 
     # return cleaned sf object
     dplyr::distinct(temp)
@@ -160,7 +160,7 @@ get_public_data <- function(bbox,
 #   stations_tiles_true <- get_public_data(bbox = "Essen",
 #                                          use_tiles = TRUE,
 #                                          cellsize = i)
-#   paste0(dim(stations_tiles_true)[1], " stations found with a cellsize of ", i, " degree.\n") %>% cat()
+#   paste0(dim(stations_tiles_true)[1], " stations found with a cellsize of ", i, " degree.\n") |> cat()
 #   toc()
 #   # sf::st_write(stations_tiles_true, "stations_tiles_true.shp")
 # }
@@ -170,11 +170,11 @@ get_public_data <- function(bbox,
 #
 #
 # dvg1gem <- sf::st_read("inst/exdata/dvg1gem/dvg1gem_nw.shp")
-# gem <- dvg1gem %>% dplyr::filter(GN == "Essen") %>% sf::st_transform(4326)
+# gem <- dvg1gem |> dplyr::filter(GN == "Essen") |> sf::st_transform(4326)
 # # sf::st_write(gem, "gem_Essen.shp")
 # bbox <- sf::st_bbox(gem)
 #
-# # bbox %>% sf::st_as_sfc() %>% sf::st_write("bbox_gem_Essen.shp")
+# # bbox |> sf::st_as_sfc() |> sf::st_write("bbox_gem_Essen.shp")
 #
 #
 #

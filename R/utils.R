@@ -13,6 +13,15 @@
 #' @examples bbox_built(6.89, 51.34, 7.13, 51.53)
 bbox_built <- function(xmin, ymin, xmax, ymax) {
 
+  # debugging ------------------------------------------------------------------
+
+  # xmin <- 6.89
+  # ymin <- 51.34
+  # xmax <- 7.13
+  # ymax <- 51.53
+
+  # main -----------------------------------------------------------------------
+
   #
   coordinates <- rbind(c(xmin, ymin),
                        c(xmax, ymin),
@@ -21,7 +30,7 @@ bbox_built <- function(xmin, ymin, xmax, ymax) {
                        c(xmin, ymin))
 
   #
-  list(coordinates) %>% sf::st_polygon() %>% sf::st_bbox()
+  list(coordinates) |> sf::st_polygon() |> sf::st_bbox()
 }
 
 
@@ -37,6 +46,12 @@ bbox_built <- function(xmin, ymin, xmax, ymax) {
 #' @examples bbox_derive("Essen")
 bbox_derive <- function(name) {
 
+  # debugging ------------------------------------------------------------------
+
+  # name <- "Essen"
+
+  # main -----------------------------------------------------------------------
+
   # read community polygons as sf
   dvg1gem <- sf::st_read("inst/exdata/dvg1gem/dvg1gem_nw.shp", quiet = TRUE)
 
@@ -44,13 +59,14 @@ bbox_derive <- function(name) {
   stopifnot(name %in% dvg1gem[["GN"]])
 
   #
-  dvg1gem %>% dplyr::filter(GN == name) %>% sf::st_transform(4326) %>% sf::st_bbox()
+  dvg1gem |> dplyr::filter(GN == name) |> sf::st_transform(4326) |> sf::st_bbox()
 }
+
 
 
 #' Parse json response from getpublicdata query to sf object
 #'
-#' @param response
+#' @param json
 #'
 #' @return An sf object
 #' @keywords internal
@@ -61,7 +77,7 @@ gpd_json2sf <- function(json) {
 
   # debugging ------------------------------------------------------------------
 
-  # response <- r_json
+  # json <- r_json
 
   # pre-processing -------------------------------------------------------------
 
@@ -72,12 +88,12 @@ gpd_json2sf <- function(json) {
   temp <- data.frame(status = character(n_stations))
 
   temp["status"] <- json$status
-  temp["time_server"] <- json$time_server %>% as.POSIXct(origin = "1970-01-01")
+  temp["time_server"] <- json$time_server |> as.POSIXct(origin = "1970-01-01")
 
   temp["base_station"] <- json$body$`_id`
 
-  temp["x"] <- json$body$place$location %>% purrr::map_chr(1) %>% as.numeric()
-  temp["y"] <- json$body$place$location %>% purrr::map_chr(2) %>% as.numeric()
+  temp["x"] <- json$body$place$location |> purrr::map_chr(1) |> as.numeric()
+  temp["y"] <- json$body$place$location |> purrr::map_chr(2) |> as.numeric()
   temp["timezone"] <- json$body$place$timezone
   temp["country"] <- json$body$place$country
   temp["altitude"] <- json$body$place$altitude
@@ -86,7 +102,7 @@ gpd_json2sf <- function(json) {
 
   temp["mark"] <- json$body$mark
 
-  temp["n_modules"] <- purrr::map(json$body$modules, length) %>% unlist()
+  temp["n_modules"] <- purrr::map(json$body$modules, length) |> unlist()
 
   temp["NAModule1"] <- NA
   temp["NAModule2"] <- NA
@@ -95,13 +111,13 @@ gpd_json2sf <- function(json) {
 
   # main -----------------------------------------------------------------------
 
-  ind <- temp[["n_modules"]] %>% cumsum()
+  ind <- temp[["n_modules"]] |> cumsum()
 
   for (i in 1:n_stations) {
 
     module_mac <- json$body$modules[[i]]
 
-    n_modules <- module_mac %>% length()
+    n_modules <- module_mac |> length()
 
     if (i == 1) {
 
@@ -122,7 +138,7 @@ gpd_json2sf <- function(json) {
   }
 
   # return sf object
-  tibble::as_tibble(temp) %>% sf::st_as_sf(coords = c("x", "y"),
-                                           crs = 4326,
-                                           agr = "identity")
+  tibble::as_tibble(temp) |> sf::st_as_sf(coords = c("x", "y"),
+                                          crs = 4326,
+                                          agr = "identity")
 }
