@@ -1,4 +1,3 @@
-
 #' Title
 #'
 #' @param xmin
@@ -19,6 +18,10 @@ bbox_built <- function(xmin, ymin, xmax, ymax) {
   # ymin <- 51.34
   # xmax <- 7.13
   # ymax <- 51.53
+
+  # input validation -----------------------------------------------------------
+
+  #
 
   # main -----------------------------------------------------------------------
 
@@ -50,6 +53,10 @@ bbox_derive <- function(name) {
 
   # name <- "Essen"
 
+  # input validation -----------------------------------------------------------
+
+  #
+
   # main -----------------------------------------------------------------------
 
   # read community polygons as sf
@@ -79,6 +86,10 @@ gpd_json2sf <- function(json) {
 
   # json <- r_json
 
+  # input validation -----------------------------------------------------------
+
+  #
+
   # pre-processing -------------------------------------------------------------
 
   #
@@ -107,7 +118,7 @@ gpd_json2sf <- function(json) {
   temp["NAModule1"] <- NA
   temp["NAModule2"] <- NA
   temp["NAModule3"] <- NA
-  temp["NAModule4"] <- NA
+  temp["NAModule4"] <- NA # TODO: always empty
 
   # main -----------------------------------------------------------------------
 

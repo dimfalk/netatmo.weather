@@ -1,4 +1,3 @@
-
 #' Title
 #'
 #' @param bbox
@@ -9,8 +8,8 @@
 #' @export
 #'
 #' @examples
-#' get_public_data(bbox = "Essen", use_tiles = FALSE)
-#' get_public_data(bbox = "Essen", use_tiles = TRUE)
+#' stations <- get_public_data(bbox = "Essen", use_tiles = FALSE)
+#' stations <- get_public_data(bbox = "Essen", use_tiles = TRUE)
 get_public_data <- function(bbox,
                             use_tiles = FALSE,
                             cellsize = 0.05) {
@@ -21,6 +20,10 @@ get_public_data <- function(bbox,
   # bbox <- c(6.89, 51.34, 7.13, 51.53)
   # use_tiles <- TRUE
   # cellsize <- 0.05
+
+  # input validation -----------------------------------------------------------
+
+  # content <- readLines(file) |> paste(collapse="") |> jsonlite::fromJSON()
 
   # pre-processing -------------------------------------------------------------
 

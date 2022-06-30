@@ -1,4 +1,3 @@
-
 #' Title
 #'
 #' @param file
@@ -9,29 +8,32 @@
 #' @examples get_oauth2_token("oauth.cfg")
 get_oauth2_token <- function(file) {
 
-  if (file.exists(file)) {
+  # debugging ------------------------------------------------------------------
 
-    ep <- httr::oauth_endpoint(authorize = "https://api.netatmo.net/oauth2/authorize",
-                               access = "https://api.netatmo.net/oauth2/token")
+  #
 
-    cfg <- jsonlite::fromJSON(file)
+  # input validation -----------------------------------------------------------
 
-    app <- httr::oauth_app(appname = cfg[["app_name"]],
-                           key = cfg[["client_ID"]],
-                           secret = cfg[["client_secret"]])
+  checkmate::assert_file_exists(file)
 
-    af_token <- httr::oauth2.0_token(ep,
-                                     app,
-                                     scope = "read_station")
+  # main -----------------------------------------------------------------------
 
-    assign(".sig", httr::config(token = af_token), envir = .GlobalEnv)
+  ep <- httr::oauth_endpoint(authorize = "https://api.netatmo.net/oauth2/authorize",
+                             access = "https://api.netatmo.net/oauth2/token")
 
-    message("Success: OAuth 2.0 token has been successfully created.")
+  cfg <- jsonlite::fromJSON(file)
 
-  } else {
+  app <- httr::oauth_app(appname = cfg[["app_name"]],
+                         key = cfg[["client_ID"]],
+                         secret = cfg[["client_secret"]])
 
-    paste0("Error: File does not exist: '", file, "'.") |> message()
-  }
+  af_token <- httr::oauth2.0_token(ep,
+                                   app,
+                                   scope = "read_station")
+
+  assign(".sig", httr::config(token = af_token), envir = .GlobalEnv)
+
+  message("Success: OAuth 2.0 token has been successfully created as `.sig`.")
 }
 
 

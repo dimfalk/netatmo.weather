@@ -1,34 +1,42 @@
-
 #' Title
 #'
-#' @param stations sf object
+#' @param devices sf object
 #' @param parameter character
 #' @param resolution
 #' @param from date
 #' @param to date
-#' @param limit
 #'
 #' @return xts
 #' @export
 #'
 #' @examples
-#' get_measure(stations, parameter = "rain")
+#' get_measure(stations, parameter = "pressure")
 #' get_measure(stations, parameter = "temperature", resolution = 5)
-#' get_measure(stations, parameter = "rain", resolution = 5, from = "2022-04-04", to = "2022-04-06")
-get_measure <- function(stations,
+#' get_measure(stations, parameter = "sum_rain", resolution = 5, from = "2022-04-04", to = "2022-04-06")
+get_measure <- function(devices,
                         parameter = "rain",
                         resolution = 5,
                         from,
-                        to,
-                        limit = 1024) {
+                        to) {
 
   # debugging ------------------------------------------------------------------
 
-  # parameter <- "rain"
+  # parameter <- "sum_rain"
   # resolution <- 5
   # from <- "2022-04-01"
   # to <- "2022-04-06"
-  # limit <- 1024
+
+  # input validation -----------------------------------------------------------
+
+  allowed_parameter <- c("pressure", "min_pressure", "max_pressure",
+                         "temperature", "min_temp", "max_temp",
+                         "humidity", "min_hum", "max_hum",
+                         "windstrength", "windangle",
+                         "guststrength", "gustangle",
+                         "sum_rain")
+
+  checkmate::assert_character(parameter, len = 1)
+  checkmate::assert_choice(parameter, allowed_parameter)
 
   # pre-processing -------------------------------------------------------------
 
@@ -38,24 +46,29 @@ get_measure <- function(stations,
     refresh_access_token()
   }
 
-  # c("temperature", "min_temp", "max_temp", "date_min_temp", "date_max_temp",
-  #   "humidity", "min_hum", "max_hum", "date_min_hum", "date_max_hum",
-  #   "co2", "min_co2", "max_co2", "date_min_co2", "date_max_co2",
-  #   "pressure", "min_pressure", "max_pressure", "date_min_pressure", "date_max_pressure",
-  #   "noise", "min_noise", "max_noise", "date_min_noise", "date_max_noise",
-  #   "rain", "min_rain", "max_rain", "sum_rain", "date_min_rain", "date_max_rain",
-  #   "windstrength", "windangle", "guststrength", "gustangle", "date_min_gust", "date_max_gust")
-
   # parameter mapping
-  relevant <- switch(parameter,
+  relevant_module <- switch(parameter,
 
-                     "pressure" = "base_station",
-                     "temperature" = "NAModule1",
-                     "humidity" = "NAModule1",
-                     "windstrengh" = "NAModule2",
-                     "windangle" = "NAModule2",
-                     "rain" = "NAModule3")
+                           "pressure" = "base_station",
+                           "min_pressure" = "base_station",
+                           "max_pressure" = "base_station",
 
+                           "temperature" = "NAModule1",
+                           "min_temp" = "NAModule1",
+                           "max_temp" = "NAModule1",
+
+                           "humidity" = "NAModule1",
+                           "min_hum" = "NAModule1",
+                           "max_hum" = "NAModule1",
+
+                           "windstrength" = "NAModule2",
+                           "windangle" = "NAModule2",
+                           "guststrength" = "NAModule2",
+                           "gustangle" = "NAModule2",
+
+                           "sum_rain" = "NAModule3")
+
+  # interval width mapping
   resolution_code <- switch(as.character(resolution),
 
                             "5" = "5min",
@@ -65,13 +78,13 @@ get_measure <- function(stations,
                             "360" = "6hours",
                             "1440" = "1day")
 
-  # subset stations
-  stations_subset <- stations[!is.na(stations[[relevant]]), ]
+  # subset devices
+  devices_subset <- devices[!is.na(devices[[relevant_module]]), ]
 
   # timespan definition
   if (missing(from) && missing(to)) {
 
-    start <- (Sys.time() - 60 * resolution * limit) |> as.integer()
+    start <- (Sys.time() - 60 * resolution * 1024) |> as.integer()
     end <- Sys.time() |> as.integer()
 
   } else if (inherits(c(from, to), "character") && all.equal(nchar(c(from, to)), c(10, 10))) {
@@ -84,11 +97,11 @@ get_measure <- function(stations,
     values_queried <- timediff_min / resolution
 
     # throw warning if limit is exceeded
-    if (values_queried > limit) {
+    if (values_queried > 1024) {
 
       warning(
         paste0("Based on the defined period ", from, "/", to, " and the chosen resolution (", resolution, " min),
-        you are trying to access ", values_queried, " values. Allowed maximum is ", limit, ". The result may be incomplete.")
+        you are trying to access ", values_queried, " values. Allowed maximum is 1024. The result may be incomplete.")
       )
 
     }
@@ -98,80 +111,56 @@ get_measure <- function(stations,
   base_url <- "https://api.netatmo.com/api/getmeasure"
 
   # loop over all relevant mac addresses and get measurements
-  n <- dim(stations_subset)[1]
+  n <- dim(devices_subset)[1]
 
   for (i in 1:n) {
 
     # query construction
-    query <- switch(parameter,
+    query <- switch(relevant_module,
 
-                    "pressure" = list(
-                      device_id = stations_subset[[i, "base_station"]],
+                    "base_station" = list(
+                      device_id = devices_subset[[i, "base_station"]],
                       scale = resolution_code,
-                      type = "pressure",
+                      type = parameter,
                       date_begin = start,
                       date_end = end,
-                      limit = limit,
+                      limit = 1024,
                       optimize = "false",
                       real_time = "true"
                     ),
 
-                    "temperature" = list(
-                      device_id = stations_subset[[i, "base_station"]],
-                      module_id = stations_subset[[i, relevant]],
+                    "NAModule1" = list(
+                      device_id = devices_subset[[i, "base_station"]],
+                      module_id = devices_subset[[i, "NAModule1"]],
                       scale = resolution_code,
-                      type = "temperature",
+                      type = parameter,
                       date_begin = start,
                       date_end = end,
-                      limit = limit,
+                      limit = 1024,
                       optimize = "false",
                       real_time = "true"
                     ),
 
-                    "humidity" = list(
-                      device_id = stations_subset[[i, "base_station"]],
-                      module_id = stations_subset[[i, relevant]],
+                    "NAModule2" = list(
+                      device_id = devices_subset[[i, "base_station"]],
+                      module_id = devices_subset[[i, "NAModule2"]],
                       scale = resolution_code,
-                      type = "humidity",
+                      type = parameter,
                       date_begin = start,
                       date_end = end,
-                      limit = limit,
+                      limit = 1024,
                       optimize = "false",
                       real_time = "true"
                     ),
 
-                    "windstrengh" = list(
-                      device_id = stations_subset[[i, "base_station"]],
-                      module_id = stations_subset[[i, relevant]],
+                    "NAModule3" = list(
+                      device_id = devices_subset[[i, "base_station"]],
+                      module_id = devices_subset[[i, "NAModule3"]],
                       scale = resolution_code,
-                      type = "windstrength",
+                      type = parameter,
                       date_begin = start,
                       date_end = end,
-                      limit = limit,
-                      optimize = "false",
-                      real_time = "true"
-                    ),
-
-                    "windangle" = list(
-                      device_id = stations_subset[[i, "base_station"]],
-                      module_id = stations_subset[[i, relevant]],
-                      scale = resolution_code,
-                      type = "windangle",
-                      date_begin = start,
-                      date_end = end,
-                      limit = limit,
-                      optimize = "false",
-                      real_time = "true"
-                    ),
-
-                    "rain" = list(
-                      device_id = stations_subset[[i, "base_station"]],
-                      module_id = stations_subset[[i, relevant]],
-                      scale = resolution_code,
-                      type = "sum_rain",
-                      date_begin = start,
-                      date_end = end,
-                      limit = limit,
+                      limit = 1024,
                       optimize = "false",
                       real_time = "true"
                     )
@@ -200,16 +189,16 @@ get_measure <- function(stations,
 
     # meta data definition
     # subset of basis parameters from `timeseriesIO::xts_init()`
-    attr(xts, "STAT_ID") <- stations_subset[["base_station"]][i]
+    attr(xts, "STAT_ID") <- devices_subset[["base_station"]][i]
 
-    attr(xts, "X") <- sf::st_coordinates(stations_subset[i, ])[1]
-    attr(xts, "Y") <- sf::st_coordinates(stations_subset[i, ])[2]
-    attr(xts, "Z") <- stations_subset[["altitude"]][i]
+    attr(xts, "X") <- sf::st_coordinates(devices_subset[i, ])[1]
+    attr(xts, "Y") <- sf::st_coordinates(devices_subset[i, ])[2]
+    attr(xts, "Z") <- devices_subset[["altitude"]][i]
     attr(xts, "CRS_EPSG") <- "4326"
-    attr(xts, "TZONE") <- stations[["timezone"]][i]
+    attr(xts, "TZONE") <- devices[["timezone"]][i]
 
     attr(xts, "OPERATOR") <- "Netatmo"
-    attr(xts, "SENS_ID") <- stations_subset[[relevant]][i]
+    attr(xts, "SENS_ID") <- devices_subset[[relevant_module]][i]
     attr(xts, "PARAMETER") <- parameter
     attr(xts, "TS_START") <- as.POSIXct(NA) # TODO
     attr(xts, "TS_END") <- as.POSIXct(NA) # TODO
@@ -223,20 +212,44 @@ get_measure <- function(stations,
     attr(xts, "MEAS_UNIT") <- switch(parameter,
 
                                      "pressure" = "bar",
+                                     "min_pressure" = "bar",
+                                     "max_pressure" = "bar",
+
                                      "temperature" = "°C",
+                                     "min_temp" = "°C",
+                                     "max_temp" = "°C",
+
                                      "humidity" = "%",
-                                     "windstrengh" = "m/s",
+                                     "min_hum" = "%",
+                                     "max_hum" = "%",
+
+                                     "windstrength" = "m/s",
                                      "windangle" = "°",
-                                     "rain" = "mm")
+                                     "guststrength" = "m/s",
+                                     "gustangle" = "°",
+
+                                     "sum_rain" = "mm")
 
     attr(xts, "MEAS_STATEMENT") <- switch(parameter,
 
                                           "pressure" = "mean",
+                                          "min_pressure" = "min",
+                                          "max_pressure" = "max",
+
                                           "temperature" = "mean",
+                                          "min_temp" = "min",
+                                          "max_temp" = "max",
+
                                           "humidity" = "mean",
-                                          "windstrengh" = "mean",
+                                          "min_hum" = "min",
+                                          "max_hum" = "max",
+
+                                          "windstrength" = "mean",
                                           "windangle" = "mean",
-                                          "rain" = "sum")
+                                          "guststrength" = "max",
+                                          "gustangle" = "max",
+
+                                          "sum_rain" = "sum")
 
     attr(xts, "REMARKS") <- NA
 
@@ -252,7 +265,7 @@ get_measure <- function(stations,
   }
 
   # definition of unique names
-  names(xtslist) <- stations_subset[["base_station"]]
+  names(xtslist) <- devices_subset[["base_station"]]
 
   # return list of xts objects
   xtslist
