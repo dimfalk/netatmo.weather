@@ -14,10 +14,10 @@
 #' get_measure(stations, parameter = "temperature", resolution = 5)
 #' get_measure(stations, parameter = "sum_rain", resolution = 5, from = "2022-04-04", to = "2022-04-06")
 get_measure <- function(devices,
-                        parameter = "rain",
+                        parameter = "sum_rain",
                         resolution = 5,
-                        from,
-                        to) {
+                        from = NULL,
+                        to = NULL) {
 
   # debugging ------------------------------------------------------------------
 
@@ -82,7 +82,7 @@ get_measure <- function(devices,
   devices_subset <- devices[!is.na(devices[[relevant_module]]), ]
 
   # timespan definition
-  if (missing(from) && missing(to)) {
+  if (is.null(from) && is.null(to)) {
 
     start <- (Sys.time() - 60 * resolution * 1024) |> as.integer()
     end <- Sys.time() |> as.integer()

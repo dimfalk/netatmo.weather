@@ -2,7 +2,6 @@
 #'
 #' @param bbox
 #' @param use_tiles
-#' @param cellsize
 #'
 #' @return tibble
 #' @export
@@ -11,15 +10,13 @@
 #' stations <- get_public_data(bbox = "Essen", use_tiles = FALSE)
 #' stations <- get_public_data(bbox = "Essen", use_tiles = TRUE)
 get_public_data <- function(bbox,
-                            use_tiles = FALSE,
-                            cellsize = 0.05) {
+                            use_tiles = FALSE) {
 
   # debugging ------------------------------------------------------------------
 
   # bbox <- "Essen"
   # bbox <- c(6.89, 51.34, 7.13, 51.53)
   # use_tiles <- TRUE
-  # cellsize <- 0.05
 
   # input validation -----------------------------------------------------------
 
@@ -40,7 +37,7 @@ get_public_data <- function(bbox,
 
   } else if (inherits(bbox, "numeric") && length(bbox) == 4) {
 
-    bbox_full <- bbox_built(bbox[1], bbox[2], bbox[3], bbox[4])
+    bbox_full <- bbox_build(bbox[1], bbox[2], bbox[3], bbox[4])
   }
 
   # main -----------------------------------------------------------------------
@@ -76,7 +73,7 @@ get_public_data <- function(bbox,
 
     # construct grid for query slicing
     grid <- sf::st_make_grid(bbox_full,
-                             cellsize = cellsize,
+                             cellsize = 0.05,
                              crs = 4326,
                              square = TRUE)
 

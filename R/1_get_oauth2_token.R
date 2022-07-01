@@ -2,7 +2,7 @@
 #'
 #' @param file
 #'
-#' @return request: Auth token: Token2.0
+#' @return Auth token: Token2.0
 #' @export
 #'
 #' @examples get_oauth2_token("oauth.cfg")

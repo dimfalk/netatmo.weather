@@ -9,8 +9,8 @@
 #' @keywords internal
 #' @export
 #'
-#' @examples bbox_built(6.89, 51.34, 7.13, 51.53)
-bbox_built <- function(xmin, ymin, xmax, ymax) {
+#' @examples bbox_build(6.89, 51.34, 7.13, 51.53)
+bbox_build <- function(xmin, ymin, xmax, ymax) {
 
   # debugging ------------------------------------------------------------------
 
