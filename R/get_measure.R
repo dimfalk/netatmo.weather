@@ -82,7 +82,7 @@ get_measure <- function(devices,
   devices_subset <- devices[!is.na(devices[[relevant_module]]), ]
 
   # period definition
-  period_int <- get_period(period)
+  period_int <- get_period(period, resolution = resolution)
 
   #
   base_url <- "https://api.netatmo.com/api/getmeasure"
