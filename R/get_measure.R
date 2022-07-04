@@ -3,28 +3,28 @@
 #' @param devices sf object
 #' @param parameter character
 #' @param resolution
-#' @param from date
-#' @param to date
+#' @param period date
 #'
 #' @return xts
 #' @export
 #'
 #' @examples
 #' get_measure(stations, parameter = "pressure")
-#' get_measure(stations, parameter = "temperature", resolution = 5)
-#' get_measure(stations, parameter = "sum_rain", resolution = 5, from = "2022-04-04", to = "2022-04-06")
+#' get_measure(stations, parameter = "temperature", resolution = 30, period = "recent")
+#' get_measure(stations, parameter = "sum_rain", resolution = 60, period = c("2022-06-06", "2022-06-08"))
 get_measure <- function(devices,
-                        parameter = "sum_rain",
+                        parameter = NULL,
                         resolution = 5,
-                        from = NULL,
-                        to = NULL) {
+                        period = NULL) {
 
   # debugging ------------------------------------------------------------------
 
+  # devices <- stations
   # parameter <- "sum_rain"
   # resolution <- 5
-  # from <- "2022-04-01"
-  # to <- "2022-04-06"
+  # period <- NULL
+  # period <- "recent"
+  # period <- c("2022-04-01", "2022-04-06")
 
   # input validation -----------------------------------------------------------
 
@@ -81,31 +81,8 @@ get_measure <- function(devices,
   # subset devices
   devices_subset <- devices[!is.na(devices[[relevant_module]]), ]
 
-  # timespan definition
-  if (is.null(from) && is.null(to)) {
-
-    start <- (Sys.time() - 60 * resolution * 1024) |> as.integer()
-    end <- Sys.time() |> as.integer()
-
-  } else if (inherits(c(from, to), "character") && all.equal(nchar(c(from, to)), c(10, 10))) {
-
-    start <- from |> strptime(format = "%Y-%m-%d") |> as.POSIXct() |> as.numeric()
-    end <- to |> strptime(format = "%Y-%m-%d") |> as.POSIXct() |> as.numeric()
-
-    timediff_min <- (end - start) / 60
-
-    values_queried <- timediff_min / resolution
-
-    # throw warning if limit is exceeded
-    if (values_queried > 1024) {
-
-      warning(
-        paste0("Based on the defined period ", from, "/", to, " and the chosen resolution (", resolution, " min),
-        you are trying to access ", values_queried, " values. Allowed maximum is 1024. The result may be incomplete.")
-      )
-
-    }
-  }
+  # period definition
+  period_int <- get_period(period)
 
   #
   base_url <- "https://api.netatmo.com/api/getmeasure"
@@ -122,8 +99,8 @@ get_measure <- function(devices,
                       device_id = devices_subset[[i, "base_station"]],
                       scale = resolution_code,
                       type = parameter,
-                      date_begin = start,
-                      date_end = end,
+                      date_begin = period_int[1],
+                      date_end = period_int[2],
                       limit = 1024,
                       optimize = "false",
                       real_time = "true"
@@ -134,8 +111,8 @@ get_measure <- function(devices,
                       module_id = devices_subset[[i, "NAModule1"]],
                       scale = resolution_code,
                       type = parameter,
-                      date_begin = start,
-                      date_end = end,
+                      date_begin = period_int[1],
+                      date_end = period_int[2],
                       limit = 1024,
                       optimize = "false",
                       real_time = "true"
@@ -146,8 +123,8 @@ get_measure <- function(devices,
                       module_id = devices_subset[[i, "NAModule2"]],
                       scale = resolution_code,
                       type = parameter,
-                      date_begin = start,
-                      date_end = end,
+                      date_begin = period_int[1],
+                      date_end = period_int[2],
                       limit = 1024,
                       optimize = "false",
                       real_time = "true"
@@ -158,8 +135,8 @@ get_measure <- function(devices,
                       module_id = devices_subset[[i, "NAModule3"]],
                       scale = resolution_code,
                       type = parameter,
-                      date_begin = start,
-                      date_end = end,
+                      date_begin = period_int[1],
+                      date_end = period_int[2],
                       limit = 1024,
                       optimize = "false",
                       real_time = "true"

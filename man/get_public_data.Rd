@@ -4,7 +4,7 @@
 \alias{get_public_data}
 \title{Title}
 \usage{
-get_public_data(bbox, use_tiles = FALSE)
+get_public_data(extent, use_tiles = FALSE)
 }
 \arguments{
 \item{use_tiles}{}
@@ -16,6 +16,8 @@ tibble
 Title
 }
 \examples{
-stations <- get_public_data(bbox = "Essen", use_tiles = FALSE)
-stations <- get_public_data(bbox = "Essen", use_tiles = TRUE)
+bbox <- get_extent(input = c(6.89, 51.34, 7.13, 51.53))
+bbox <- get_extent(input = "Essen")
+stations <- get_public_data(extent = bbox)
+stations <- get_public_data(extent = bbox, use_tiles = TRUE)
 }

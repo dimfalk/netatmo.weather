@@ -3,6 +3,7 @@
 export(get_extent)
 export(get_measure)
 export(get_oauth2_token)
+export(get_period)
 export(get_public_data)
 export(gpd_json2sf)
 export(is_expired)

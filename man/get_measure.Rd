@@ -4,22 +4,14 @@
 \alias{get_measure}
 \title{Title}
 \usage{
-get_measure(
-  devices,
-  parameter = "sum_rain",
-  resolution = 5,
-  from = NULL,
-  to = NULL
-)
+get_measure(devices, parameter = NULL, resolution = 5, period = NULL)
 }
 \arguments{
 \item{devices}{sf object}
 
 \item{parameter}{character}
 
-\item{from}{date}
-
-\item{to}{date}
+\item{period}{date}
 }
 \value{
 xts
@@ -29,6 +21,6 @@ Title
 }
 \examples{
 get_measure(stations, parameter = "pressure")
-get_measure(stations, parameter = "temperature", resolution = 5)
-get_measure(stations, parameter = "sum_rain", resolution = 5, from = "2022-04-04", to = "2022-04-06")
+get_measure(stations, parameter = "temperature", resolution = 30, period = "recent")
+get_measure(stations, parameter = "sum_rain", resolution = 60, period = c("2022-06-06", "2022-06-08"))
 }

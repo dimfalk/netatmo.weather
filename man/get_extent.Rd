@@ -4,7 +4,7 @@
 \alias{get_extent}
 \title{Construct an object of type bbox using coordinates or specific polygons}
 \usage{
-get_extent(input, crs = 4326)
+get_extent(input, epsg = 4326)
 }
 \arguments{
 \item{input}{Vector of length 4 containing numeric representing coordinates,
@@ -21,8 +21,8 @@ Construct an object of type bbox using coordinates or specific polygons
 }
 \examples{
 \dontrun{
-bbox1 <- get_extent(input = c(6.89, 51.34, 7.13, 51.53), crs = 4326)
-bbox2 <- get_extent(input = "Essen")
-bbox3 <- get_extent(input = "45145")
+bbox <- get_extent(input = c(6.89, 51.34, 7.13, 51.53))
+bbox <- get_extent(input = "Essen")
+bbox <- get_extent(input = "45145")
 }
 }

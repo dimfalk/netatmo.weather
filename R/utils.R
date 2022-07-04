@@ -1,3 +1,78 @@
+#' Title
+#'
+#' @param input
+#' @param resolution
+#'
+#' @return
+#' @export
+#'
+#' @examples
+#' get_period()
+#' get_period(input = "recent")
+#' get_period(input = c("2022-06-01", "2022-06-04"))
+get_period <- function(input = NULL,
+                       resolution = 5) {
+
+  # debugging ------------------------------------------------------------------
+
+  # input <- NULL
+  # input <- "recent"
+  # input <- c("2022-06-01", "2022-06-04")
+  # resolution <- 5
+
+  # input validation -----------------------------------------------------------
+
+
+
+  # main -----------------------------------------------------------------------
+
+  now <- lubridate::now()
+
+  # default: in case no input is defined by the user
+  if (is.null(input)) {
+
+    to <-  now |> lubridate::floor_date(x = _, unit = "hour")
+    from <- (to - 60 * resolution * 1024)
+
+    # return object
+    c(from, to) |> as.integer()
+
+
+    # query the last 24 hours only
+  } else if (inherits(input, "character") && length(input) == 1 && input == "recent") {
+
+    to <-  now |> lubridate::floor_date(x = _, unit = "hour")
+    from <- (to - 60 * 60 * 24)
+
+    # return object
+    c(from, to) |> as.integer()
+
+
+    # in case a vector of timestamps is provided c("YYYY-MM-DD", "YYYY-MM-DD")
+  } else if (inherits(input, "character") && all.equal(nchar(input), c(10, 10))) {
+
+    from <- input[1] |> strptime(format = "%Y-%m-%d") |> as.POSIXct()
+    to <- input[2] |> strptime(format = "%Y-%m-%d") |> as.POSIXct()
+
+    #
+    timediff_min <- (as.integer(to) - as.integer(from)) / 60
+    n_queried <- timediff_min / resolution
+
+    # throw warning if limit is exceeded
+    if (n_queried > 1024) {
+
+      warning(
+        paste0("Based on the defined period ", from, "/", to, " and the chosen resolution (", resolution, " min),
+        you are trying to access ", n_queried, " values. Allowed maximum is 1024. The result may be incomplete.")
+      )
+    }
+
+    # return object
+    c(from, to) |> as.integer()
+  }
+}
+
+
 #' Construct an object of type bbox using coordinates or specific polygons
 #'
 #' @param input Vector of length 4 containing numeric representing coordinates,
@@ -58,9 +133,10 @@ get_extent <- function(input,
 
 
     # string of length 5 representing a postal zip code
-  } else if (inherits(input, "character") && length(input) == 1 && is.numeric(as.numeric(input))) {
+  } else if (inherits(input, "character") && length(input) == 1 && nchar(input) == 5 && is.numeric(as.numeric(input))) {
 
     # TODO
+    message("TO BE IMPLEMENTED.")
   }
 }
 
