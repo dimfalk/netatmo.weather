@@ -1,72 +1,67 @@
-#' Title
+#' Construct an object of type bbox using coordinates or specific polygons
 #'
-#' @param xmin
-#' @param ymin
-#' @param xmax
-#' @param ymax
+#' @param input Vector of length 4 containing numeric representing coordinates,
+#'   string of length 1 representing the name of a municipality,
+#'   or string of length 5 representing a postal zip code.
+#' @param crs (optional) Coordinate reference system definition.
 #'
-#' @return
-#' @keywords internal
+#' @return An object of type `bbox`.
 #' @export
 #'
-#' @examples bbox_build(6.89, 51.34, 7.13, 51.53)
-bbox_build <- function(xmin, ymin, xmax, ymax) {
+#' @examples
+#' \dontrun{
+#' bbox <- get_extent(input = c(6.89, 51.34, 7.13, 51.53))
+#' bbox <- get_extent(input = "Essen")
+#' bbox <- get_extent(input = "45145")
+#' }
+get_extent <- function(input,
+                       epsg = 4326) {
 
   # debugging ------------------------------------------------------------------
 
-  # xmin <- 6.89
-  # ymin <- 51.34
-  # xmax <- 7.13
-  # ymax <- 51.53
+  # input <- c(6.89, 51.34, 7.13, 51.53)
+  # epsg <- 4326
+  # input <- "Essen"
+  # input <- "45145"
 
   # input validation -----------------------------------------------------------
 
-  #
+
 
   # main -----------------------------------------------------------------------
 
-  #
-  coordinates <- rbind(c(xmin, ymin),
-                       c(xmax, ymin),
-                       c(xmax, ymax),
-                       c(xmin, ymax),
-                       c(xmin, ymin))
+  # vector of length 4 containing numeric representing coordinates
+  if (inherits(input, "numeric") && length(input) == 4) {
 
-  #
-  list(coordinates) |> sf::st_polygon() |> sf::st_bbox()
-}
+    #
+    coordinates <- rbind(c(input[1], input[2]),
+                         c(input[3], input[2]),
+                         c(input[3], input[4]),
+                         c(input[1], input[4]),
+                         c(input[1], input[2]))
+
+    #
+    list(coordinates) |> sf::st_polygon() |> sf::st_sfc(crs = epsg) |> sf::st_bbox()
 
 
+    # string of length 1 representing the name of a municipality
+  } else if (inherits(input, "character") && length(input) == 1 && is.na(as.numeric(input))) {
 
-#' Title
-#'
-#' @param name
-#'
-#' @return
-#' @keywords internal
-#' @export
-#'
-#' @examples bbox_derive("Essen")
-bbox_derive <- function(name) {
+    # read community polygons as sf
+    dvg1gem <- sf::st_read("inst/exdata/dvg1gem/dvg1gem_nw.shp", quiet = TRUE)
 
-  # debugging ------------------------------------------------------------------
+    #
+    stopifnot(input %in% dvg1gem[["GN"]])
 
-  # name <- "Essen"
+    #
+    dvg1gem |> dplyr::filter(GN == input) |> sf::st_transform(epsg) |> sf::st_bbox()
 
-  # input validation -----------------------------------------------------------
 
-  #
+    # string of length 5 representing a postal zip code
+  } else if (inherits(input, "character") && length(input) == 1 && is.numeric(as.numeric(input))) {
 
-  # main -----------------------------------------------------------------------
-
-  # read community polygons as sf
-  dvg1gem <- sf::st_read("inst/exdata/dvg1gem/dvg1gem_nw.shp", quiet = TRUE)
-
-  #
-  stopifnot(name %in% dvg1gem[["GN"]])
-
-  #
-  dvg1gem |> dplyr::filter(GN == name) |> sf::st_transform(4326) |> sf::st_bbox()
+    # TODO
+  }
 }
 
 

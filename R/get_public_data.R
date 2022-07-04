@@ -1,21 +1,23 @@
 #' Title
 #'
-#' @param bbox
+#' @param extent
 #' @param use_tiles
 #'
 #' @return tibble
 #' @export
 #'
 #' @examples
-#' stations <- get_public_data(bbox = "Essen", use_tiles = FALSE)
-#' stations <- get_public_data(bbox = "Essen", use_tiles = TRUE)
-get_public_data <- function(bbox,
+#' bbox <- get_extent(input = c(6.89, 51.34, 7.13, 51.53))
+#' bbox <- get_extent(input = "Essen")
+#' stations <- get_public_data(extent = bbox)
+#' stations <- get_public_data(extent = bbox, use_tiles = TRUE)
+get_public_data <- function(extent,
                             use_tiles = FALSE) {
 
   # debugging ------------------------------------------------------------------
 
-  # bbox <- "Essen"
-  # bbox <- c(6.89, 51.34, 7.13, 51.53)
+  # extent <- get_extent(input = c(6.89, 51.34, 7.13, 51.53))
+  # extent <- get_extent(input = "Essen")
   # use_tiles <- TRUE
 
   # input validation -----------------------------------------------------------
@@ -30,16 +32,6 @@ get_public_data <- function(bbox,
     refresh_access_token()
   }
 
-  # construct bbox based on passed input, string or vector of numerics
-  if (inherits(bbox, "character") && length(bbox) == 1) {
-
-    bbox_full <- bbox_derive(bbox)
-
-  } else if (inherits(bbox, "numeric") && length(bbox) == 4) {
-
-    bbox_full <- bbox_build(bbox[1], bbox[2], bbox[3], bbox[4])
-  }
-
   # main -----------------------------------------------------------------------
 
   # url definition
@@ -49,10 +41,10 @@ get_public_data <- function(bbox,
 
     # query definition
     query <- list(
-      lat_ne = bbox_full["ymax"] |> as.numeric(),
-      lon_ne = bbox_full["xmax"] |> as.numeric(),
-      lat_sw = bbox_full["ymin"] |> as.numeric(),
-      lon_sw = bbox_full["xmin"] |> as.numeric(),
+      lat_ne = extent["ymax"] |> as.numeric(),
+      lon_ne = extent["xmax"] |> as.numeric(),
+      lat_sw = extent["ymin"] |> as.numeric(),
+      lon_sw = extent["xmin"] |> as.numeric(),
       required_data = "temperature",
       filter = "false"
     )
@@ -64,15 +56,15 @@ get_public_data <- function(bbox,
     r_json <- httr::content(r_raw, "text") |> jsonlite::fromJSON()
 
     # parse raw response to sf object and return
-    sf <- gpd_json2sf(r_json)
+    r_sf <- gpd_json2sf(r_json)
 
     # trim stations to original bounding box again, return sf object
-    sf::st_as_sfc(bbox_full) |> sf::st_intersection(x = sf, y = _)
+    sf::st_as_sfc(extent) |> sf::st_intersection(x = r_sf, y = _)
 
   } else if (use_tiles == TRUE) {
 
     # construct grid for query slicing
-    grid <- sf::st_make_grid(bbox_full,
+    grid <- sf::st_make_grid(extent,
                              cellsize = 0.05,
                              crs = 4326,
                              square = TRUE)
@@ -83,14 +75,14 @@ get_public_data <- function(bbox,
     for (i in 1:n_tiles) {
 
       # get bbox of the current tile
-      bbox_tile <- sf::st_bbox(grid[i])
+      extent_tile <- sf::st_bbox(grid[i])
 
       # query definition
       query <- list(
-        lat_ne = bbox_tile["ymax"] |> as.numeric(),
-        lon_ne = bbox_tile["xmax"] |> as.numeric(),
-        lat_sw = bbox_tile["ymin"] |> as.numeric(),
-        lon_sw = bbox_tile["xmin"] |> as.numeric(),
+        lat_ne = extent_tile["ymax"] |> as.numeric(),
+        lon_ne = extent_tile["xmax"] |> as.numeric(),
+        lat_sw = extent_tile["ymin"] |> as.numeric(),
+        lon_sw = extent_tile["xmin"] |> as.numeric(),
         required_data = "temperature",
         filter = "false"
       )
@@ -114,7 +106,7 @@ get_public_data <- function(bbox,
       Sys.sleep(0.25)
 
       # parse raw response to sf object
-      sf <- gpd_json2sf(r_json)
+      r_sf <- gpd_json2sf(r_json)
 
       # write sf objects to disk for debugging purposes
       # sf::st_write(sf, paste0("tile_no_", i, ".shp"))
@@ -122,11 +114,11 @@ get_public_data <- function(bbox,
       #
       if (i == 1) {
 
-        temp <- sf
+        temp <- r_sf
 
       } else {
 
-        temp <- rbind(temp, sf)
+        temp <- rbind(temp, r_sf)
       }
     }
 
@@ -134,7 +126,7 @@ get_public_data <- function(bbox,
     temp[["time_server"]] <- temp[["time_server"]] |> max()
 
     # trim stations due to overlapping tiles to original bounding box again
-    temp <- sf::st_as_sfc(bbox_full) |> sf::st_intersection(x = temp, y = _)
+    temp <- sf::st_as_sfc(extent) |> sf::st_intersection(x = temp, y = _)
 
     # return cleaned sf object
     dplyr::distinct(temp)
