@@ -2,27 +2,25 @@
 % Please edit documentation in R/utils.R
 \name{get_extent}
 \alias{get_extent}
-\title{Construct an object of type bbox using coordinates or specific polygons}
+\title{Construct an object of type bbox based on user input}
 \usage{
-get_extent(input, epsg = 4326)
+get_extent(x, epsg = 4326)
 }
 \arguments{
-\item{input}{Vector of length 4 containing numeric representing coordinates,
-string of length 1 representing the name of a municipality,
-or string of length 5 representing a postal zip code.}
+\item{x}{Vector of length 4 containing numeric representing coordinates (xmin, ymin, xmax, ymax),
+or string of length 1 representing the name of a municipality,
+or string of nchar 5 representing a postal zip code.}
 
-\item{crs}{(optional) Coordinate reference system definition.}
+\item{epsg}{(optional) Coordinate reference system definition.}
 }
 \value{
 An object of type \code{bbox}.
 }
 \description{
-Construct an object of type bbox using coordinates or specific polygons
+Construct an object of type bbox based on user input
 }
 \examples{
-\dontrun{
-bbox <- get_extent(input = c(6.89, 51.34, 7.13, 51.53))
-bbox <- get_extent(input = "Essen")
-bbox <- get_extent(input = "45145")
-}
+e1 <- get_extent(x = c(6.89, 51.34, 7.13, 51.53))
+e2 <- get_extent(x = "Essen")
+e3 <- get_extent(x = "45145")
 }

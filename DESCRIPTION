@@ -1,15 +1,21 @@
-Package: netatmoR
-Title: What the Package Does (One Line, Title Case)
-Version: 0.0.0.9000
+Package: netatmo.weather
+Title: R interface to access the weather API at dev.netatmo.com
+Version: 0.1
 Authors@R: 
-    person("First", "Last", , "first.last@example.com", role = c("aut", "cre"),
-           comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: What the package does (one paragraph).
+    person("Dimitri", "Falk", , "falk.dimitri@eglv.de", role = c("aut", "cre"))
+Description: Obtain metadata and measurements from Netatmo stations.
 License: GPL (>= 3)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.0
+RoxygenNote: 7.2.1
 Depends: R (>= 4.2.0)
 Imports: 
+    checkmate,
+    dplyr,
     httr,
-    sf
+    jsonlite,
+    lubridate,
+    purrr,
+    sf,
+    tibble,
+    xts

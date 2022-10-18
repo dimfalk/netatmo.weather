@@ -2,18 +2,23 @@
 % Please edit documentation in R/utils.R
 \name{get_period}
 \alias{get_period}
-\title{Title}
+\title{Construct a vector of length 2 and integer type representing UNIX time}
 \usage{
-get_period(input = NULL, resolution = 5)
+get_period(x = NULL, res = 5)
 }
 \arguments{
-\item{resolution}{}
+\item{x}{Leave blank, or "recent", or a vector of length 2 containing from/to timestamps as characters.}
+
+\item{res}{Measurement resolution in minutes.}
+}
+\value{
+A vector of length 2 containing from/to timestamps as UNIX time.
 }
 \description{
-Title
+Construct a vector of length 2 and integer type representing UNIX time
 }
 \examples{
 get_period()
-get_period(input = "recent")
-get_period(input = c("2022-06-01", "2022-06-04"))
+get_period(x = "recent")
+get_period(x = c("2022-06-01", "2022-06-04"))
 }

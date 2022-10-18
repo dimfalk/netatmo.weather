@@ -1,23 +1,22 @@
-#' Title
+#' Get Netatmo station locations with various metadata based on extent queried
 #'
-#' @param extent
-#' @param use_tiles
+#' @param ext A bounding box as provided by `get_extent()`.
+#' @param use_tiles Boolean. Should fetching be done in spatial slices? More results are to be expected when `TRUE`.
 #'
-#' @return tibble
+#' @return A simple feature collection containing station metadata and geometries.
 #' @export
 #'
 #' @examples
-#' bbox <- get_extent(input = c(6.89, 51.34, 7.13, 51.53))
-#' bbox <- get_extent(input = "Essen")
-#' stations <- get_public_data(extent = bbox)
-#' stations <- get_public_data(extent = bbox, use_tiles = TRUE)
-get_public_data <- function(extent,
-                            use_tiles = FALSE) {
+#' e <- get_extent(x = c(6.89, 51.34, 7.13, 51.53))
+#' stations <- get_publicdata(ext = e)
+#' stations <- get_publicdata(ext = e, use_tiles = TRUE)
+get_publicdata <- function(ext,
+                           use_tiles = FALSE) {
 
   # debugging ------------------------------------------------------------------
 
-  # extent <- get_extent(input = c(6.89, 51.34, 7.13, 51.53))
-  # extent <- get_extent(input = "Essen")
+  # ext <- get_extent(x = c(6.89, 51.34, 7.13, 51.53))
+  # ext <- get_extent(x = "Essen")
   # use_tiles <- TRUE
 
   # input validation -----------------------------------------------------------
@@ -29,7 +28,7 @@ get_public_data <- function(extent,
   # refresh access token if expired (3 hours after request)
   if (is_expired()) {
 
-    refresh_access_token()
+    refresh_at()
   }
 
   # main -----------------------------------------------------------------------
@@ -41,10 +40,10 @@ get_public_data <- function(extent,
 
     # query definition
     query <- list(
-      lat_ne = extent["ymax"] |> as.numeric(),
-      lon_ne = extent["xmax"] |> as.numeric(),
-      lat_sw = extent["ymin"] |> as.numeric(),
-      lon_sw = extent["xmin"] |> as.numeric(),
+      lat_ne = ext["ymax"] |> as.numeric(),
+      lon_ne = ext["xmax"] |> as.numeric(),
+      lat_sw = ext["ymin"] |> as.numeric(),
+      lon_sw = ext["xmin"] |> as.numeric(),
       required_data = "temperature",
       filter = "false"
     )
@@ -59,12 +58,12 @@ get_public_data <- function(extent,
     r_sf <- gpd_json2sf(r_json)
 
     # trim stations to original bounding box again, return sf object
-    sf::st_as_sfc(extent) |> sf::st_intersection(x = r_sf, y = _)
+    sf::st_as_sfc(ext) |> sf::st_intersection(x = r_sf, y = _)
 
   } else if (use_tiles == TRUE) {
 
     # construct grid for query slicing
-    grid <- sf::st_make_grid(extent,
+    grid <- sf::st_make_grid(ext,
                              cellsize = 0.05,
                              crs = 4326,
                              square = TRUE)
@@ -75,14 +74,14 @@ get_public_data <- function(extent,
     for (i in 1:n_tiles) {
 
       # get bbox of the current tile
-      extent_tile <- sf::st_bbox(grid[i])
+      ext_tile <- sf::st_bbox(grid[i])
 
       # query definition
       query <- list(
-        lat_ne = extent_tile["ymax"] |> as.numeric(),
-        lon_ne = extent_tile["xmax"] |> as.numeric(),
-        lat_sw = extent_tile["ymin"] |> as.numeric(),
-        lon_sw = extent_tile["xmin"] |> as.numeric(),
+        lat_ne = ext_tile["ymax"] |> as.numeric(),
+        lon_ne = ext_tile["xmax"] |> as.numeric(),
+        lat_sw = ext_tile["ymin"] |> as.numeric(),
+        lon_sw = ext_tile["xmin"] |> as.numeric(),
         required_data = "temperature",
         filter = "false"
       )
@@ -126,7 +125,7 @@ get_public_data <- function(extent,
     temp[["time_server"]] <- temp[["time_server"]] |> max()
 
     # trim stations due to overlapping tiles to original bounding box again
-    temp <- sf::st_as_sfc(extent) |> sf::st_intersection(x = temp, y = _)
+    temp <- sf::st_as_sfc(ext) |> sf::st_intersection(x = temp, y = _)
 
     # return cleaned sf object
     dplyr::distinct(temp)

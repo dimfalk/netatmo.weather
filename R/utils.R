@@ -1,24 +1,90 @@
-#' Title
+#' Construct an object of type bbox based on user input
 #'
-#' @param input
-#' @param resolution
+#' @param x Vector of length 4 containing numeric representing coordinates (xmin, ymin, xmax, ymax),
+#'   or string of length 1 representing the name of a municipality,
+#'   or string of nchar 5 representing a postal zip code.
+#' @param epsg (optional) Coordinate reference system definition.
 #'
-#' @return
+#' @return An object of type `bbox`.
+#' @export
+#'
+#' @examples
+#' e1 <- get_extent(x = c(6.89, 51.34, 7.13, 51.53))
+#' e2 <- get_extent(x = "Essen")
+#' e3 <- get_extent(x = "45145")
+get_extent <- function(x,
+                       epsg = 4326) {
+
+  # debugging ------------------------------------------------------------------
+
+  # x <- c(6.89, 51.34, 7.13, 51.53)
+  # x <- "Essen"
+  # x <- "45145"
+  # epsg <- 4326
+
+  # input validation -----------------------------------------------------------
+
+
+
+  # main -----------------------------------------------------------------------
+
+  # vector of length 4 containing numeric representing coordinates
+  if (inherits(x, "numeric") && length(x) == 4) {
+
+    #
+    coordinates <- rbind(c(x[1], x[2]),
+                         c(x[3], x[2]),
+                         c(x[3], x[4]),
+                         c(x[1], x[4]),
+                         c(x[1], x[2]))
+
+    #
+    list(coordinates) |> sf::st_polygon() |> sf::st_sfc(crs = epsg) |> sf::st_bbox()
+
+
+    # string of length 1 representing the name of a municipality
+  } else if (inherits(x, "character") && length(x) == 1 && as.numeric(x) |> suppressWarnings() |> is.na()) {
+
+    # read community polygons as sf
+    dvg1gem <- system.file("/inst/exdata/dvg1gem/dvg1gem_nw.shp", package="netatmo.weather") |> sf::st_read(quiet = TRUE)
+
+    #
+    stopifnot(x %in% dvg1gem[["GN"]])
+
+    #
+    dvg1gem |> dplyr::filter(GN == x) |> sf::st_transform(epsg) |> sf::st_bbox()
+
+
+    # string of length 5 representing a postal zip code
+  } else if (inherits(x, "character") && length(x) == 1 && nchar(x) == 5 && is.numeric(as.numeric(x))) {
+
+    # TODO
+    message("TO BE IMPLEMENTED.")
+  }
+}
+
+
+#' Construct a vector of length 2 and integer type representing UNIX time
+#'
+#' @param x Leave blank, or "recent", or a vector of length 2 containing from/to timestamps as characters.
+#' @param res Measurement resolution in minutes.
+#'
+#' @return A vector of length 2 containing from/to timestamps as UNIX time.
 #' @export
 #'
 #' @examples
 #' get_period()
-#' get_period(input = "recent")
-#' get_period(input = c("2022-06-01", "2022-06-04"))
-get_period <- function(input = NULL,
-                       resolution = 5) {
+#' get_period(x = "recent")
+#' get_period(x = c("2022-06-01", "2022-06-04"))
+get_period <- function(x = NULL,
+                       res = 5) {
 
   # debugging ------------------------------------------------------------------
 
-  # input <- NULL
-  # input <- "recent"
-  # input <- c("2022-06-01", "2022-06-04")
-  # resolution <- 5
+  # x <- NULL
+  # x <- "recent"
+  # x <- c("2022-06-01", "2022-06-04")
+  # res <- 5
 
   # input validation -----------------------------------------------------------
 
@@ -29,19 +95,19 @@ get_period <- function(input = NULL,
   now <- lubridate::now()
 
   # default: in case no input is defined by the user
-  if (is.null(input)) {
+  if (is.null(x)) {
 
-    to <-  now |> lubridate::floor_date(x = _, unit = "hour")
-    from <- (to - 60 * resolution * 1024)
+    to <-  now |> lubridate::floor_date(unit = "hour")
+    from <- (to - 60 * res * 1024)
 
     # return object
     c(from, to) |> as.integer()
 
 
     # query the last 24 hours only
-  } else if (inherits(input, "character") && length(input) == 1 && input == "recent") {
+  } else if (inherits(x, "character") && length(x) == 1 && x == "recent") {
 
-    to <-  now |> lubridate::floor_date(x = _, unit = "hour")
+    to <-  now |> lubridate::floor_date(unit = "hour")
     from <- (to - 60 * 60 * 24)
 
     # return object
@@ -49,14 +115,14 @@ get_period <- function(input = NULL,
 
 
     # in case a vector of timestamps is provided c("YYYY-MM-DD", "YYYY-MM-DD")
-  } else if (inherits(input, "character") && all.equal(nchar(input), c(10, 10))) {
+  } else if (inherits(x, "character") && all.equal(nchar(x), c(10, 10))) {
 
-    from <- input[1] |> strptime(format = "%Y-%m-%d") |> as.POSIXct()
-    to <- input[2] |> strptime(format = "%Y-%m-%d") |> as.POSIXct()
+    from <- x[1] |> strptime(format = "%Y-%m-%d") |> as.POSIXct()
+    to <- x[2] |> strptime(format = "%Y-%m-%d") |> as.POSIXct()
 
     #
     timediff_min <- (as.integer(to) - as.integer(from)) / 60
-    n_queried <- timediff_min / resolution
+    n_queried <- timediff_min / res
 
     # throw warning if limit is exceeded
     if (n_queried > 1024) {
@@ -73,82 +139,12 @@ get_period <- function(input = NULL,
 }
 
 
-#' Construct an object of type bbox using coordinates or specific polygons
+#' Parse json response from get_publicdata query to sf object
 #'
-#' @param input Vector of length 4 containing numeric representing coordinates,
-#'   string of length 1 representing the name of a municipality,
-#'   or string of length 5 representing a postal zip code.
-#' @param crs (optional) Coordinate reference system definition.
+#' @param json The json object returned by the API.
 #'
-#' @return An object of type `bbox`.
-#' @export
-#'
-#' @examples
-#' \dontrun{
-#' bbox <- get_extent(input = c(6.89, 51.34, 7.13, 51.53))
-#' bbox <- get_extent(input = "Essen")
-#' bbox <- get_extent(input = "45145")
-#' }
-get_extent <- function(input,
-                       epsg = 4326) {
-
-  # debugging ------------------------------------------------------------------
-
-  # input <- c(6.89, 51.34, 7.13, 51.53)
-  # epsg <- 4326
-  # input <- "Essen"
-  # input <- "45145"
-
-  # input validation -----------------------------------------------------------
-
-
-
-  # main -----------------------------------------------------------------------
-
-  # vector of length 4 containing numeric representing coordinates
-  if (inherits(input, "numeric") && length(input) == 4) {
-
-    #
-    coordinates <- rbind(c(input[1], input[2]),
-                         c(input[3], input[2]),
-                         c(input[3], input[4]),
-                         c(input[1], input[4]),
-                         c(input[1], input[2]))
-
-    #
-    list(coordinates) |> sf::st_polygon() |> sf::st_sfc(crs = epsg) |> sf::st_bbox()
-
-
-    # string of length 1 representing the name of a municipality
-  } else if (inherits(input, "character") && length(input) == 1 && is.na(as.numeric(input))) {
-
-    # read community polygons as sf
-    dvg1gem <- sf::st_read("inst/exdata/dvg1gem/dvg1gem_nw.shp", quiet = TRUE)
-
-    #
-    stopifnot(input %in% dvg1gem[["GN"]])
-
-    #
-    dvg1gem |> dplyr::filter(GN == input) |> sf::st_transform(epsg) |> sf::st_bbox()
-
-
-    # string of length 5 representing a postal zip code
-  } else if (inherits(input, "character") && length(input) == 1 && nchar(input) == 5 && is.numeric(as.numeric(input))) {
-
-    # TODO
-    message("TO BE IMPLEMENTED.")
-  }
-}
-
-
-
-#' Parse json response from getpublicdata query to sf object
-#'
-#' @param json
-#'
-#' @return An sf object
+#' @return An sf object.
 #' @keywords internal
-#' @export
 #'
 #' @examples gpd_json2sf(r_json)
 gpd_json2sf <- function(json) {

@@ -2,18 +2,18 @@
 % Please edit documentation in R/utils.R
 \name{gpd_json2sf}
 \alias{gpd_json2sf}
-\title{Parse json response from getpublicdata query to sf object}
+\title{Parse json response from get_publicdata query to sf object}
 \usage{
 gpd_json2sf(json)
 }
 \arguments{
-\item{json}{}
+\item{json}{The json object returned by the API.}
 }
 \value{
-An sf object
+An sf object.
 }
 \description{
-Parse json response from getpublicdata query to sf object
+Parse json response from get_publicdata query to sf object
 }
 \examples{
 gpd_json2sf(r_json)

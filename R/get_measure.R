@@ -1,88 +1,86 @@
-#' Title
+#' Get Netatmo station observations
 #'
-#' @param devices sf object
-#' @param parameter character
-#' @param resolution
-#' @param period date
+#' @param devices A `sf` object as provided by `get_publicdata()`.
+#' @param par The meteorological parameter to acquire.
+#' @param res Measurement resolution in minutes.
+#' @param period A from/to period vector as provided by `get_period()`.
 #'
-#' @return xts
+#' @return A list of `xts` objects.
 #' @export
 #'
 #' @examples
-#' get_measure(stations, parameter = "pressure")
-#' get_measure(stations, parameter = "temperature", resolution = 30, period = "recent")
-#' get_measure(stations, parameter = "sum_rain", resolution = 60, period = c("2022-06-06", "2022-06-08"))
+#' get_measure(stations, par = "pressure")
+#' get_measure(stations, par = "temperature", res = 30, period = "recent")
+#' get_measure(stations, par = "sum_rain", res = 60, period = c("2022-06-06", "2022-06-08"))
 get_measure <- function(devices,
-                        parameter = NULL,
-                        resolution = 5,
+                        par = NULL,
+                        res = 5,
                         period = NULL) {
 
   # debugging ------------------------------------------------------------------
 
   # devices <- stations
-  # parameter <- "sum_rain"
-  # resolution <- 5
+  # par <- "sum_rain"
+  # res <- 5
   # period <- NULL
   # period <- "recent"
   # period <- c("2022-04-01", "2022-04-06")
 
   # input validation -----------------------------------------------------------
 
-  allowed_parameter <- c("pressure", "min_pressure", "max_pressure",
-                         "temperature", "min_temp", "max_temp",
-                         "humidity", "min_hum", "max_hum",
-                         "windstrength", "windangle",
-                         "guststrength", "gustangle",
-                         "sum_rain")
+  allowed_par <- c("pressure", "min_pressure", "max_pressure", "temperature",
+                   "min_temp", "max_temp", "humidity", "min_hum", "max_hum",
+                   "windstrength", "windangle", "guststrength", "gustangle",
+                   "sum_rain")
 
-  checkmate::assert_character(parameter, len = 1)
-  checkmate::assert_choice(parameter, allowed_parameter)
+  checkmate::assert_character(par, len = 1)
+  checkmate::assert_choice(par, allowed_par)
 
   # pre-processing -------------------------------------------------------------
 
   # refresh access token if expired (3 hours after request)
   if (is_expired()) {
 
-    refresh_access_token()
+    refresh_at()
   }
 
   # parameter mapping
-  relevant_module <- switch(parameter,
+  relevant_module <- switch(par,
 
-                           "pressure" = "base_station",
-                           "min_pressure" = "base_station",
-                           "max_pressure" = "base_station",
+                            "pressure" = "base_station",
+                            "min_pressure" = "base_station",
+                            "max_pressure" = "base_station",
 
-                           "temperature" = "NAModule1",
-                           "min_temp" = "NAModule1",
-                           "max_temp" = "NAModule1",
+                            "temperature" = "NAModule1",
+                            "min_temp" = "NAModule1",
+                            "max_temp" = "NAModule1",
 
-                           "humidity" = "NAModule1",
-                           "min_hum" = "NAModule1",
-                           "max_hum" = "NAModule1",
+                            "humidity" = "NAModule1",
+                            "min_hum" = "NAModule1",
+                            "max_hum" = "NAModule1",
 
-                           "windstrength" = "NAModule2",
-                           "windangle" = "NAModule2",
-                           "guststrength" = "NAModule2",
-                           "gustangle" = "NAModule2",
+                            "windstrength" = "NAModule2",
+                            "windangle" = "NAModule2",
+                            "guststrength" = "NAModule2",
+                            "gustangle" = "NAModule2",
 
-                           "sum_rain" = "NAModule3")
+                            "sum_rain" = "NAModule3")
 
   # interval width mapping
-  resolution_code <- switch(as.character(resolution),
+  res_code <- switch(as.character(res),
 
-                            "5" = "5min",
-                            "30" = "30min",
-                            "60" = "1hour",
-                            "180" = "3hours",
-                            "360" = "6hours",
-                            "1440" = "1day")
+                     "5" = "5min",
+                     "30" = "30min",
+                     "60" = "1hour",
+                     "180" = "3hours",
+                     "360" = "6hours",
+                     "1440" = "1day")
 
   # subset devices
   devices_subset <- devices[!is.na(devices[[relevant_module]]), ]
 
   # period definition
-  period_int <- get_period(period, resolution = resolution)
+  period_int <- get_period(input = period, res = res)
 
   #
   base_url <- "https://api.netatmo.com/api/getmeasure"
@@ -97,8 +95,8 @@ get_measure <- function(devices,
 
                     "base_station" = list(
                       device_id = devices_subset[[i, "base_station"]],
-                      scale = resolution_code,
-                      type = parameter,
+                      scale = res_code,
+                      type = par,
                       date_begin = period_int[1],
                       date_end = period_int[2],
                       limit = 1024,
@@ -109,8 +107,8 @@ get_measure <- function(devices,
                     "NAModule1" = list(
                       device_id = devices_subset[[i, "base_station"]],
                       module_id = devices_subset[[i, "NAModule1"]],
-                      scale = resolution_code,
-                      type = parameter,
+                      scale = res_code,
+                      type = par,
                       date_begin = period_int[1],
                       date_end = period_int[2],
                       limit = 1024,
@@ -121,8 +119,8 @@ get_measure <- function(devices,
                     "NAModule2" = list(
                       device_id = devices_subset[[i, "base_station"]],
                       module_id = devices_subset[[i, "NAModule2"]],
-                      scale = resolution_code,
-                      type = parameter,
+                      scale = res_code,
+                      type = par,
                       date_begin = period_int[1],
                       date_end = period_int[2],
                       limit = 1024,
@@ -133,8 +131,8 @@ get_measure <- function(devices,
                     "NAModule3" = list(
                       device_id = devices_subset[[i, "base_station"]],
                       module_id = devices_subset[[i, "NAModule3"]],
-                      scale = resolution_code,
-                      type = parameter,
+                      scale = res_code,
+                      type = par,
                       date_begin = period_int[1],
                       date_end = period_int[2],
                       limit = 1024,
@@ -174,9 +172,9 @@ get_measure <- function(devices,
     attr(xts, "CRS_EPSG") <- "4326"
     attr(xts, "TZONE") <- devices[["timezone"]][i]
 
-    attr(xts, "OPERATOR") <- "Netatmo"
+    attr(xts, "OPERATOR") <- "Netatmo S.A."
     attr(xts, "SENS_ID") <- devices_subset[[relevant_module]][i]
-    attr(xts, "PARAMETER") <- parameter
+    attr(xts, "PARAMETER") <- par
     attr(xts, "TS_START") <- as.POSIXct(NA) # TODO
     attr(xts, "TS_END") <- as.POSIXct(NA) # TODO
     attr(xts, "TS_TYPE") <- "measurement"
@@ -184,9 +182,9 @@ get_measure <- function(devices,
     attr(xts, "MEAS_INTERVALTYPE") <- TRUE
     attr(xts, "MEAS_BLOCKING") <- "right"
 
-    attr(xts, "MEAS_RESOLUTION") <- resolution
+    attr(xts, "MEAS_RESOLUTION") <- res
 
-    attr(xts, "MEAS_UNIT") <- switch(parameter,
+    attr(xts, "MEAS_UNIT") <- switch(par,
 
                                      "pressure" = "bar",
                                      "min_pressure" = "bar",
@@ -207,7 +205,7 @@ get_measure <- function(devices,
 
                                      "sum_rain" = "mm")
 
-    attr(xts, "MEAS_STATEMENT") <- switch(parameter,
+    attr(xts, "MEAS_STATEMENT") <- switch(par,
 
                                           "pressure" = "mean",
                                           "min_pressure" = "min",

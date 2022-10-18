@@ -1,12 +1,12 @@
-#' Title
+#' Create an Oauth 2.0 token for api.netatmo.net
 #'
-#' @param file
+#' @param file Full path to oauth configuration file.
 #'
-#' @return Auth token: Token2.0
+#' @return A request object containing the Oauth 2.0 token.
 #' @export
 #'
-#' @examples get_oauth2_token("oauth.cfg")
-get_oauth2_token <- function(file) {
+#' @examples get_oauth2token("oauth.cfg")
+get_oauth2token <- function(file) {
 
   # debugging ------------------------------------------------------------------
 
@@ -31,6 +31,8 @@ get_oauth2_token <- function(file) {
                                    app,
                                    scope = "read_station")
 
+  .sig <- NULL
+
   assign(".sig", httr::config(token = af_token), envir = .GlobalEnv)
 
   message("Success: OAuth 2.0 token has been successfully created as `.sig`.")
@@ -38,15 +40,13 @@ get_oauth2_token <- function(file) {
 
 
 
-#' Title
+#' Return your access token as a string for further use in a browser
 #'
-#' @param token
-#'
-#' @return
+#' @return A string representing the access token.
 #' @export
 #'
-#' @examples print_access_token()
-print_access_token <- function() {
+#' @examples print_at()
+print_at <- function() {
 
   paste("&access_token=",
         .sig$auth_token$credentials$access_token,
@@ -55,13 +55,13 @@ print_access_token <- function() {
 
 
 
-#' Title
+#' Return your refresh token as a string for further use in a browser
 #'
-#' @return
+#' @return A string representing the refresh token.
 #' @export
 #'
-#' @examples print_refresh_token()
-print_refresh_token <- function() {
+#' @examples print_rt()
+print_rt <- function() {
 
   paste("&refresh_token=",
         .sig$auth_token$credentials$refresh_token,
@@ -70,10 +70,11 @@ print_refresh_token <- function() {
 
 
 
-#' Title
+#' Check if your Oauth 2.0 token is expired and needs to be refreshed
 #'
-#' @return
-#' @export
+#' @return A boolean.
+#' @keywords internal
+#'
 #'
 #' @examples is_expired()
 is_expired <- function() {
@@ -108,13 +109,13 @@ is_expired <- function() {
 
 
 
-#' Title
+#' Refresh your access token using the refresh token
 #'
-#' @return
-#' @export
+#' @return The refreshed token.
+#' @keywords internal
 #'
-#' @examples refresh_access_token()
-refresh_access_token <- function() {
+#' @examples refresh_at()
+refresh_at <- function() {
 
   .sig$auth_token$refresh()
 }

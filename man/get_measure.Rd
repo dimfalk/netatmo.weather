@@ -2,25 +2,27 @@
 % Please edit documentation in R/get_measure.R
 \name{get_measure}
 \alias{get_measure}
-\title{Title}
+\title{Get Netatmo station observations}
 \usage{
-get_measure(devices, parameter = NULL, resolution = 5, period = NULL)
+get_measure(devices, par = NULL, res = 5, period = NULL)
 }
 \arguments{
-\item{devices}{sf object}
+\item{devices}{A \code{sf} object as provided by \code{get_publicdata()}.}
 
-\item{parameter}{character}
+\item{par}{The meteorological parameter to acquire.}
 
-\item{period}{date}
+\item{res}{Measurement resolution in minutes.}
+
+\item{period}{A from/to period vector as provided by \code{get_period()}.}
 }
 \value{
-xts
+A list of \code{xts} objects.
 }
 \description{
-Title
+Get Netatmo station observations
 }
 \examples{
-get_measure(stations, parameter = "pressure")
-get_measure(stations, parameter = "temperature", resolution = 30, period = "recent")
-get_measure(stations, parameter = "sum_rain", resolution = 60, period = c("2022-06-06", "2022-06-08"))
+get_measure(stations, par = "pressure")
+get_measure(stations, par = "temperature", res = 30, period = "recent")
+get_measure(stations, par = "sum_rain", res = 60, period = c("2022-06-06", "2022-06-08"))
 }
