@@ -1,66 +1,93 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# netatmoR
+# netatmo-weather
 
 <!-- badges: start -->
 <!-- badges: end -->
 
-The goal of netatmoR is to …
+The goal of netatmo-weather is to provide access to Netatmo measurements
+and station metadata making use of the weather API at dev.netatmo.com.
 
 ## Installation
 
-You can install the development version of netatmoR from
+You can install the development version of netatmo-weather from
 [GitHub](https://github.com/) with:
 
 ``` r
 # install.packages("devtools")
-devtools::install_github("falk-env/netatmoR")
+# devtools::install_github("falk-env/netatmo-weather")
 ```
 
-## Example
+## Authentication
 
-This is a basic example which shows you how to solve a common problem:
+In order to be able to access data, please follow the subsequent steps
+carefully:
 
-<https://dev.netatmo.com/apidocumentation/oauth>
+1)  Register a user account at
+    [auth.netatmo.com](https://auth.netatmo.com/access/signup).
+
+2)  Login at
+    [dev.netatmo.com](https://auth.netatmo.com/de-de/access/login?next_url=https%3A%2F%2Fdev.netatmo.com%2F).
+
+3)  Click on your username in the upper right corner and create a new
+    application. Provide mandatory information (\*).
+
+4)  Once saved, rename `example-oauth.cfg` in your package directory to
+    e.g. `oauth.cfg` and replace dummy details with data from your own
+    app (app name, client ID, client secret).
+
+5)  Execute the following function in order to create a Oauth 2 token.
 
 ``` r
- # Use a local file ('.httr-oauth'), to cache OAuth access credentials between R sessions?
-  
-  #  Do you authorize application [appname] to access your account [e-mail] data?
-  
-  # Yes, I accept.
-  
-  # Authentication complete. Please close this page and return to R.
-  
-  # `.httr-oauth` created.
-  
-  # all configuration options are per request, not per handle.
+netatmo.weather::get_oauth2token("oauth.cfg")
+#> Success: OAuth 2.0 token has been successfully created as `.sig`.
 ```
 
-What is special about using `README.Rmd` instead of just `README.md`?
-You can include R chunks like so:
+6)  When asked, whether you want to use a local file to cache OAuth
+    access credentials between R sessions, choose 1: Yes.
 
-``` r
-summary(cars)
-#>      speed           dist       
-#>  Min.   : 4.0   Min.   :  2.00  
-#>  1st Qu.:12.0   1st Qu.: 26.00  
-#>  Median :15.0   Median : 36.00  
-#>  Mean   :15.4   Mean   : 42.98  
-#>  3rd Qu.:19.0   3rd Qu.: 56.00  
-#>  Max.   :25.0   Max.   :120.00
-```
+7)  You’ll be redirected to your browser to grant access to your
+    application. Accept. Note: `get_oauth2token()` is limited to
+    `"read_station"` scope.
 
-You’ll still need to render `README.Rmd` regularly, to keep `README.md`
-up-to-date. `devtools::build_readme()` is handy for this. You could also
-use GitHub Actions to re-render `README.Rmd` every time you push. An
-example workflow can be found here:
-<https://github.com/r-lib/actions/tree/v1/examples>.
+8)  Successful authentication is confirmed in your browser:
+    “Authentication complete. Please close this page and return to R.”.
 
-You can also embed plots, for example:
+9)  Your token is stored in the `.httr-oauth` file in your package
+    directory and as `.sig` in your R environment.
 
-<img src="man/figures/README-pressure-1.png" width="100%" />
+In case you wanted to execute /getpublicdata and /getmeasure API calls
+from your browser (for debugging reasons or whatever), you’ll need to
+append your access token to your URL (“&access_token=xxx”). You’ll also
+be notified if you try to execute requests with your access token
+missing.
 
-In that case, don’t forget to commit and push the resulting figure
-files, so they display on GitHub and CRAN.
+You can access your access and refresh token consisting of a key and
+secret making use of little helpers provided:
+
+    print_at()
+    #> "&access_token=62361e03ca18e13802546z20|5dt2091f1693dbff35f0428f2386b492"
+
+    print_rt()
+    #> "&refresh_token=62361e03ca18e13802546z20|6ce2fb2490a615d58b16e874fz4eb579"
+
+Issued access tokens expire after \~14 days and have to be refreshed.
+Usually, this is done in the background without the user noticing.
+However, you could also check and refresh yourself if you want to:
+
+    is_expired()
+    #> TRUE
+
+    refresh_at()
+    #> <Token>
+    #> <oauth_endpoint>
+    #>  authorize: https://api.netatmo.net/oauth2/authorize
+    #>  access:    https://api.netatmo.net/oauth2/token
+    #> <oauth_app> de_uhi
+    #>   key:    62361e03ca18e13802546z20
+    #>   secret: <hidden>
+    #> <credentials> scope, access_token, expires_in, expire_in, refresh_token
+
+    is_expired()
+    #> FALSE
