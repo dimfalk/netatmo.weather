@@ -19,3 +19,4 @@ Imports:
     sf,
     tibble,
     xts
+LazyData: true

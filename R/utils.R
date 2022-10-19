@@ -46,13 +46,13 @@ get_extent <- function(x,
   } else if (inherits(x, "character") && length(x) == 1 && as.numeric(x) |> suppressWarnings() |> is.na()) {
 
     # read community polygons as sf
-    dvg1gem <- system.file("/inst/exdata/dvg1gem/dvg1gem_nw.shp", package="netatmo.weather") |> sf::st_read(quiet = TRUE)
+    system.file("data/vg250_gem.rda", package="netatmo.weather") |> load()
 
     #
-    stopifnot(x %in% dvg1gem[["GN"]])
+    stopifnot(x %in% vg250_gem[["GN"]])
 
     #
-    dvg1gem |> dplyr::filter(GN == x) |> sf::st_transform(epsg) |> sf::st_bbox()
+    vg250_gem |> dplyr::filter(GN == x) |> sf::st_transform(epsg) |> sf::st_bbox()
 
 
     # string of length 5 representing a postal zip code
