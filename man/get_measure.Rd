@@ -22,6 +22,8 @@ A list of \code{xts} objects.
 Get Netatmo station observations
 }
 \examples{
+get_oauth2token("oauth.cfg")
+
 get_measure(stations, par = "pressure")
 get_measure(stations, par = "temperature", res = 30, period = "recent")
 get_measure(stations, par = "sum_rain", res = 60, period = c("2022-06-06", "2022-06-08"))

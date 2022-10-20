@@ -2,7 +2,7 @@
 % Please edit documentation in R/get_publicdata.R
 \name{get_publicdata}
 \alias{get_publicdata}
-\title{Get Netatmo station locations with various metadata based on extent queried}
+\title{Get Netatmo station locations enriched with metadata}
 \usage{
 get_publicdata(ext, use_tiles = FALSE)
 }
@@ -15,10 +15,12 @@ get_publicdata(ext, use_tiles = FALSE)
 A simple feature collection containing station metadata and geometries.
 }
 \description{
-Get Netatmo station locations with various metadata based on extent queried
+Get Netatmo station locations enriched with metadata
 }
 \examples{
+get_oauth2token("oauth.cfg")
 e <- get_extent(x = c(6.89, 51.34, 7.13, 51.53))
+
 stations <- get_publicdata(ext = e)
 stations <- get_publicdata(ext = e, use_tiles = TRUE)
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{gpd_json2sf}
 \alias{gpd_json2sf}
-\title{Parse json response from get_publicdata query to sf object}
+\title{Parse json response from \code{get_publicdata()} call to sf object}
 \usage{
 gpd_json2sf(json)
 }
@@ -13,7 +13,7 @@ gpd_json2sf(json)
 An sf object.
 }
 \description{
-Parse json response from get_publicdata query to sf object
+Parse json response from \code{get_publicdata()} call to sf object
 }
 \examples{
 gpd_json2sf(r_json)

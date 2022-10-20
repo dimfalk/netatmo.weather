@@ -31,7 +31,7 @@ get_oauth2token <- function(file) {
                                    app,
                                    scope = "read_station")
 
-  .sig <- NULL
+  .sig <<- NULL
 
   assign(".sig", httr::config(token = af_token), envir = .GlobalEnv)
 

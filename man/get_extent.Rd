@@ -14,13 +14,14 @@ or string of nchar 5 representing a postal zip code.}
 \item{epsg}{(optional) Coordinate reference system definition.}
 }
 \value{
-An object of type \code{bbox}.
+An object of type \code{sfc_POLYGON}.
 }
 \description{
 Construct an object of type bbox based on user input
 }
 \examples{
 e1 <- get_extent(x = c(6.89, 51.34, 7.13, 51.53))
-e2 <- get_extent(x = "Essen")
-e3 <- get_extent(x = "45145")
+e2 <- get_extent(x = c(353034.1, 5689295.3, 370288.6, 5710875.9), epsg = 25832)
+e3 <- get_extent(x = "Essen")
+e4 <- get_extent(x = "45145")
 }

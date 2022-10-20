@@ -1,4 +1,4 @@
-#' Get Netatmo station locations with various metadata based on extent queried
+#' Get Netatmo station locations enriched with metadata
 #'
 #' @param ext A bounding box as provided by `get_extent()`.
 #' @param use_tiles Boolean. Should fetching be done in spatial slices? More results are to be expected when `TRUE`.
@@ -7,7 +7,9 @@
 #' @export
 #'
 #' @examples
+#' get_oauth2token("oauth.cfg")
 #' e <- get_extent(x = c(6.89, 51.34, 7.13, 51.53))
+#'
 #' stations <- get_publicdata(ext = e)
 #' stations <- get_publicdata(ext = e, use_tiles = TRUE)
 get_publicdata <- function(ext,
