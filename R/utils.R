@@ -45,7 +45,7 @@ get_extent <- function(x,
   } else if (inherits(x, "character") && length(x) == 1 && as.numeric(x) |> suppressWarnings() |> is.na()) {
 
     # construct object
-    sf <- vg250_gem_simplified |> dplyr::filter(GEN == x)
+    sf <- vg250_gem_bbox |> dplyr::filter(GEN == x)
 
     # number of objects present
     n <- dim(sf)[1]
@@ -54,7 +54,7 @@ get_extent <- function(x,
     if (n == 0) {
 
       # partial matching successful?
-      pmatch <- vg250_gem_simplified[["GEN"]][grep(x, vg250_gem_simplified[["GEN"]])]
+      pmatch <- vg250_gem_bbox[["GEN"]][grep(x, vg250_gem_bbox[["GEN"]])]
 
       if (length(pmatch) == 0) {
 
@@ -72,7 +72,7 @@ get_extent <- function(x,
       bbox <- sf[1,]  |> sf::st_bbox() |> sf::st_as_sfc()
 
       paste("Warning: The name provided returned multiple non-unique results. Only the first object is returned.",
-            "Consider to visually inspect the returned object using e.g. `mapview::mapview(e)`.", sep ="\n  ") |> message()
+            "Consider to visually inspect the returned object using e.g. `mapview::mapview(e)`.", sep ="\n  ") |> warning()
 
     } else if (n == 1) {
 
@@ -82,7 +82,7 @@ get_extent <- function(x,
     # string of length 5 representing a postal zip code ------------------------
   } else if (inherits(x, "character") && length(x) == 1 && nchar(x) == 5 && !is.na(as.numeric(x)) |> suppressWarnings()) {
 
-    sf <- osm_plz_simplified |> dplyr::filter(plz == x)
+    sf <- osm_plz_bbox |> dplyr::filter(plz == x)
 
     # number of objects present
     n <- dim(sf)[1]
@@ -99,7 +99,7 @@ get_extent <- function(x,
 
   } else {
 
-    stop("Your input could not be attributed properly. Please check the examples provided: `?get_extent`.")
+    "Your input could not be attributed properly. Please check the examples provided: `?get_extent`." |> stop()
   }
 
   # return object
