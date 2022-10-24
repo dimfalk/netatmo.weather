@@ -7,10 +7,10 @@
 get_oauth2token(file)
 }
 \arguments{
-\item{file}{Full path to oauth configuration file.}
+\item{file}{character. Full path to oauth configuration file.}
 }
 \value{
-A request object containing the Oauth 2.0 token.
+Request object containing the Oauth 2.0 token.
 }
 \description{
 Create an Oauth 2.0 token for api.netatmo.net

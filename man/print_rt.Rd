@@ -2,15 +2,15 @@
 % Please edit documentation in R/get_oauth2token.R
 \name{print_rt}
 \alias{print_rt}
-\title{Return your refresh token as a string for further use in a browser}
+\title{Return refresh token to console for further use in a browser}
 \usage{
 print_rt()
 }
 \value{
-A string representing the refresh token.
+character. Refresh token representation.
 }
 \description{
-Return your refresh token as a string for further use in a browser
+Return refresh token to console for further use in a browser
 }
 \examples{
 print_rt()

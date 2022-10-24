@@ -14,7 +14,7 @@ or string of nchar 5 representing a postal zip code.}
 \item{epsg}{(optional) Coordinate reference system definition.}
 }
 \value{
-An object of type \code{sfc_POLYGON}.
+Object of type \code{sfc_POLYGON}.
 }
 \description{
 Construct an object of type bbox based on user input

@@ -1,13 +1,14 @@
 #' Get Netatmo station locations enriched with metadata
 #'
-#' @param ext A bounding box as provided by `get_extent()`.
-#' @param use_tiles Boolean. Should fetching be done in spatial slices? More results are to be expected when `TRUE`.
+#' @param ext Object of type `sfc_POLYGON`, as provided by `get_extent()`.
+#' @param use_tiles logical. Should fetching be done in spatial slices? More results are to be expected using `TRUE`.
 #'
-#' @return A simple feature collection containing station metadata and geometries.
+#' @return Sf object containing station metadata and geometries.
 #' @export
 #'
 #' @examples
 #' get_oauth2token("oauth.cfg")
+#'
 #' e <- get_extent(x = c(6.89, 51.34, 7.13, 51.53))
 #'
 #' stations <- get_publicdata(ext = e)
@@ -19,15 +20,23 @@ get_publicdata <- function(ext,
 
   # ext <- get_extent(x = c(6.89, 51.34, 7.13, 51.53))
   # ext <- get_extent(x = "Essen")
+  # ext <- get_extent(x = "45145")
   # use_tiles <- TRUE
 
   # input validation -----------------------------------------------------------
 
-  # content <- readLines(file) |> paste(collapse="") |> jsonlite::fromJSON()
+  if(exists(".sig") == FALSE) {
+
+    "Error: OAuth 2.0 token does not exist. Run `get_oauth2token()` first." |> stop()
+  }
+
+  checkmate::assert_class(ext, c("sfc_POLYGON", "sfc"))
+
+  checkmate::assert_logical(use_tiles)
 
   # pre-processing -------------------------------------------------------------
 
-  # refresh access token if expired (3 hours after request)
+  # refresh access token if expired
   if (is_expired()) {
 
     refresh_at()
@@ -42,10 +51,10 @@ get_publicdata <- function(ext,
 
     # query definition
     query <- list(
-      lat_ne = ext["ymax"] |> as.numeric(),
-      lon_ne = ext["xmax"] |> as.numeric(),
-      lat_sw = ext["ymin"] |> as.numeric(),
-      lon_sw = ext["xmin"] |> as.numeric(),
+      lat_ne = sf::st_bbox(ext)["ymax"] |> as.numeric(),
+      lon_ne = sf::st_bbox(ext)["xmax"] |> as.numeric(),
+      lat_sw = sf::st_bbox(ext)["ymin"] |> as.numeric(),
+      lon_sw = sf::st_bbox(ext)["xmin"] |> as.numeric(),
       required_data = "temperature",
       filter = "false"
     )
@@ -60,7 +69,7 @@ get_publicdata <- function(ext,
     r_sf <- gpd_json2sf(r_json)
 
     # trim stations to original bounding box again, return sf object
-    sf::st_as_sfc(ext) |> sf::st_intersection(x = r_sf, y = _)
+    sf::st_intersection(x = r_sf, y = ext)
 
   } else if (use_tiles == TRUE) {
 
@@ -127,69 +136,9 @@ get_publicdata <- function(ext,
     temp[["time_server"]] <- temp[["time_server"]] |> max()
 
     # trim stations due to overlapping tiles to original bounding box again
-    temp <- sf::st_as_sfc(ext) |> sf::st_intersection(x = temp, y = _)
+    temp <- sf::st_intersection(x = temp, y = ext)
 
     # return cleaned sf object
     dplyr::distinct(temp)
   }
 }
-
-# ------------ >>>
-
-# library(tictoc)
-# tic()
-# stations_tiles_false <- get_public_data(bbox = "Essen",
-#                                         use_tiles = FALSE)
-# toc()
-# # sf::st_write(stations_tiles_false, "stations_tiles_false.shp")
-#
-#
-#
-#
-#
-# for (i in seq(from = 0.2, to = 0.01, by = -0.01)) {
-#
-#   tic()
-#   stations_tiles_true <- get_public_data(bbox = "Essen",
-#                                          use_tiles = TRUE,
-#                                          cellsize = i)
-#   paste0(dim(stations_tiles_true)[1], " stations found with a cellsize of ", i, " degree.\n") |> cat()
-#   toc()
-#   # sf::st_write(stations_tiles_true, "stations_tiles_true.shp")
-# }
-#
-#
-#
-#
-#
-# dvg1gem <- sf::st_read("inst/exdata/dvg1gem/dvg1gem_nw.shp")
-# gem <- dvg1gem |> dplyr::filter(GN == "Essen") |> sf::st_transform(4326)
-# # sf::st_write(gem, "gem_Essen.shp")
-# bbox <- sf::st_bbox(gem)
-#
-# # bbox |> sf::st_as_sfc() |> sf::st_write("bbox_gem_Essen.shp")
-#
-#
-#
-# grid <- sf::st_make_grid(bbox,
-#                          cellsize = 0.01,
-#                          crs = 4326,
-#                          square = TRUE)
-# length(grid)
-# # sf::st_write(grid, "grid_005.shp")
-#
-# ggplot2::ggplot() +
-#   ggplot2::geom_sf(data = gem) +
-#   ggplot2::geom_sf(data = grid) +
-#   ggplot2::geom_sf(data = stations_tiles_true, mapping = ggplot2::aes(col="red"))
-# #
-# # mapview::mapview(stations)
-# #
-# #
-# # plot(grid)
-# # plot(sf::st_geometry(gem), add = TRUE)
-# #
-# # plot(grid[gem], col = '#ff000088', add = TRUE)
-# #
-# # plot(sf::st_geometry(stations_tiles_true), col = "blue", add = TRUE)
-

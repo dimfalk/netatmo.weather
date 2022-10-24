@@ -9,16 +9,16 @@ get_period(x = NULL, res = 5)
 \arguments{
 \item{x}{Leave blank, or "recent", or a vector of length 2 containing from/to timestamps as characters.}
 
-\item{res}{Measurement resolution in minutes.}
+\item{res}{numeric. Measurement resolution in minutes.}
 }
 \value{
-A vector of length 2 containing from/to timestamps as UNIX time.
+numeric. Vector of length 2 containing from/to timestamps as UNIX time.
 }
 \description{
 Construct a vector of length 2 and integer type representing UNIX time
 }
 \examples{
-get_period()
-get_period(x = "recent")
-get_period(x = c("2022-06-01", "2022-06-04"))
+p1 <- get_period()
+p2 <- get_period(x = "recent")
+p3 <- get_period(x = c("2022-06-01", "2022-06-04"))
 }

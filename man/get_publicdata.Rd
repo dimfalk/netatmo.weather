@@ -7,18 +7,19 @@
 get_publicdata(ext, use_tiles = FALSE)
 }
 \arguments{
-\item{ext}{A bounding box as provided by \code{get_extent()}.}
+\item{ext}{Object of type \code{sfc_POLYGON}, as provided by \code{get_extent()}.}
 
-\item{use_tiles}{Boolean. Should fetching be done in spatial slices? More results are to be expected when \code{TRUE}.}
+\item{use_tiles}{logical. Should fetching be done in spatial slices? More results are to be expected using \code{TRUE}.}
 }
 \value{
-A simple feature collection containing station metadata and geometries.
+Sf object containing station metadata and geometries.
 }
 \description{
 Get Netatmo station locations enriched with metadata
 }
 \examples{
 get_oauth2token("oauth.cfg")
+
 e <- get_extent(x = c(6.89, 51.34, 7.13, 51.53))
 
 stations <- get_publicdata(ext = e)

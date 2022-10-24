@@ -2,15 +2,15 @@
 % Please edit documentation in R/get_oauth2token.R
 \name{print_at}
 \alias{print_at}
-\title{Return your access token as a string for further use in a browser}
+\title{Return access token to console for further use in a browser}
 \usage{
 print_at()
 }
 \value{
-A string representing the access token.
+character. Access token representation.
 }
 \description{
-Return your access token as a string for further use in a browser
+Return access token to console for further use in a browser
 }
 \examples{
 print_at()

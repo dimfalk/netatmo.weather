@@ -1,8 +1,8 @@
 #' Create an Oauth 2.0 token for api.netatmo.net
 #'
-#' @param file Full path to oauth configuration file.
+#' @param file character. Full path to oauth configuration file.
 #'
-#' @return A request object containing the Oauth 2.0 token.
+#' @return Request object containing the Oauth 2.0 token.
 #' @export
 #'
 #' @examples get_oauth2token("oauth.cfg")
@@ -10,7 +10,7 @@ get_oauth2token <- function(file) {
 
   # debugging ------------------------------------------------------------------
 
-  #
+  # file <- "oauth.cfg"
 
   # input validation -----------------------------------------------------------
 
@@ -35,49 +35,76 @@ get_oauth2token <- function(file) {
 
   assign(".sig", httr::config(token = af_token), envir = .GlobalEnv)
 
-  message("Success: OAuth 2.0 token has been successfully created as `.sig`.")
+  message("Note: OAuth 2.0 token has been successfully created as `.sig`.")
 }
 
 
 
-#' Return your access token as a string for further use in a browser
+#' Return access token to console for further use in a browser
 #'
-#' @return A string representing the access token.
+#' @return character. Access token representation.
 #' @export
 #'
 #' @examples print_at()
 print_at <- function() {
 
+  # input validation -----------------------------------------------------------
+
+  if(exists(".sig") == FALSE) {
+
+    "Error: OAuth 2.0 token does not exist. Run `get_oauth2token()` first." |> stop()
+  }
+
+  # main -----------------------------------------------------------------------
+
   paste("&access_token=",
-        .sig$auth_token$credentials$access_token,
-        sep = "") |> print()
+        .sig[["auth_token"]][["credentials"]][["access_token"]],
+        sep = "") |> cat()
 }
 
 
 
-#' Return your refresh token as a string for further use in a browser
+#' Return refresh token to console for further use in a browser
 #'
-#' @return A string representing the refresh token.
+#' @return character. Refresh token representation.
 #' @export
 #'
 #' @examples print_rt()
 print_rt <- function() {
 
+  # input validation -----------------------------------------------------------
+
+  if(exists(".sig") == FALSE) {
+
+    "Error: OAuth 2.0 token does not exist. Run `get_oauth2token()` first." |> stop()
+  }
+
+  # main -----------------------------------------------------------------------
+
   paste("&refresh_token=",
-        .sig$auth_token$credentials$refresh_token,
-        sep = "") |> print()
+        .sig[["auth_token"]][["credentials"]][["refresh_token"]],
+        sep = "") |> cat()
 }
 
 
 
 #' Check if your Oauth 2.0 token is expired and needs to be refreshed
 #'
-#' @return A boolean.
+#' @return logical.
 #' @keywords internal
-#'
+#' @noRd
 #'
 #' @examples is_expired()
 is_expired <- function() {
+
+  # input validation -----------------------------------------------------------
+
+  if(exists(".sig") == FALSE) {
+
+    "Error: OAuth 2.0 token does not exist. Run `get_oauth2token()` first." |> stop()
+  }
+
+  # main -----------------------------------------------------------------------
 
   base_url <- "https://api.netatmo.com/api/getpublicdata"
 
@@ -97,7 +124,7 @@ is_expired <- function() {
   r_json <- httr::content(r_raw, "text") |> jsonlite::fromJSON()
 
   # return boolean
-  if (r_raw$status_code == 403 && r_json$error$message == "Access token expired") {
+  if (r_raw[["status_code"]] == 403 && r_json[["error"]][["message"]] == "Access token expired") {
 
     TRUE
 
@@ -111,11 +138,21 @@ is_expired <- function() {
 
 #' Refresh your access token using the refresh token
 #'
-#' @return The refreshed token.
+#' @return Refreshed token.
 #' @keywords internal
+#' @noRd
 #'
 #' @examples refresh_at()
 refresh_at <- function() {
 
-  .sig$auth_token$refresh()
+  # input validation -----------------------------------------------------------
+
+  if(exists(".sig") == FALSE) {
+
+    "Error: OAuth 2.0 token does not exist. Run `get_oauth2token()` first." |> stop()
+  }
+
+  # main -----------------------------------------------------------------------
+
+  .sig[["auth_token"]]$refresh()
 }

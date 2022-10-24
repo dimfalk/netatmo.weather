@@ -5,7 +5,7 @@
 #'   or string of nchar 5 representing a postal zip code.
 #' @param epsg (optional) Coordinate reference system definition.
 #'
-#' @return An object of type `sfc_POLYGON`.
+#' @return Object of type `sfc_POLYGON`.
 #' @export
 #'
 #' @examples
@@ -26,9 +26,15 @@ get_extent <- function(x,
 
   # input validation -----------------------------------------------------------
 
+  checkmate::assert(
 
+    checkmate::testNumeric(x, len = 4, any.missing = FALSE),
+    checkmate::testCharacter(x, len = 1),
+  )
 
-  # vector of length 2 containing numeric representing coordinates -------------
+  # main -----------------------------------------------------------------------
+
+  # vector of length 4 containing numeric representing coordinates -------------
   if (inherits(x, "numeric") && length(x) == 4) {
 
     # prepare object
@@ -79,7 +85,7 @@ get_extent <- function(x,
       bbox <- sf |> sf::st_bbox() |> sf::st_as_sfc()
     }
 
-    # string of length 5 representing a postal zip code ------------------------
+    # string of nchar 5 representing a postal zip code ------------------------
   } else if (inherits(x, "character") && length(x) == 1 && nchar(x) == 5 && !is.na(as.numeric(x)) |> suppressWarnings()) {
 
     sf <- osm_plz_bbox |> dplyr::filter(plz == x)
@@ -113,15 +119,15 @@ get_extent <- function(x,
 #' Construct a vector of length 2 and integer type representing UNIX time
 #'
 #' @param x Leave blank, or "recent", or a vector of length 2 containing from/to timestamps as characters.
-#' @param res Measurement resolution in minutes.
+#' @param res numeric. Measurement resolution in minutes.
 #'
-#' @return A vector of length 2 containing from/to timestamps as UNIX time.
+#' @return numeric. Vector of length 2 containing from/to timestamps as UNIX time.
 #' @export
 #'
 #' @examples
-#' get_period()
-#' get_period(x = "recent")
-#' get_period(x = c("2022-06-01", "2022-06-04"))
+#' p1 <- get_period()
+#' p2 <- get_period(x = "recent")
+#' p3 <- get_period(x = c("2022-06-01", "2022-06-04"))
 get_period <- function(x = NULL,
                        res = 5) {
 
@@ -134,7 +140,14 @@ get_period <- function(x = NULL,
 
   # input validation -----------------------------------------------------------
 
+  allowed_p <- c("recent")
 
+  checkmate::assert(
+
+    checkmate::testNull(x),
+    checkmate::test_choice(x, allowed_p),
+    checkmate::test_character(x, len = 2, n.chars = 10)
+  )
 
   # main -----------------------------------------------------------------------
 
@@ -165,10 +178,8 @@ get_period <- function(x = NULL,
     # throw warning if limit is exceeded
     if (n_queried > 1024) {
 
-      warning(
-        paste0("Based on the defined period ", from, "/", to, " and the chosen resolution (", resolution, " min),
-        you are trying to access ", n_queried, " values. Allowed maximum is 1024. The result may be incomplete.")
-      )
+      paste0("Based on the defined period '", from, "/", to, "' and the chosen resolution '", res, " min',
+             you are trying to access ", n_queried, " values. Allowed maximum is 1024. The result may be incomplete.") |> warning()
     }
   }
 

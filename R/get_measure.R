@@ -1,46 +1,69 @@
 #' Get Netatmo station observations
 #'
-#' @param devices A `sf` object as provided by `get_publicdata()`.
-#' @param par The meteorological parameter to acquire.
-#' @param res Measurement resolution in minutes.
-#' @param period A from/to period vector as provided by `get_period()`.
+#' @param devices Sf object as provided by `get_publicdata()`.
+#' @param period numeric. From/to period vector as provided by `get_period()`.
+#' @param par character. Meteorological parameter to query.
+#' @param res numeric. Measurement resolution in minutes.
 #'
-#' @return A list of `xts` objects.
+#' @return List of `xts` objects.
 #' @export
 #'
 #' @examples
 #' get_oauth2token("oauth.cfg")
 #'
-#' get_measure(stations, par = "pressure")
-#' get_measure(stations, par = "temperature", res = 30, period = "recent")
-#' get_measure(stations, par = "sum_rain", res = 60, period = c("2022-06-06", "2022-06-08"))
+#' e <- get_extent(x = c(6.89, 51.34, 7.13, 51.53))
+#' stations <- get_publicdata(ext = e)
+#'
+#' p1 <- get_period()
+#' p2 <- get_period(x = "recent")
+#' p3 <- get_period(x = c("2022-06-06", "2022-06-08"))
+#'
+#' get_measure(stations, period = p1, par = "pressure")
+#' get_measure(stations, period = p2, par = "temperature", res = 30)
+#' get_measure(stations, period = p3, par = "sum_rain", res = 60)
 get_measure <- function(devices,
+                        period = NULL,
                         par = NULL,
-                        res = 5,
-                        period = NULL) {
+                        res = 5) {
 
   # debugging ------------------------------------------------------------------
 
   # devices <- stations
+  # period <- get_period()
+  # period <- get_period(x = "recent")
+  # period <- get_period(x = c("2022-06-06", "2022-06-08"))
   # par <- "sum_rain"
   # res <- 5
-  # period <- NULL
-  # period <- "recent"
-  # period <- c("2022-04-01", "2022-04-06")
 
   # input validation -----------------------------------------------------------
+
+  if(exists(".sig") == FALSE) {
+
+    "Error: OAuth 2.0 token does not exist. Run `get_oauth2token()` first." |> stop()
+  }
+
+  checkmate::assert_class(devices, c("sf", "tbl_df", "tbl", "data.frame"))
+
+  checkmate::assert_numeric(period, len = 2)
+
+  checkmate::assert_character(par, len = 1)
 
   allowed_par <- c("pressure", "min_pressure", "max_pressure", "temperature",
                    "min_temp", "max_temp", "humidity", "min_hum", "max_hum",
                    "windstrength", "windangle", "guststrength", "gustangle",
                    "sum_rain")
 
-  checkmate::assert_character(par, len = 1)
   checkmate::assert_choice(par, allowed_par)
+
+  checkmate::assert_numeric(res, len = 1)
+
+  allowed_res <- c(5, 30, 60, 180, 360, 1440)
+
+  checkmate::assert_choice(res, allowed_res)
 
   # pre-processing -------------------------------------------------------------
 
-  # refresh access token if expired (3 hours after request)
+  # refresh access token if expired
   if (is_expired()) {
 
     refresh_at()
@@ -81,9 +104,6 @@ get_measure <- function(devices,
   # subset devices
   devices_subset <- devices[!is.na(devices[[relevant_module]]), ]
 
-  # period definition
-  period_int <- get_period(input = period, res = res)
-
   #
   base_url <- "https://api.netatmo.com/api/getmeasure"
 
@@ -99,8 +119,8 @@ get_measure <- function(devices,
                       device_id = devices_subset[[i, "base_station"]],
                       scale = res_code,
                       type = par,
-                      date_begin = period_int[1],
-                      date_end = period_int[2],
+                      date_begin = period[1],
+                      date_end = period[2],
                       limit = 1024,
                       optimize = "false",
                       real_time = "true"
@@ -111,8 +131,8 @@ get_measure <- function(devices,
                       module_id = devices_subset[[i, "NAModule1"]],
                       scale = res_code,
                       type = par,
-                      date_begin = period_int[1],
-                      date_end = period_int[2],
+                      date_begin = period[1],
+                      date_end = period[2],
                       limit = 1024,
                       optimize = "false",
                       real_time = "true"
@@ -123,8 +143,8 @@ get_measure <- function(devices,
                       module_id = devices_subset[[i, "NAModule2"]],
                       scale = res_code,
                       type = par,
-                      date_begin = period_int[1],
-                      date_end = period_int[2],
+                      date_begin = period[1],
+                      date_end = period[2],
                       limit = 1024,
                       optimize = "false",
                       real_time = "true"
@@ -135,8 +155,8 @@ get_measure <- function(devices,
                       module_id = devices_subset[[i, "NAModule3"]],
                       scale = res_code,
                       type = par,
-                      date_begin = period_int[1],
-                      date_end = period_int[2],
+                      date_begin = period[1],
+                      date_end = period[2],
                       limit = 1024,
                       optimize = "false",
                       real_time = "true"

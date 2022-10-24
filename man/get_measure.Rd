@@ -4,19 +4,19 @@
 \alias{get_measure}
 \title{Get Netatmo station observations}
 \usage{
-get_measure(devices, par = NULL, res = 5, period = NULL)
+get_measure(devices, period = NULL, par = NULL, res = 5)
 }
 \arguments{
-\item{devices}{A \code{sf} object as provided by \code{get_publicdata()}.}
+\item{devices}{Sf object as provided by \code{get_publicdata()}.}
 
-\item{par}{The meteorological parameter to acquire.}
+\item{period}{numeric. From/to period vector as provided by \code{get_period()}.}
 
-\item{res}{Measurement resolution in minutes.}
+\item{par}{character. Meteorological parameter to query.}
 
-\item{period}{A from/to period vector as provided by \code{get_period()}.}
+\item{res}{numeric. Measurement resolution in minutes.}
 }
 \value{
-A list of \code{xts} objects.
+List of \code{xts} objects.
 }
 \description{
 Get Netatmo station observations
@@ -24,7 +24,14 @@ Get Netatmo station observations
 \examples{
 get_oauth2token("oauth.cfg")
 
-get_measure(stations, par = "pressure")
-get_measure(stations, par = "temperature", res = 30, period = "recent")
-get_measure(stations, par = "sum_rain", res = 60, period = c("2022-06-06", "2022-06-08"))
+e <- get_extent(x = c(6.89, 51.34, 7.13, 51.53))
+stations <- get_publicdata(ext = e)
+
+p1 <- get_period()
+p2 <- get_period(x = "recent")
+p3 <- get_period(x = c("2022-06-06", "2022-06-08"))
+
+get_measure(stations, period = p1, par = "pressure")
+get_measure(stations, period = p2, par = "temperature", res = 30)
+get_measure(stations, period = p3, par = "sum_rain", res = 60)
 }
