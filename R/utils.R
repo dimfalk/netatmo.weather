@@ -157,13 +157,13 @@ get_period <- function(x = NULL,
   if (is.null(x)) {
 
     to <-  now |> lubridate::floor_date(unit = "hour")
-    from <- (to - 60 * res * 1024)
+    from <- to - 60 * res * 1024
 
     # query the last 24 hours only
   } else if (inherits(x, "character") && length(x) == 1 && x == "recent") {
 
     to <-  now |> lubridate::floor_date(unit = "hour")
-    from <- (to - 60 * 60 * 24)
+    from <- to - 60 * 60 * 24
 
     # in case a vector of timestamps is provided c("YYYY-MM-DD", "YYYY-MM-DD")
   } else if (inherits(x, "character") && all.equal(nchar(x), c(10, 10))) {
