@@ -218,18 +218,18 @@ get_measure <- function(devices,
                                      "min_pressure" = "bar",
                                      "max_pressure" = "bar",
 
-                                     "temperature" = "°C",
-                                     "min_temp" = "°C",
-                                     "max_temp" = "°C",
+                                     "temperature" = "degC",
+                                     "min_temp" = "degC",
+                                     "max_temp" = "degC",
 
                                      "humidity" = "%",
                                      "min_hum" = "%",
                                      "max_hum" = "%",
 
                                      "windstrength" = "m/s",
-                                     "windangle" = "°",
+                                     "windangle" = "deg",
                                      "guststrength" = "m/s",
-                                     "gustangle" = "°",
+                                     "gustangle" = "deg",
 
                                      "sum_rain" = "mm")
 

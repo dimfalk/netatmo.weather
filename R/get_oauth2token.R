@@ -31,9 +31,9 @@ get_oauth2token <- function(file) {
                                    app,
                                    scope = "read_station")
 
-  .sig <<- NULL
-
-  assign(".sig", httr::config(token = af_token), envir = .GlobalEnv)
+  # assigning locally beforehand quiets concerns of R CMD check
+  .sig <- httr::config(token = af_token)
+  .sig <<- .sig
 
   message("Note: OAuth 2.0 token has been successfully created as `.sig`.")
 }

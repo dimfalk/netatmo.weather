@@ -188,6 +188,7 @@ get_period <- function(x = NULL,
 }
 
 
+
 #' Parse json response from `get_publicdata()` call to sf object
 #'
 #' @param json The json object returned by the API.
@@ -269,3 +270,8 @@ gpd_json2sf <- function(json) {
                                           crs = 4326,
                                           agr = "identity")
 }
+
+
+
+# quiets concerns of R CMD check
+utils::globalVariables(c("vg250_gem_bbox", "GEN", "osm_plz_bbox", "plz", ".sig"))
