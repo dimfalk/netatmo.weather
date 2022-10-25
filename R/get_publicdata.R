@@ -37,7 +37,10 @@ get_publicdata <- function(ext,
   # pre-processing -------------------------------------------------------------
 
   # abort if no connection is available
-  stopifnot(curl::has_internet())
+  stopifnot("No internet connection available." = curl::has_internet())
+
+  # abort if target host is not available
+  stopifnot("`api.netatmo.com` is not available." = curl::nslookup("api.netatmo.com") == "51.145.143.28")
 
   # refresh access token if expired
   if (is_expired()) {
