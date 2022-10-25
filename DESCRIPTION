@@ -3,7 +3,7 @@ Title: R interface to access the weather API at dev.netatmo.com
 Version: 0.1
 Authors@R: 
     person("Dimitri", "Falk", , "falk.dimitri@eglv.de", role = c("aut", "cre"))
-Description: Obtain metadata and measurements from Netatmo stations.
+Description: Obtain station locations, metadata and measurements from Netatmo stations for the region specified
 License: GPL (>= 3)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
@@ -11,6 +11,7 @@ RoxygenNote: 7.2.1
 Depends: R (>= 4.2.0)
 Imports: 
     checkmate,
+    curl,
     dplyr,
     httr,
     jsonlite,

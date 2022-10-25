@@ -36,6 +36,9 @@ get_publicdata <- function(ext,
 
   # pre-processing -------------------------------------------------------------
 
+  # abort if no connection is available
+  stopifnot(curl::has_internet())
+
   # refresh access token if expired
   if (is_expired()) {
 
