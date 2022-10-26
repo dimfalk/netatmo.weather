@@ -57,7 +57,7 @@ get_oauth2token("oauth.cfg")
 
 9) Your token is stored in the `.httr-oauth` file in your package directory and as `.sig` in your R environment. 
 
-In case you wanted to execute /getpublicdata and /getmeasure API calls from your browser (for debugging reasons or whatever), you'll need to append your access token to your URL ("&access_token=xxx"). You'll also be notified if you try to execute requests with your access token missing.
+In case you wanted to execute **/getpublicdata** and **/getmeasure** API calls from your browser (for debugging reasons or whatever), you'll need to append your access token to your URL ("&access_token=xxx"). You'll also be notified if you try to execute requests with your access token missing.
 
 You can access your access and refresh token consisting of a key and secret making use of little helpers provided:
 

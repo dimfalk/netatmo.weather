@@ -1,31 +1,30 @@
 #' Create an Oauth 2.0 token for api.netatmo.net
-#'
-#' @param file character. Full path to oauth configuration file.
-#'
+
 #' @return Request object containing the Oauth 2.0 token.
 #' @export
 #'
-#' @examples get_oauth2token("oauth.cfg")
-get_oauth2token <- function(file) {
-
-  # debugging ------------------------------------------------------------------
-
-  # file <- "oauth.cfg"
+#' @examples get_oauth2token()
+get_oauth2token <- function() {
 
   # input validation -----------------------------------------------------------
 
-  checkmate::assert_file_exists(file)
+  # abort if no connection is available
+  stopifnot("Internet connection is not available." = curl::has_internet())
+
+  # abort if target host is not available
+  stopifnot("`api.netatmo.com` is not available." = curl::nslookup("api.netatmo.net") == "51.145.143.28")
+
+  # abort if app technical parameters are missing, c.f. https://dev.netatmo.com/
+  stopifnot("Client ID and secret are missing. Run `set_credentials()` first." = any(keyring::keyring_list()[["keyring"]] == "netatmo"))
 
   # main -----------------------------------------------------------------------
 
   ep <- httr::oauth_endpoint(authorize = "https://api.netatmo.net/oauth2/authorize",
                              access = "https://api.netatmo.net/oauth2/token")
 
-  cfg <- jsonlite::fromJSON(file)
-
-  app <- httr::oauth_app(appname = cfg[["app_name"]],
-                         key = cfg[["client_ID"]],
-                         secret = cfg[["client_secret"]])
+  app <- httr::oauth_app(appname = keyring::key_get("name", keyring = "netatmo"),
+                         key = keyring::key_get("id", keyring = "netatmo"),
+                         secret = keyring::key_get("secret", keyring = "netatmo"))
 
   af_token <- httr::oauth2.0_token(ep,
                                    app,
@@ -35,7 +34,7 @@ get_oauth2token <- function(file) {
   .sig <- httr::config(token = af_token)
   .sig <<- .sig
 
-  message("Note: OAuth 2.0 token has been successfully created as `.sig`.")
+  message("Note: OAuth 2.0 token successfully created as `.sig`.")
 }
 
 
@@ -50,10 +49,8 @@ print_at <- function() {
 
   # input validation -----------------------------------------------------------
 
-  if(exists(".sig") == FALSE) {
-
-    "Error: OAuth 2.0 token does not exist. Run `get_oauth2token()` first." |> stop()
-  }
+  # abort if token is not available
+  stopifnot("OAuth 2.0 token is missing. Run `get_oauth2token()` first." = file.exists(".httr-oauth") || exists(".sig"))
 
   # main -----------------------------------------------------------------------
 
@@ -74,10 +71,8 @@ print_rt <- function() {
 
   # input validation -----------------------------------------------------------
 
-  if(exists(".sig") == FALSE) {
-
-    "Error: OAuth 2.0 token does not exist. Run `get_oauth2token()` first." |> stop()
-  }
+  # abort if token is not available
+  stopifnot("OAuth 2.0 token is missing. Run `get_oauth2token()` first." = file.exists(".httr-oauth") || exists(".sig"))
 
   # main -----------------------------------------------------------------------
 
@@ -99,10 +94,14 @@ is_expired <- function() {
 
   # input validation -----------------------------------------------------------
 
-  if(exists(".sig") == FALSE) {
+  # abort if no connection is available
+  stopifnot("Internet connection is not available." = curl::has_internet())
 
-    "Error: OAuth 2.0 token does not exist. Run `get_oauth2token()` first." |> stop()
-  }
+  # abort if target host is not available
+  stopifnot("`api.netatmo.com` is not available." = curl::nslookup("api.netatmo.net") == "51.145.143.28")
+
+  # abort if token is not available
+  stopifnot("OAuth 2.0 token is missing. Run `get_oauth2token()` first." = file.exists(".httr-oauth") || exists(".sig"))
 
   # main -----------------------------------------------------------------------
 
@@ -147,10 +146,14 @@ refresh_at <- function() {
 
   # input validation -----------------------------------------------------------
 
-  if(exists(".sig") == FALSE) {
+  # abort if no connection is available
+  stopifnot("Internet connection is not available." = curl::has_internet())
 
-    "Error: OAuth 2.0 token does not exist. Run `get_oauth2token()` first." |> stop()
-  }
+  # abort if target host is not available
+  stopifnot("`api.netatmo.com` is not available." = curl::nslookup("api.netatmo.net") == "51.145.143.28")
+
+  # abort if token is not available
+  stopifnot("OAuth 2.0 token is missing. Run `get_oauth2token()` first." = file.exists(".httr-oauth") || exists(".sig"))
 
   # main -----------------------------------------------------------------------
 

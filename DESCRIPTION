@@ -15,6 +15,7 @@ Imports:
     dplyr,
     httr,
     jsonlite,
+    keyring,
     lubridate,
     purrr,
     sf,

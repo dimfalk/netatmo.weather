@@ -13,7 +13,7 @@
 #' e2 <- get_extent(x = c(353034.1, 5689295.3, 370288.6, 5710875.9), epsg = 25832)
 #' e3 <- get_extent(x = "Essen")
 #' e4 <- get_extent(x = "45145")
-get_extent <- function(x,
+get_extent <- function(x = NULL,
                        epsg = 4326) {
 
   # debugging ------------------------------------------------------------------

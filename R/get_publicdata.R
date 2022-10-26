@@ -13,7 +13,7 @@
 #'
 #' stations <- get_publicdata(ext = e)
 #' stations <- get_publicdata(ext = e, use_tiles = TRUE)
-get_publicdata <- function(ext,
+get_publicdata <- function(ext = NULL,
                            use_tiles = FALSE) {
 
   # debugging ------------------------------------------------------------------
@@ -25,22 +25,20 @@ get_publicdata <- function(ext,
 
   # input validation -----------------------------------------------------------
 
-  if(exists(".sig") == FALSE) {
-
-    "Error: OAuth 2.0 token does not exist. Run `get_oauth2token()` first." |> stop()
-  }
-
   checkmate::assert_class(ext, c("sfc_POLYGON", "sfc"))
 
   checkmate::assert_logical(use_tiles)
 
-  # pre-processing -------------------------------------------------------------
-
   # abort if no connection is available
-  stopifnot("No internet connection available." = curl::has_internet())
+  stopifnot("Internet connection is not available." = curl::has_internet())
 
   # abort if target host is not available
   stopifnot("`api.netatmo.com` is not available." = curl::nslookup("api.netatmo.com") == "51.145.143.28")
+
+  # abort if token is not available
+  stopifnot("OAuth 2.0 token is missing. Run `get_oauth2token()` first." = file.exists(".httr-oauth") || exists(".sig"))
+
+  # pre-processing -------------------------------------------------------------
 
   # refresh access token if expired
   if (is_expired()) {
