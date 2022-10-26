@@ -18,7 +18,7 @@ Sf object containing station metadata and geometries.
 Get Netatmo station locations enriched with metadata
 }
 \examples{
-get_oauth2token("oauth.cfg")
+get_oauth2token()
 
 e <- get_extent(x = c(6.89, 51.34, 7.13, 51.53))
 

@@ -45,7 +45,8 @@ get_oauth2token <- function() {
 #' @return character. Access token representation.
 #' @export
 #'
-#' @examples print_at()
+#' @examples
+#' print_at()
 print_at <- function() {
 
   # input validation -----------------------------------------------------------
@@ -67,7 +68,8 @@ print_at <- function() {
 #' @return character. Refresh token representation.
 #' @export
 #'
-#' @examples print_rt()
+#' @examples
+#' print_rt()
 print_rt <- function() {
 
   # input validation -----------------------------------------------------------
@@ -90,7 +92,8 @@ print_rt <- function() {
 #' @keywords internal
 #' @noRd
 #'
-#' @examples is_expired()
+#' @examples
+#' is_expired()
 is_expired <- function() {
 
   # input validation -----------------------------------------------------------
@@ -142,7 +145,8 @@ is_expired <- function() {
 #' @keywords internal
 #' @noRd
 #'
-#' @examples refresh_at()
+#' @examples
+#' refresh_at()
 refresh_at <- function() {
 
   # input validation -----------------------------------------------------------
