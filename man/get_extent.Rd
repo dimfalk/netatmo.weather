@@ -4,7 +4,7 @@
 \alias{get_extent}
 \title{Construct an object of type bbox based on user input}
 \usage{
-get_extent(x, epsg = 4326)
+get_extent(x = NULL, epsg = 4326)
 }
 \arguments{
 \item{x}{Vector of length 4 containing numeric representing coordinates (xmin, ymin, xmax, ymax),

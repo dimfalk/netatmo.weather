@@ -4,7 +4,7 @@
 \alias{get_measure}
 \title{Get Netatmo station observations}
 \usage{
-get_measure(devices, period = NULL, par = NULL, res = 5)
+get_measure(devices = NULL, period = NULL, par = NULL, res = 5)
 }
 \arguments{
 \item{devices}{Sf object as provided by \code{get_publicdata()}.}

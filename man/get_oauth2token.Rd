@@ -4,10 +4,7 @@
 \alias{get_oauth2token}
 \title{Create an Oauth 2.0 token for api.netatmo.net}
 \usage{
-get_oauth2token(file)
-}
-\arguments{
-\item{file}{character. Full path to oauth configuration file.}
+get_oauth2token()
 }
 \value{
 Request object containing the Oauth 2.0 token.
@@ -16,5 +13,5 @@ Request object containing the Oauth 2.0 token.
 Create an Oauth 2.0 token for api.netatmo.net
 }
 \examples{
-get_oauth2token("oauth.cfg")
+get_oauth2token()
 }

@@ -3,7 +3,8 @@
 #' @return Request object containing the Oauth 2.0 token.
 #' @export
 #'
-#' @examples get_oauth2token()
+#' @examples
+#' get_oauth2token()
 get_oauth2token <- function() {
 
   # input validation -----------------------------------------------------------

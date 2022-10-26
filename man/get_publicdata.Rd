@@ -4,7 +4,7 @@
 \alias{get_publicdata}
 \title{Get Netatmo station locations enriched with metadata}
 \usage{
-get_publicdata(ext, use_tiles = FALSE)
+get_publicdata(ext = NULL, use_tiles = FALSE)
 }
 \arguments{
 \item{ext}{Object of type \code{sfc_POLYGON}, as provided by \code{get_extent()}.}
