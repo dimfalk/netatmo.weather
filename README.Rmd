@@ -13,7 +13,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-# netatmo-weather
+# netatmo.weather
 
 <!-- badges: start -->
 <!-- badges: end -->
@@ -25,8 +25,8 @@ The goal of netatmo.weather is to provide access to Netatmo measurements and sta
 You can install the development version of netatmo.weather from [GitHub](https://github.com/) with:
 
 ``` r
-# install.packages("devtools")
-# devtools::install_github("falk-env/netatmo.weather")
+install.packages("devtools")
+devtools::install_github("falk-env/netatmo.weather")
 ```
 
 and load the package via
@@ -41,30 +41,28 @@ library(netatmo.weather)
 
 In order to be able to access data, please follow the subsequent steps:
 
-1) Register a user account at [auth.netatmo.com](https://auth.netatmo.com/access/signup).
+1) Register a user account at [auth.netatmo.com](https://auth.netatmo.com/access/signup) and login at [dev.netatmo.com](https://auth.netatmo.com/de-de/access/login?next_url=https%3A%2F%2Fdev.netatmo.com%2F).
 
-2) Login at [dev.netatmo.com](https://auth.netatmo.com/de-de/access/login?next_url=https%3A%2F%2Fdev.netatmo.com%2F).
+2) Click on your username in the upper right corner and create a new application. Provide mandatory information (*) and save.
 
-3) Click on your username in the upper right corner and create a new application. Provide mandatory information (*) and save.
+3) Credentials will be stored making use of `{keyring}`. To securely encrypt your secrets stored, it is necessary to define a master password in your R user environment, which can be edited via `file.edit("~/.Renviron")`. Create a new environment variable called `keyring_pw`. The new line added now looks something like `keyring_pw = "insert_your_strong_password_here_123!"`. You can also create a password using e.g. `{sodium}` with `keygen() |> bin2hex()`. Restart R to see changes.
 
-4) Credentials will be stored making use of `{keyring}`. To securely encrypt your secrets stored, it is necessary to define a master password in your R user environment, which can be edited via `file.edit("~/.Renviron")`. Create a new environment variable called `keyring_pw`. The new line added now looks something like `keyring_pw = "insert_your_strong_password_here_123!"`. You can also create a password using e.g. `{sodium}` with `keygen() |> bin2hex()`. Restart R to see changes.
+4) Run `set_credentials()` and copy & paste the information necessary (name/id/secret), as supplied in 2) .
 
-5) Run `set_credentials()` and provide the information necessary (name/id/secret), as supplied in 3) .
-
-```
+``` r
 set_credentials()
 #> Note: Keyring 'netatmo' successfully created.
 ```
 
-6) Run `get_oauth2token()` to create an Oauth 2 token based on the specifications provided in 5).
+5) Run `get_oauth2token()` to create an Oauth 2 token based on the specifications provided in 4).
 
 ```{r}
 get_oauth2token()
 ```
 
-7) When asked, whether you want to use a local file to cache OAuth access credentials between R sessions, choose "1: Yes".
+6) When asked, whether you want to use a local file to cache OAuth access credentials between R sessions, choose "1: Yes".
 
-8) You'll be redirected to your browser to grant access to your application. Accept and close the browser tab.
+7) You'll be redirected to your browser to grant access to your application. Accept and close the browser tab.
 
 Note: `get_oauth2token()` is limited to `"read_station"` scope. Successful authentication is confirmed in the browser. Your token is now stored in `.httr-oauth` in your package directory and as `.sig` in your R environment. 
 
@@ -72,7 +70,7 @@ In case you wanted to execute **/getpublicdata** and **/getmeasure** API calls f
 
 You can access your access and refresh token consisting of a key and secret making use of little helpers provided:
 
-```
+``` r
 print_at()
 #> "&access_token=62361e03ca18e13802546z20|5dt2091f1693dbff35f0428f2386b492"
 
@@ -82,7 +80,7 @@ print_rt()
 
 Token expire after 3 hours and have to be refreshed again in order to be used. `{netatmo.weather}` does so in the background automatically without the user noticing. But if you're using your access token in a browser session temporarily, make use of these little helpers provided:
 
-```
+``` r
 is_expired()
 #> TRUE
 
@@ -133,7 +131,8 @@ head(stations, 10)
 However, since the number of stations returned by /getpublicdata seems to be influenced by the size of the area queried, the logical argument `use_tiles` was implemented, slicing your area of interest in tiles à 0.05 degrees to be queried separately in order to ensure the maximum number of available stations.
 
 ```{r}
-stations_tiled <- get_publicdata(ext = e1, use_tiles = TRUE)
+stations_tiled <- get_publicdata(ext = e1, 
+                                 use_tiles = TRUE)
 
 # returning a simple feature collection with 628 features using the same extent as above
 dim(stations_tiled)
@@ -154,7 +153,7 @@ To assist you with the latter going backwards from `Sys.time()`, `get_period()` 
 p1 <- get_period()
 as.POSIXct(p1, origin = "1970-01-01")
 
-# hourly data
+# here: `res = 60` corresponding to hourly data
 p2 <- get_period(res = 60)
 as.POSIXct(p2, origin = "1970-01-01")
 
@@ -171,13 +170,18 @@ This can now be used to acquire observations (iterating over previously identifi
 
 ```{r}
 # get subset of data for demonstration purposes
-obs_temperature <- get_measure(devices = stations_tiled[1:10, ], period = p2, par = "temperature", res = 60)
+obs_temperature <- get_measure(devices = stations_tiled[1:10, ], 
+                               period = p2, 
+                               par = "temperature", 
+                               res = 60)
 
 class(obs_temperature)
 length(obs_temperature)
 
 # subset to individual xts object
 xts <- obs_temperature[[1]]
+
+class(xts)
 
 # inspect index/coredata
 head(xts)

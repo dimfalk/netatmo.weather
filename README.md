@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# netatmo-weather
+# netatmo.weather
 
 <!-- badges: start -->
 <!-- badges: end -->
@@ -15,8 +15,8 @@ You can install the development version of netatmo.weather from
 [GitHub](https://github.com/) with:
 
 ``` r
-# install.packages("devtools")
-# devtools::install_github("falk-env/netatmo.weather")
+install.packages("devtools")
+devtools::install_github("falk-env/netatmo.weather")
 ```
 
 and load the package via
@@ -32,15 +32,14 @@ library(netatmo.weather)
 In order to be able to access data, please follow the subsequent steps:
 
 1)  Register a user account at
-    [auth.netatmo.com](https://auth.netatmo.com/access/signup).
-
-2)  Login at
+    [auth.netatmo.com](https://auth.netatmo.com/access/signup) and login
+    at
     [dev.netatmo.com](https://auth.netatmo.com/de-de/access/login?next_url=https%3A%2F%2Fdev.netatmo.com%2F).
 
-3)  Click on your username in the upper right corner and create a new
+2)  Click on your username in the upper right corner and create a new
     application. Provide mandatory information (\*) and save.
 
-4)  Credentials will be stored making use of `{keyring}`. To securely
+3)  Credentials will be stored making use of `{keyring}`. To securely
     encrypt your secrets stored, it is necessary to define a master
     password in your R user environment, which can be edited via
     `file.edit("~/.Renviron")`. Create a new environment variable called
@@ -49,26 +48,26 @@ In order to be able to access data, please follow the subsequent steps:
     create a password using e.g. `{sodium}` with
     `keygen() |> bin2hex()`. Restart R to see changes.
 
-5)  Run `set_credentials()` and provide the information necessary
-    (name/id/secret), as supplied in 3) .
+4)  Run `set_credentials()` and copy & paste the information necessary
+    (name/id/secret), as supplied in 2) .
 
-<!-- -->
+``` r
+set_credentials()
+#> Note: Keyring 'netatmo' successfully created.
+```
 
-    set_credentials()
-    #> Note: Keyring 'netatmo' successfully created.
-
-6)  Run `get_oauth2token()` to create an Oauth 2 token based on the
-    specifications provided in 5).
+5)  Run `get_oauth2token()` to create an Oauth 2 token based on the
+    specifications provided in 4).
 
 ``` r
 get_oauth2token()
 #> Note: OAuth 2.0 token successfully created as `.sig`.
 ```
 
-7)  When asked, whether you want to use a local file to cache OAuth
+6)  When asked, whether you want to use a local file to cache OAuth
     access credentials between R sessions, choose “1: Yes”.
 
-8)  You’ll be redirected to your browser to grant access to your
+7)  You’ll be redirected to your browser to grant access to your
     application. Accept and close the browser tab.
 
 Note: `get_oauth2token()` is limited to `"read_station"` scope.
@@ -85,32 +84,36 @@ missing.
 You can access your access and refresh token consisting of a key and
 secret making use of little helpers provided:
 
-    print_at()
-    #> "&access_token=62361e03ca18e13802546z20|5dt2091f1693dbff35f0428f2386b492"
+``` r
+print_at()
+#> "&access_token=62361e03ca18e13802546z20|5dt2091f1693dbff35f0428f2386b492"
 
-    print_rt()
-    #> "&refresh_token=62361e03ca18e13802546z20|6ce2fb2490a615d58b16e874fz4eb579"
+print_rt()
+#> "&refresh_token=62361e03ca18e13802546z20|6ce2fb2490a615d58b16e874fz4eb579"
+```
 
 Token expire after 3 hours and have to be refreshed again in order to be
 used. `{netatmo.weather}` does so in the background automatically
 without the user noticing. But if you’re using your access token in a
 browser session temporarily, make use of these little helpers provided:
 
-    is_expired()
-    #> TRUE
+``` r
+is_expired()
+#> TRUE
 
-    refresh_at()
-    #> <Token>
-    #> <oauth_endpoint>
-    #>  authorize: https://api.netatmo.net/oauth2/authorize
-    #>  access:    https://api.netatmo.net/oauth2/token
-    #> <oauth_app> de_uhi
-    #>   key:    62361e03ca18e13802546z20
-    #>   secret: <hidden>
-    #> <credentials> scope, access_token, expires_in, expire_in, refresh_token
+refresh_at()
+#> <Token>
+#> <oauth_endpoint>
+#>  authorize: https://api.netatmo.net/oauth2/authorize
+#>  access:    https://api.netatmo.net/oauth2/token
+#> <oauth_app> de_uhi
+#>   key:    62361e03ca18e13802546z20
+#>   secret: <hidden>
+#> <credentials> scope, access_token, expires_in, expire_in, refresh_token
 
-    is_expired()
-    #> FALSE
+is_expired()
+#> FALSE
+```
 
 ### /getpublicdata
 
@@ -159,7 +162,7 @@ stations <- get_publicdata(ext = e1)
 
 # returning a simple feature collection with 309 features
 dim(stations)
-#> [1] 308  15
+#> [1] 307  15
 
 # inspect
 head(stations, 10)
@@ -171,16 +174,16 @@ head(stations, 10)
 #> # A tibble: 10 × 15
 #>    status time_server         base_…¹ timez…² country altit…³ city  street  mark
 #>    <chr>  <dttm>              <chr>   <chr>   <chr>     <int> <chr> <chr>  <int>
-#>  1 ok     2022-10-26 14:37:35 70:ee:… Europe… DE          112 Essen Steel…    10
-#>  2 ok     2022-10-26 14:37:35 70:ee:… Europe… DE          114 Essen Steel…     1
-#>  3 ok     2022-10-26 14:37:35 70:ee:… Europe… DE          108 Essen Herwa…    10
-#>  4 ok     2022-10-26 14:37:35 70:ee:… Europe… DE           76 Essen Graff…    10
-#>  5 ok     2022-10-26 14:37:35 70:ee:… Europe… DE           60 Essen Hengl…     1
-#>  6 ok     2022-10-26 14:37:35 70:ee:… Europe… DE           79 Essen Am Kn…    10
-#>  7 ok     2022-10-26 14:37:35 70:ee:… Europe… DE           69 Essen Notte…     1
-#>  8 ok     2022-10-26 14:37:35 70:ee:… Europe… DE           77 Essen Lohmü…    10
-#>  9 ok     2022-10-26 14:37:35 70:ee:… Europe… DE           76 Essen Lohdi…    10
-#> 10 ok     2022-10-26 14:37:35 70:ee:… Europe… DE           98 Essen Märki…    10
+#>  1 ok     2022-10-26 15:22:10 70:ee:… Europe… DE          112 Essen Steel…    10
+#>  2 ok     2022-10-26 15:22:10 70:ee:… Europe… DE          114 Essen Steel…     1
+#>  3 ok     2022-10-26 15:22:10 70:ee:… Europe… DE          108 Essen Herwa…    10
+#>  4 ok     2022-10-26 15:22:10 70:ee:… Europe… DE           76 Essen Graff…    10
+#>  5 ok     2022-10-26 15:22:10 70:ee:… Europe… DE           60 Essen Hengl…     1
+#>  6 ok     2022-10-26 15:22:10 70:ee:… Europe… DE           79 Essen Am Kn…    10
+#>  7 ok     2022-10-26 15:22:10 70:ee:… Europe… DE           69 Essen Notte…    10
+#>  8 ok     2022-10-26 15:22:10 70:ee:… Europe… DE           77 Essen Lohmü…    10
+#>  9 ok     2022-10-26 15:22:10 70:ee:… Europe… DE           76 Essen Lohdi…    10
+#> 10 ok     2022-10-26 15:22:10 70:ee:… Europe… DE           98 Essen Märki…    10
 #> # … with 6 more variables: n_modules <int>, NAModule1 <chr>, NAModule2 <chr>,
 #> #   NAModule3 <chr>, NAModule4 <lgl>, geometry <POINT [°]>, and abbreviated
 #> #   variable names ¹​base_station, ²​timezone, ³​altitude
@@ -193,13 +196,14 @@ to be influenced by the size of the area queried, the logical argument
 number of available stations.
 
 ``` r
-stations_tiled <- get_publicdata(ext = e1, use_tiles = TRUE)
+stations_tiled <- get_publicdata(ext = e1, 
+                                 use_tiles = TRUE)
 #> Warning: attribute variables are assumed to be spatially constant throughout all
 #> geometries
 
 # returning a simple feature collection with 628 features using the same extent as above
 dim(stations_tiled)
-#> [1] 628  15
+#> [1] 626  15
 
 # inspect
 head(stations_tiled, 10)
@@ -211,16 +215,16 @@ head(stations_tiled, 10)
 #> # A tibble: 10 × 15
 #>    status time_server         base_…¹ timez…² country altit…³ city  street  mark
 #>    <chr>  <dttm>              <chr>   <chr>   <chr>     <int> <chr> <chr>  <int>
-#>  1 ok     2022-10-26 14:38:30 70:ee:… Europe… DE           45 Essen Volck…    10
-#>  2 ok     2022-10-26 14:38:30 70:ee:… Europe… DE           46 Essen Eva-H…    10
-#>  3 ok     2022-10-26 14:38:30 70:ee:… Europe… DE           48 Essen Rings…     1
-#>  4 ok     2022-10-26 14:38:30 70:ee:… Europe… DE           98 Essen Laupe…    10
-#>  5 ok     2022-10-26 14:38:30 70:ee:… Europe… DE           46 Essen Johan…     1
-#>  6 ok     2022-10-26 14:38:30 70:ee:… Europe… DE           64 Essen Meist…    10
-#>  7 ok     2022-10-26 14:38:30 70:ee:… Europe… DE           62 Essen Haupt…    10
-#>  8 ok     2022-10-26 14:38:30 70:ee:… Europe… DE           66 Essen Eiche…    10
-#>  9 ok     2022-10-26 14:38:30 70:ee:… Europe… DE           81 Essen Humme…    10
-#> 10 ok     2022-10-26 14:38:30 70:ee:… Europe… DE           45 Mülh… Bauor…    10
+#>  1 ok     2022-10-26 15:23:03 70:ee:… Europe… DE           45 Essen Volck…    10
+#>  2 ok     2022-10-26 15:23:03 70:ee:… Europe… DE           46 Essen Eva-H…     1
+#>  3 ok     2022-10-26 15:23:03 70:ee:… Europe… DE           48 Essen Rings…     1
+#>  4 ok     2022-10-26 15:23:03 70:ee:… Europe… DE           98 Essen Laupe…    10
+#>  5 ok     2022-10-26 15:23:03 70:ee:… Europe… DE           46 Essen Johan…     1
+#>  6 ok     2022-10-26 15:23:03 70:ee:… Europe… DE           64 Essen Meist…    10
+#>  7 ok     2022-10-26 15:23:03 70:ee:… Europe… DE           62 Essen Haupt…     1
+#>  8 ok     2022-10-26 15:23:03 70:ee:… Europe… DE           66 Essen Eiche…    10
+#>  9 ok     2022-10-26 15:23:03 70:ee:… Europe… DE           81 Essen Humme…     1
+#> 10 ok     2022-10-26 15:23:03 70:ee:… Europe… DE           45 Mülh… Bauor…     1
 #> # … with 6 more variables: n_modules <int>, NAModule1 <chr>, NAModule2 <chr>,
 #> #   NAModule3 <chr>, NAModule4 <lgl>, geometry <POINT [°]>, and abbreviated
 #> #   variable names ¹​base_station, ²​timezone, ³​altitude
@@ -244,17 +248,17 @@ To assist you with the latter going backwards from `Sys.time()`,
 # default: `res = 5`
 p1 <- get_period()
 as.POSIXct(p1, origin = "1970-01-01")
-#> [1] "2022-10-23 00:40:00 CEST" "2022-10-26 14:00:00 CEST"
+#> [1] "2022-10-23 01:40:00 CEST" "2022-10-26 15:00:00 CEST"
 
-# hourly data
+# here: `res = 60` corresponding to hourly data
 p2 <- get_period(res = 60)
 as.POSIXct(p2, origin = "1970-01-01")
-#> [1] "2022-09-13 22:00:00 CEST" "2022-10-26 14:00:00 CEST"
+#> [1] "2022-09-13 23:00:00 CEST" "2022-10-26 15:00:00 CEST"
 
 # querying the last 24 hours, maybe convenient for scheduled jobs
 p3 <- get_period(x = "recent")
 as.POSIXct(p3, origin = "1970-01-01")
-#> [1] "2022-10-25 14:00:00 CEST" "2022-10-26 14:00:00 CEST"
+#> [1] "2022-10-25 15:00:00 CEST" "2022-10-26 15:00:00 CEST"
 
 # self-defined period
 p4 <- get_period(x = c("2022-06-01", "2022-06-04"))
@@ -268,7 +272,10 @@ some time to finish.
 
 ``` r
 # get subset of data for demonstration purposes
-obs_temperature <- get_measure(devices = stations_tiled[1:10, ], period = p2, par = "temperature", res = 60)
+obs_temperature <- get_measure(devices = stations_tiled[1:10, ], 
+                               period = p2, 
+                               par = "temperature", 
+                               res = 60)
 
 class(obs_temperature)
 #> [1] "list"
@@ -278,15 +285,18 @@ length(obs_temperature)
 # subset to individual xts object
 xts <- obs_temperature[[1]]
 
+class(xts)
+#> [1] "xts" "zoo"
+
 # inspect index/coredata
 head(xts)
 #>                     [,1]
-#> 2022-09-13 22:00:00 19.8
 #> 2022-09-13 23:00:00 19.0
 #> 2022-09-14 00:00:00 18.1
 #> 2022-09-14 01:00:00 17.5
 #> 2022-09-14 02:00:00 17.1
 #> 2022-09-14 03:00:00 16.7
+#> 2022-09-14 04:00:00 16.3
 
 # inspect attribute names appended 
 attributes(xts) |> names() |> tail(-3)
