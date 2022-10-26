@@ -25,9 +25,13 @@ get_oauth2token <- function() {
   ep <- httr::oauth_endpoint(authorize = "https://api.netatmo.net/oauth2/authorize",
                              access = "https://api.netatmo.net/oauth2/token")
 
+  keyring::keyring_unlock("netatmo", password = Sys.getenv("keyring_pw"))
+
   app <- httr::oauth_app(appname = keyring::key_get("name", keyring = "netatmo"),
                          key = keyring::key_get("id", keyring = "netatmo"),
                          secret = keyring::key_get("secret", keyring = "netatmo"))
+
+  keyring::keyring_lock("netatmo")
 
   af_token <- httr::oauth2.0_token(ep,
                                    app,

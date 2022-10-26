@@ -32,6 +32,8 @@ set_credentials <- function() {
                      keyring = "netatmo",
                      prompt = "client_secret")
 
+    keyring::keyring_lock("netatmo")
+
     message("Note: Keyring 'netatmo' successfully created.")
   }
 }
