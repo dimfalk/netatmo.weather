@@ -18,7 +18,7 @@ knitr::opts_chunk$set(
 <!-- badges: start -->
 <!-- badges: end -->
 
-The goal of netatmo.weather is to provide access to Netatmo measurements and station metadata making use of the weather API at dev.netatmo.com.
+The goal of netatmo.weather is to provide access to Netatmo measurements and station metadata making use of the Netatmo Weather API.
 
 ## Installation
 

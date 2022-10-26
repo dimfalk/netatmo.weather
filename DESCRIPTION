@@ -1,5 +1,5 @@
 Package: netatmo.weather
-Title: R interface to access the weather API at dev.netatmo.com
+Title: R interface to access the Netatmo Weather API
 Version: 0.2
 Authors@R: 
     person("Dimitri", "Falk", , "falk.dimitri@eglv.de", role = c("aut", "cre"))
