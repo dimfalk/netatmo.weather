@@ -18,46 +18,57 @@ knitr::opts_chunk$set(
 <!-- badges: start -->
 <!-- badges: end -->
 
-The goal of netatmo-weather is to provide access to Netatmo measurements and station metadata making use of the weather API at dev.netatmo.com.
+The goal of netatmo.weather is to provide access to Netatmo measurements and station metadata making use of the weather API at dev.netatmo.com.
 
 ## Installation
 
-You can install the development version of netatmo-weather from [GitHub](https://github.com/) with:
+You can install the development version of netatmo.weather from [GitHub](https://github.com/) with:
 
 ``` r
 # install.packages("devtools")
-# devtools::install_github("falk-env/netatmo-weather")
+# devtools::install_github("falk-env/netatmo.weather")
+```
+
+and load the package via
+
+```{r}
+library(netatmo.weather)
 ```
 
 ## Getting Started
 
 ### Authentication
 
-In order to be able to access data, please follow the subsequent steps carefully:
+In order to be able to access data, please follow the subsequent steps:
 
 1) Register a user account at [auth.netatmo.com](https://auth.netatmo.com/access/signup).
 
 2) Login at [dev.netatmo.com](https://auth.netatmo.com/de-de/access/login?next_url=https%3A%2F%2Fdev.netatmo.com%2F).
 
-3) Click on your username in the upper right corner and create a new application. Provide mandatory information (*).
+3) Click on your username in the upper right corner and create a new application. Provide mandatory information (*) and save.
 
-4) Once saved, rename `example-oauth.cfg` in your package directory to e.g. `oauth.cfg` and replace dummy details with data from your own app (app name, client ID, client secret). 
+4) Credentials will be stored making use of `{keyring}`. To securely encrypt your secrets stored, it is necessary to define a master password in your R user environment, which can be edited via `file.edit("~/.Renviron")`. Create a new environment variable called `keyring_pw`. The new line added now looks something like `keyring_pw = "insert_your_strong_password_here_123!"`. You can also create a password using e.g. `{sodium}` with `keygen() |> bin2hex()`. Restart R to see changes.
 
-5) Execute the following function in order to create a Oauth 2 token.
+5) Run `set_credentials()` and provide the information necessary (name/id/secret), as supplied in 3) .
 
-```{r}
-get_oauth2token("oauth.cfg")
+```
+set_credentials()
+#> Note: Keyring 'netatmo' successfully created.
 ```
 
-6) When asked, whether you want to use a local file to cache OAuth access credentials between R sessions, choose 1: Yes.
+6) Run `get_oauth2token()` to create an Oauth 2 token based on the specifications provided in 5).
 
-7) You'll be redirected to your browser to grant access to your application. Accept. Note: `get_oauth2token()` is limited to `"read_station"` scope.
+```{r}
+get_oauth2token()
+```
 
-8) Successful authentication is confirmed in your browser: "Authentication complete. Please close this page and return to R.".
+7) When asked, whether you want to use a local file to cache OAuth access credentials between R sessions, choose "1: Yes".
 
-9) Your token is stored in the `.httr-oauth` file in your package directory and as `.sig` in your R environment. 
+8) You'll be redirected to your browser to grant access to your application. Accept and close the browser tab.
 
-In case you wanted to execute **/getpublicdata** and **/getmeasure** API calls from your browser (for debugging reasons or whatever), you'll need to append your access token to your URL ("&access_token=xxx"). You'll also be notified if you try to execute requests with your access token missing.
+Note: `get_oauth2token()` is limited to `"read_station"` scope. Successful authentication is confirmed in the browser. Your token is now stored in `.httr-oauth` in your package directory and as `.sig` in your R environment. 
+
+In case you wanted to execute **/getpublicdata** and **/getmeasure** API calls from your browser (for debugging reasons or whatever), you'll need to append your access token to your URL: `"&access_token=xxx"`. You'll also be notified if you try to execute requests with your access token missing.
 
 You can access your access and refresh token consisting of a key and secret making use of little helpers provided:
 
@@ -69,8 +80,7 @@ print_rt()
 #> "&refresh_token=62361e03ca18e13802546z20|6ce2fb2490a615d58b16e874fz4eb579"
 ```
 
-Issued access tokens expire after 3 hours and have to be refreshed again in order to be used. 
-Usually, this is performed in the background without the user noticing. However, you could also check and refresh yourself if you'd like:
+Token expire after 3 hours and have to be refreshed again in order to be used. `{netatmo.weather}` does so in the background automatically without the user noticing. But if you're using your access token in a browser session temporarily, make use of these little helpers provided:
 
 ```
 is_expired()
@@ -92,7 +102,7 @@ is_expired()
 
 ### /getpublicdata
 
-API queries via `get_publicdata()` in order to obtain station metadata require a user-defined bounding box as the main function argument. In order to facilitate this, `get_extent()` was implemented to help you out:
+Queries via `get_publicdata()` to obtain station locations and metadata require a user-defined bounding box as the main function argument. In order to facilitate this, `get_extent()` was implemented to help you out:
 
 ```{r}
 # using coordinates (xmin, ymin, xmax, ymax)
@@ -108,54 +118,60 @@ e3 <- get_extent(x = "45145")
 e3
 ```
 
-This information can now be used to list stations with accordant metadata located in this area (at the time of the query):
+This information can now be used to list stations located in this area (at the time of the query):
 
 ```{r}
 stations <- get_publicdata(ext = e1)
 
-# returning a simple feature collection with 305 features
-stations
+# returning a simple feature collection with 309 features
+dim(stations)
+
+# inspect
+head(stations, 10)
 ```
 
-However, since the number of stations coming from /getpublicdata seems to be influenced by the size of the area queried, the argument `use_tiles` was implemented, slicing your area of interest in tiles à 0.05° to be queried separately in order to ensure the maximum number of available stations.
+However, since the number of stations returned by /getpublicdata seems to be influenced by the size of the area queried, the logical argument `use_tiles` was implemented, slicing your area of interest in tiles à 0.05 degrees to be queried separately in order to ensure the maximum number of available stations.
 
 ```{r}
 stations_tiled <- get_publicdata(ext = e1, use_tiles = TRUE)
 
-# returning a simple feature collection with 635 features using the same extent as above
-stations_tiled
+# returning a simple feature collection with 628 features using the same extent as above
+dim(stations_tiled)
+
+# inspect
+head(stations_tiled, 10)
 ```
 
 ### /getmeasure
 
-API queries via `get_measure()` in order to obtain station observations basically require a base station MAC address to be queried (included in `stations`), the parameter to be queried (e.g. `temperature`, `humudity`, `sum_rain`), the measurement interval in minutes (e.g. `5`, `30`, `60`) and a period encompassing the timestamp of the first and last observation to retrieve in form of the local UNIX time in seconds. 
+Queries via `get_measure()` to obtain station observations basically require a base station MAC address to be queried (included in `stations`), the parameter to be queried (e.g. `temperature`, `humudity`, `sum_rain`, `...`), the measurement interval in minutes (e.g. `5`, `30`, `60`) and a period encompassing the timestamp of the first and last observation to retrieve in form of the local UNIX time in seconds. 
 
 To assist you with the latter going backwards from `Sys.time()`, `get_period()` exists:
 
 ```{r}
 # per default returning the maximum number of observations (1024) as a function of `res` chosen
 # default: `res = 5`
-p1a <- get_period()
-as.POSIXct(p1a, origin = "1970-01-01")
+p1 <- get_period()
+as.POSIXct(p1, origin = "1970-01-01")
 
 # hourly data
-p1b <- get_period(res = 60)
-as.POSIXct(p1b, origin = "1970-01-01")
-
-# querying the last 24 hours, maybe convenient for scheduled jobs
-p2 <- get_period(x = "recent")
+p2 <- get_period(res = 60)
 as.POSIXct(p2, origin = "1970-01-01")
 
-# self-defined period
-p3 <- get_period(x = c("2022-06-01", "2022-06-04"))
+# querying the last 24 hours, maybe convenient for scheduled jobs
+p3 <- get_period(x = "recent")
 as.POSIXct(p3, origin = "1970-01-01")
+
+# self-defined period
+p4 <- get_period(x = c("2022-06-01", "2022-06-04"))
+as.POSIXct(p4, origin = "1970-01-01")
 ```
 
-This can now be used to acquire observations of previously identified stations in form of listed `xts` objects (might take some time to execute):
+This can now be used to acquire observations (iterating over previously identified stations) in form of listed `xts` objects. This might take some time to finish.
 
 ```{r}
-# get data
-obs_temperature <- get_measure(devices = stations_tiled, par = "temperature", res = 60, period = "recent")
+# get subset of data for demonstration purposes
+obs_temperature <- get_measure(devices = stations_tiled[1:10, ], period = p2, par = "temperature", res = 60)
 
 class(obs_temperature)
 length(obs_temperature)
@@ -163,10 +179,11 @@ length(obs_temperature)
 # subset to individual xts object
 xts <- obs_temperature[[1]]
 
+# inspect index/coredata
 head(xts)
 
-plot(xts, col = "red")
+# inspect attribute names appended 
+attributes(xts) |> names() |> tail(-3)
 
-# inspect appended metadata
-attributes(xts)
+plot(xts, main = "hourly air temperatures", col = "red")
 ```

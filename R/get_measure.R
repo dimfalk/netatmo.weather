@@ -188,7 +188,7 @@ get_measure <- function(devices = NULL,
 
     # sleep to prevent http 429: too many requests and
     # http 403 (error code 26): user usage reached (50 req. per 10 s)
-    Sys.sleep(0.25)
+    Sys.sleep(0.5)
 
     # meta data definition
     # subset of basis parameters from `timeseriesIO::xts_init()`
