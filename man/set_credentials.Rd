@@ -13,7 +13,9 @@ environment. creates a new keyring called \code{"netatmo"} with \code{"name"}, \
 Store Netatmo API credentials (name/id/secret) using a \code{keyring}
 }
 \examples{
+\dontrun{
 set_credentials()
+}
 }
 \seealso{
 \code{\link{keyring}}

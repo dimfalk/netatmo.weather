@@ -4,7 +4,9 @@
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' get_oauth2token()
+#' }
 get_oauth2token <- function() {
 
   # input validation -----------------------------------------------------------
@@ -46,7 +48,9 @@ get_oauth2token <- function() {
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' print_at()
+#' }
 print_at <- function() {
 
   # input validation -----------------------------------------------------------
@@ -69,7 +73,9 @@ print_at <- function() {
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' print_rt()
+#' }
 print_rt <- function() {
 
   # input validation -----------------------------------------------------------
@@ -93,7 +99,9 @@ print_rt <- function() {
 #' @noRd
 #'
 #' @examples
+#' \dontrun{
 #' is_expired()
+#' }
 is_expired <- function() {
 
   # input validation -----------------------------------------------------------
@@ -146,7 +154,9 @@ is_expired <- function() {
 #' @noRd
 #'
 #' @examples
+#' \dontrun{
 #' refresh_at()
+#' }
 refresh_at <- function() {
 
   # input validation -----------------------------------------------------------

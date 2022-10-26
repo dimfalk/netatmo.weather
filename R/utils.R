@@ -195,8 +195,12 @@ get_period <- function(x = NULL,
 #'
 #' @return An sf object.
 #' @keywords internal
+#' @noRd
 #'
-#' @examples gpd_json2sf(r_json)
+#' @examples
+#' \dontrun{
+#' gpd_json2sf(r_json)
+#' }
 gpd_json2sf <- function(json) {
 
   # debugging ------------------------------------------------------------------

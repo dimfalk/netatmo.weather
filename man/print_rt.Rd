@@ -13,5 +13,7 @@ character. Refresh token representation.
 Return refresh token to console for further use in a browser
 }
 \examples{
+\dontrun{
 print_rt()
+}
 }

@@ -6,7 +6,9 @@
 #' @seealso \code{\link{keyring}}
 #'
 #' @examples
+#' \dontrun{
 #' set_credentials()
+#' }
 set_credentials <- function() {
 
   if (any(keyring::keyring_list()[["keyring"]] == "netatmo")) {

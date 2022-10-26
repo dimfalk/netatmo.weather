@@ -13,5 +13,7 @@ character. Access token representation.
 Return access token to console for further use in a browser
 }
 \examples{
+\dontrun{
 print_at()
+}
 }

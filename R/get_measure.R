@@ -9,6 +9,7 @@
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' get_oauth2token()
 #'
 #' e <- get_extent(x = c(6.89, 51.34, 7.13, 51.53))
@@ -21,6 +22,7 @@
 #' get_measure(stations, period = p1, par = "pressure")
 #' get_measure(stations, period = p2, par = "temperature", res = 30)
 #' get_measure(stations, period = p3, par = "sum_rain", res = 60)
+#' }
 get_measure <- function(devices = NULL,
                         period = NULL,
                         par = NULL,

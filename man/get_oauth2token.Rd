@@ -13,5 +13,7 @@ Request object containing the Oauth 2.0 token.
 Create an Oauth 2.0 token for api.netatmo.net
 }
 \examples{
+\dontrun{
 get_oauth2token()
+}
 }

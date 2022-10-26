@@ -7,12 +7,14 @@
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' get_oauth2token()
 #'
 #' e <- get_extent(x = c(6.89, 51.34, 7.13, 51.53))
 #'
 #' stations <- get_publicdata(ext = e)
 #' stations <- get_publicdata(ext = e, use_tiles = TRUE)
+#' }
 get_publicdata <- function(ext = NULL,
                            use_tiles = FALSE) {
 

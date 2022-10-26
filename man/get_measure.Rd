@@ -22,6 +22,7 @@ List of \code{xts} objects.
 Get Netatmo station observations
 }
 \examples{
+\dontrun{
 get_oauth2token()
 
 e <- get_extent(x = c(6.89, 51.34, 7.13, 51.53))
@@ -34,4 +35,5 @@ p3 <- get_period(x = c("2022-06-06", "2022-06-08"))
 get_measure(stations, period = p1, par = "pressure")
 get_measure(stations, period = p2, par = "temperature", res = 30)
 get_measure(stations, period = p3, par = "sum_rain", res = 60)
+}
 }
