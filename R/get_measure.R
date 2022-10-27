@@ -172,7 +172,7 @@ get_measure <- function(devices = NULL,
     # main ---------------------------------------------------------------------
 
     # send request
-    r_raw <- httr::GET(url = base_url, query = query, .sig)
+    r_raw <- httr::GET(url = base_url, query = query, config = .sig)
 
     # parse response
     r_json <- httr::content(r_raw, "text") |> jsonlite::fromJSON()

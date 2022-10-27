@@ -133,7 +133,7 @@ is_expired <- function() {
   )
 
   # send request
-  r_raw <- httr::GET(url = base_url, query = query, .sig)
+  r_raw <- httr::GET(url = base_url, query = query, config = .sig)
 
   # parse response to json
   r_json <- httr::content(r_raw, "text") |> jsonlite::fromJSON()
