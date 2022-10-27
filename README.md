@@ -52,7 +52,7 @@ also create a password using e.g. `{sodium}` with
 the key (privately) via `Sys.getenv("KEYRING_PASSWORD")`.
 
 4)  Run `set_credentials()` and copy & paste the information necessary
-    (name/id/secret), as supplied in 2) .
+    (id/secret), as supplied in 2) .
 
 ``` r
 set_credentials()
@@ -109,7 +109,7 @@ refresh_at()
 #> <oauth_endpoint>
 #>  authorize: https://api.netatmo.net/oauth2/authorize
 #>  access:    https://api.netatmo.net/oauth2/token
-#> <oauth_app> de_uhi
+#> <oauth_app> netatmo.weather
 #>   key:    62361e03ca18e13802546z20
 #>   secret: <hidden>
 #> <credentials> scope, access_token, expires_in, expire_in, refresh_token
@@ -165,7 +165,7 @@ stations <- get_publicdata(ext = e1)
 
 # returning a simple feature collection with x features
 dim(stations)
-#> [1] 309  15
+#> [1] 308  15
 
 # inspect
 head(stations, 10)
@@ -177,16 +177,16 @@ head(stations, 10)
 #> # A tibble: 10 × 15
 #>    status time_server         base_…¹ timez…² country altit…³ city  street  mark
 #>    <chr>  <dttm>              <chr>   <chr>   <chr>     <int> <chr> <chr>  <int>
-#>  1 ok     2022-10-27 23:30:22 70:ee:… Europe… DE          112 Essen Steel…    10
-#>  2 ok     2022-10-27 23:30:22 70:ee:… Europe… DE          114 Essen Steel…    10
-#>  3 ok     2022-10-27 23:30:22 70:ee:… Europe… DE          108 Essen Herwa…    10
-#>  4 ok     2022-10-27 23:30:22 70:ee:… Europe… DE           76 Essen Graff…    10
-#>  5 ok     2022-10-27 23:30:22 70:ee:… Europe… DE           60 Essen Hengl…    10
-#>  6 ok     2022-10-27 23:30:22 70:ee:… Europe… DE           79 Essen Am Kn…    10
-#>  7 ok     2022-10-27 23:30:22 70:ee:… Europe… DE           69 Essen Notte…     1
-#>  8 ok     2022-10-27 23:30:22 70:ee:… Europe… DE           77 Essen Lohmü…    10
-#>  9 ok     2022-10-27 23:30:22 70:ee:… Europe… DE           76 Essen Lohdi…     1
-#> 10 ok     2022-10-27 23:30:22 70:ee:… Europe… DE           98 Essen Märki…    10
+#>  1 ok     2022-10-28 00:00:59 70:ee:… Europe… DE          112 Essen Steel…    10
+#>  2 ok     2022-10-28 00:00:59 70:ee:… Europe… DE          114 Essen Steel…    10
+#>  3 ok     2022-10-28 00:00:59 70:ee:… Europe… DE          108 Essen Herwa…    10
+#>  4 ok     2022-10-28 00:00:59 70:ee:… Europe… DE           76 Essen Graff…    10
+#>  5 ok     2022-10-28 00:00:59 70:ee:… Europe… DE           60 Essen Hengl…    10
+#>  6 ok     2022-10-28 00:00:59 70:ee:… Europe… DE           79 Essen Am Kn…    10
+#>  7 ok     2022-10-28 00:00:59 70:ee:… Europe… DE           69 Essen Notte…     1
+#>  8 ok     2022-10-28 00:00:59 70:ee:… Europe… DE           77 Essen Lohmü…    10
+#>  9 ok     2022-10-28 00:00:59 70:ee:… Europe… DE           76 Essen Lohdi…     1
+#> 10 ok     2022-10-28 00:00:59 70:ee:… Europe… DE           98 Essen Märki…    10
 #> # … with 6 more variables: n_modules <int>, NAModule1 <chr>, NAModule2 <chr>,
 #> #   NAModule3 <chr>, NAModule4 <lgl>, geometry <POINT [°]>, and abbreviated
 #> #   variable names ¹​base_station, ²​timezone, ³​altitude
@@ -206,7 +206,7 @@ stations_tiled <- get_publicdata(ext = e1,
 
 # returning a simple feature collection with ca. twice as many features using the same extent as above
 dim(stations_tiled)
-#> [1] 633  15
+#> [1] 632  15
 
 # inspect
 head(stations_tiled, 10)
@@ -218,16 +218,16 @@ head(stations_tiled, 10)
 #> # A tibble: 10 × 15
 #>    status time_server         base_…¹ timez…² country altit…³ city  street  mark
 #>    <chr>  <dttm>              <chr>   <chr>   <chr>     <int> <chr> <chr>  <int>
-#>  1 ok     2022-10-27 23:31:22 70:ee:… Europe… DE           45 Essen Volck…    10
-#>  2 ok     2022-10-27 23:31:22 70:ee:… Europe… DE           46 Essen Eva-H…    10
-#>  3 ok     2022-10-27 23:31:22 70:ee:… Europe… DE           48 Essen Rings…     1
-#>  4 ok     2022-10-27 23:31:22 70:ee:… Europe… DE           98 Essen Laupe…    10
-#>  5 ok     2022-10-27 23:31:22 70:ee:… Europe… DE           46 Essen Johan…     1
-#>  6 ok     2022-10-27 23:31:22 70:ee:… Europe… DE           64 Essen Meist…    10
-#>  7 ok     2022-10-27 23:31:22 70:ee:… Europe… DE           62 Essen Haupt…    10
-#>  8 ok     2022-10-27 23:31:22 70:ee:… Europe… DE           66 Essen Eiche…    10
-#>  9 ok     2022-10-27 23:31:22 70:ee:… Europe… DE           81 Essen Humme…     1
-#> 10 ok     2022-10-27 23:31:22 70:ee:… Europe… DE           45 Mülh… Bauor…    10
+#>  1 ok     2022-10-28 00:01:52 70:ee:… Europe… DE           45 Essen Volck…    10
+#>  2 ok     2022-10-28 00:01:52 70:ee:… Europe… DE           46 Essen Eva-H…    10
+#>  3 ok     2022-10-28 00:01:52 70:ee:… Europe… DE           48 Essen Rings…     1
+#>  4 ok     2022-10-28 00:01:52 70:ee:… Europe… DE           98 Essen Laupe…    10
+#>  5 ok     2022-10-28 00:01:52 70:ee:… Europe… DE           46 Essen Johan…     1
+#>  6 ok     2022-10-28 00:01:52 70:ee:… Europe… DE           64 Essen Meist…    10
+#>  7 ok     2022-10-28 00:01:52 70:ee:… Europe… DE           62 Essen Haupt…    10
+#>  8 ok     2022-10-28 00:01:52 70:ee:… Europe… DE           66 Essen Eiche…    10
+#>  9 ok     2022-10-28 00:01:52 70:ee:… Europe… DE           81 Essen Humme…     1
+#> 10 ok     2022-10-28 00:01:52 70:ee:… Europe… DE           45 Mülh… Bauor…    10
 #> # … with 6 more variables: n_modules <int>, NAModule1 <chr>, NAModule2 <chr>,
 #> #   NAModule3 <chr>, NAModule4 <lgl>, geometry <POINT [°]>, and abbreviated
 #> #   variable names ¹​base_station, ²​timezone, ³​altitude
@@ -251,17 +251,17 @@ To assist you with the latter going backwards from `Sys.time()`,
 # default: `res = 5`
 p1 <- get_period()
 as.POSIXct(p1, origin = "1970-01-01")
-#> [1] "2022-10-24 09:40:00 CEST" "2022-10-27 23:00:00 CEST"
+#> [1] "2022-10-24 10:40:00 CEST" "2022-10-28 00:00:00 CEST"
 
 # here: `res = 60` corresponding to hourly data
 p2 <- get_period(res = 60)
 as.POSIXct(p2, origin = "1970-01-01")
-#> [1] "2022-09-15 07:00:00 CEST" "2022-10-27 23:00:00 CEST"
+#> [1] "2022-09-15 08:00:00 CEST" "2022-10-28 00:00:00 CEST"
 
 # querying the last 24 hours, maybe convenient for scheduled jobs
 p3 <- get_period(x = "recent")
 as.POSIXct(p3, origin = "1970-01-01")
-#> [1] "2022-10-26 23:00:00 CEST" "2022-10-27 23:00:00 CEST"
+#> [1] "2022-10-27 CEST" "2022-10-28 CEST"
 
 # self-defined period
 p4 <- get_period(x = c("2022-06-01", "2022-06-04"))
@@ -294,12 +294,12 @@ class(xts)
 # inspect index/coredata
 head(xts)
 #>                     [,1]
-#> 2022-09-15 07:00:00 12.4
 #> 2022-09-15 08:00:00 13.3
 #> 2022-09-15 09:00:00 14.7
 #> 2022-09-15 10:00:00 16.9
 #> 2022-09-15 11:00:00 18.8
 #> 2022-09-15 12:00:00 19.4
+#> 2022-09-15 13:00:00 18.2
 
 # inspect attribute names appended 
 attributes(xts) |> names() |> tail(-3)

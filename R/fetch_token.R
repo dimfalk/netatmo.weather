@@ -27,7 +27,7 @@ fetch_token <- function() {
 
   keyring::keyring_unlock("netatmo", password = Sys.getenv("KEYRING_PASSWORD"))
 
-  app <- httr::oauth_app(appname = keyring::key_get("name", keyring = "netatmo"),
+  app <- httr::oauth_app(appname = "netatmo.weather",
                          key = keyring::key_get("id", keyring = "netatmo"),
                          secret = keyring::key_get("secret", keyring = "netatmo"))
 

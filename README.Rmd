@@ -49,7 +49,7 @@ In order to be able to access data, please follow the subsequent steps:
 
 The new line added now looks something like `KEYRING_PASSWORD = "insert_your_strong_password_here_123!"`. You can also create a password using e.g. `{sodium}` with `keygen() |> bin2hex()`. Restart R to see changes. Eventually inspect the key (privately) via `Sys.getenv("KEYRING_PASSWORD")`.
 
-4) Run `set_credentials()` and copy & paste the information necessary (name/id/secret), as supplied in 2) .
+4) Run `set_credentials()` and copy & paste the information necessary (id/secret), as supplied in 2) .
 
 ``` r
 set_credentials()
@@ -91,7 +91,7 @@ refresh_at()
 #> <oauth_endpoint>
 #>  authorize: https://api.netatmo.net/oauth2/authorize
 #>  access:    https://api.netatmo.net/oauth2/token
-#> <oauth_app> de_uhi
+#> <oauth_app> netatmo.weather
 #>   key:    62361e03ca18e13802546z20
 #>   secret: <hidden>
 #> <credentials> scope, access_token, expires_in, expire_in, refresh_token
