@@ -65,7 +65,7 @@ get_measure <- function(devices = NULL,
   stopifnot("`api.netatmo.com` is not available." = curl::nslookup("api.netatmo.com") == "51.145.143.28")
 
   # abort if token is not available
-  stopifnot("OAuth 2.0 token is missing. Run `get_oauth2token()` first." = file.exists(".httr-oauth") || exists(".sig"))
+  stopifnot("OAuth 2.0 token is missing. Run `get_oauth2token()` first." = file.exists(".httr-oauth") && exists(".sig"))
 
   # pre-processing -------------------------------------------------------------
 
