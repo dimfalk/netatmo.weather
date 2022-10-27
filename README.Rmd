@@ -45,7 +45,9 @@ In order to be able to access data, please follow the subsequent steps:
 
 2) Click on your username in the upper right corner and create a new application. Provide mandatory information (*) and save.
 
-3) Credentials will be stored making use of `{keyring}`. In order to securely encrypt your secrets stored, it is necessary to define a vault password in your user-level `.Renviron`, which can be edited via `file.edit("~/.Renviron")` or by running `usethis::edit_r_environ()`. Create a new environment variable called `KEYRING_PASSWORD`. The new line added now looks something like `KEYRING_PASSWORD = "insert_your_strong_password_here_123!"`. You can also create a password using e.g. `{sodium}` with `keygen() |> bin2hex()`. Restart R to see changes. Eventually inspect the key (privately) via `Sys.getenv("KEYRING_PASSWORD")`.
+3) Credentials will be stored making use of `{keyring}`. In order to securely encrypt your secrets stored, it is necessary to define a vault password in your user-level `.Renviron`, which can be edited via `file.edit("~/.Renviron")` or by running `usethis::edit_r_environ()`. Create a new environment variable called `KEYRING_PASSWORD`. 
+
+The new line added now looks something like `KEYRING_PASSWORD = "insert_your_strong_password_here_123!"`. You can also create a password using e.g. `{sodium}` with `keygen() |> bin2hex()`. Restart R to see changes. Eventually inspect the key (privately) via `Sys.getenv("KEYRING_PASSWORD")`.
 
 4) Run `set_credentials()` and copy & paste the information necessary (name/id/secret), as supplied in 2) .
 
@@ -121,7 +123,7 @@ This information can now be used to list stations located in this area (at the t
 ```{r}
 stations <- get_publicdata(ext = e1)
 
-# returning a simple feature collection with 310 features
+# returning a simple feature collection with x features
 dim(stations)
 
 # inspect
@@ -134,7 +136,7 @@ However, since the number of stations returned by /getpublicdata seems to be inf
 stations_tiled <- get_publicdata(ext = e1, 
                                  use_tiles = TRUE)
 
-# returning a simple feature collection with 633 features using the same extent as above
+# returning a simple feature collection with ca. twice as many features using the same extent as above
 dim(stations_tiled)
 
 # inspect

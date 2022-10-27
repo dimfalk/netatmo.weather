@@ -43,11 +43,13 @@ In order to be able to access data, please follow the subsequent steps:
     vault password in your user-level `.Renviron`, which can be edited
     via `file.edit("~/.Renviron")` or by running
     `usethis::edit_r_environ()`. Create a new environment variable
-    called `KEYRING_PASSWORD`. The new line added now looks something
-    like `KEYRING_PASSWORD = "insert_your_strong_password_here_123!"`.
-    You can also create a password using e.g. `{sodium}` with
-    `keygen() |> bin2hex()`. Restart R to see changes. Eventually
-    inspect the key (privately) via `Sys.getenv("KEYRING_PASSWORD")`.
+    called `KEYRING_PASSWORD`.
+
+The new line added now looks something like
+`KEYRING_PASSWORD = "insert_your_strong_password_here_123!"`. You can
+also create a password using e.g. `{sodium}` with
+`keygen() |> bin2hex()`. Restart R to see changes. Eventually inspect
+the key (privately) via `Sys.getenv("KEYRING_PASSWORD")`.
 
 4)  Run `set_credentials()` and copy & paste the information necessary
     (name/id/secret), as supplied in 2) .
@@ -161,9 +163,9 @@ This information can now be used to list stations located in this area
 ``` r
 stations <- get_publicdata(ext = e1)
 
-# returning a simple feature collection with 310 features
+# returning a simple feature collection with x features
 dim(stations)
-#> [1] 310  15
+#> [1] 309  15
 
 # inspect
 head(stations, 10)
@@ -175,16 +177,16 @@ head(stations, 10)
 #> # A tibble: 10 × 15
 #>    status time_server         base_…¹ timez…² country altit…³ city  street  mark
 #>    <chr>  <dttm>              <chr>   <chr>   <chr>     <int> <chr> <chr>  <int>
-#>  1 ok     2022-10-27 23:20:16 70:ee:… Europe… DE          112 Essen Steel…    10
-#>  2 ok     2022-10-27 23:20:16 70:ee:… Europe… DE          114 Essen Steel…    10
-#>  3 ok     2022-10-27 23:20:16 70:ee:… Europe… DE          108 Essen Herwa…    10
-#>  4 ok     2022-10-27 23:20:16 70:ee:… Europe… DE           76 Essen Graff…    10
-#>  5 ok     2022-10-27 23:20:16 70:ee:… Europe… DE           60 Essen Hengl…    10
-#>  6 ok     2022-10-27 23:20:16 70:ee:… Europe… DE           79 Essen Am Kn…    10
-#>  7 ok     2022-10-27 23:20:16 70:ee:… Europe… DE           69 Essen Notte…     1
-#>  8 ok     2022-10-27 23:20:16 70:ee:… Europe… DE           77 Essen Lohmü…    10
-#>  9 ok     2022-10-27 23:20:16 70:ee:… Europe… DE           76 Essen Lohdi…     1
-#> 10 ok     2022-10-27 23:20:16 70:ee:… Europe… DE           98 Essen Märki…    10
+#>  1 ok     2022-10-27 23:30:22 70:ee:… Europe… DE          112 Essen Steel…    10
+#>  2 ok     2022-10-27 23:30:22 70:ee:… Europe… DE          114 Essen Steel…    10
+#>  3 ok     2022-10-27 23:30:22 70:ee:… Europe… DE          108 Essen Herwa…    10
+#>  4 ok     2022-10-27 23:30:22 70:ee:… Europe… DE           76 Essen Graff…    10
+#>  5 ok     2022-10-27 23:30:22 70:ee:… Europe… DE           60 Essen Hengl…    10
+#>  6 ok     2022-10-27 23:30:22 70:ee:… Europe… DE           79 Essen Am Kn…    10
+#>  7 ok     2022-10-27 23:30:22 70:ee:… Europe… DE           69 Essen Notte…     1
+#>  8 ok     2022-10-27 23:30:22 70:ee:… Europe… DE           77 Essen Lohmü…    10
+#>  9 ok     2022-10-27 23:30:22 70:ee:… Europe… DE           76 Essen Lohdi…     1
+#> 10 ok     2022-10-27 23:30:22 70:ee:… Europe… DE           98 Essen Märki…    10
 #> # … with 6 more variables: n_modules <int>, NAModule1 <chr>, NAModule2 <chr>,
 #> #   NAModule3 <chr>, NAModule4 <lgl>, geometry <POINT [°]>, and abbreviated
 #> #   variable names ¹​base_station, ²​timezone, ³​altitude
@@ -202,7 +204,7 @@ stations_tiled <- get_publicdata(ext = e1,
 #> Warning: attribute variables are assumed to be spatially constant throughout all
 #> geometries
 
-# returning a simple feature collection with 633 features using the same extent as above
+# returning a simple feature collection with ca. twice as many features using the same extent as above
 dim(stations_tiled)
 #> [1] 633  15
 
@@ -216,16 +218,16 @@ head(stations_tiled, 10)
 #> # A tibble: 10 × 15
 #>    status time_server         base_…¹ timez…² country altit…³ city  street  mark
 #>    <chr>  <dttm>              <chr>   <chr>   <chr>     <int> <chr> <chr>  <int>
-#>  1 ok     2022-10-27 23:21:14 70:ee:… Europe… DE           45 Essen Volck…    10
-#>  2 ok     2022-10-27 23:21:14 70:ee:… Europe… DE           46 Essen Eva-H…    10
-#>  3 ok     2022-10-27 23:21:14 70:ee:… Europe… DE           48 Essen Rings…     1
-#>  4 ok     2022-10-27 23:21:14 70:ee:… Europe… DE           98 Essen Laupe…    10
-#>  5 ok     2022-10-27 23:21:14 70:ee:… Europe… DE           46 Essen Johan…     1
-#>  6 ok     2022-10-27 23:21:14 70:ee:… Europe… DE           64 Essen Meist…    10
-#>  7 ok     2022-10-27 23:21:14 70:ee:… Europe… DE           62 Essen Haupt…    10
-#>  8 ok     2022-10-27 23:21:14 70:ee:… Europe… DE           66 Essen Eiche…    10
-#>  9 ok     2022-10-27 23:21:14 70:ee:… Europe… DE           81 Essen Humme…     1
-#> 10 ok     2022-10-27 23:21:14 70:ee:… Europe… DE           45 Mülh… Bauor…    10
+#>  1 ok     2022-10-27 23:31:22 70:ee:… Europe… DE           45 Essen Volck…    10
+#>  2 ok     2022-10-27 23:31:22 70:ee:… Europe… DE           46 Essen Eva-H…    10
+#>  3 ok     2022-10-27 23:31:22 70:ee:… Europe… DE           48 Essen Rings…     1
+#>  4 ok     2022-10-27 23:31:22 70:ee:… Europe… DE           98 Essen Laupe…    10
+#>  5 ok     2022-10-27 23:31:22 70:ee:… Europe… DE           46 Essen Johan…     1
+#>  6 ok     2022-10-27 23:31:22 70:ee:… Europe… DE           64 Essen Meist…    10
+#>  7 ok     2022-10-27 23:31:22 70:ee:… Europe… DE           62 Essen Haupt…    10
+#>  8 ok     2022-10-27 23:31:22 70:ee:… Europe… DE           66 Essen Eiche…    10
+#>  9 ok     2022-10-27 23:31:22 70:ee:… Europe… DE           81 Essen Humme…     1
+#> 10 ok     2022-10-27 23:31:22 70:ee:… Europe… DE           45 Mülh… Bauor…    10
 #> # … with 6 more variables: n_modules <int>, NAModule1 <chr>, NAModule2 <chr>,
 #> #   NAModule3 <chr>, NAModule4 <lgl>, geometry <POINT [°]>, and abbreviated
 #> #   variable names ¹​base_station, ²​timezone, ³​altitude
