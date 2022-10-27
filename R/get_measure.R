@@ -10,7 +10,7 @@
 #'
 #' @examples
 #' \dontrun{
-#' get_oauth2token()
+#' fetch_token()
 #'
 #' e <- get_extent(x = c(6.89, 51.34, 7.13, 51.53))
 #' stations <- get_publicdata(ext = e)
@@ -65,7 +65,7 @@ get_measure <- function(devices = NULL,
   stopifnot("`api.netatmo.com` is not available." = curl::nslookup("api.netatmo.com") == "51.145.143.28")
 
   # abort if token is not available
-  stopifnot("OAuth 2.0 token is missing. Run `get_oauth2token()` first." = file.exists(".httr-oauth") && exists(".sig"))
+  stopifnot("OAuth 2.0 token is missing. Run `fetch_token()` first." = file.exists(".httr-oauth") && exists(".sig"))
 
   # pre-processing -------------------------------------------------------------
 
@@ -113,7 +113,7 @@ get_measure <- function(devices = NULL,
   #
   base_url <- "https://api.netatmo.com/api/getmeasure"
 
-  # loop over all relevant mac addresses and get measurements
+  # iterate over relevant mac addresses and get measurements
   n <- dim(devices_subset)[1]
 
   for (i in 1:n) {

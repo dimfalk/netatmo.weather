@@ -2,15 +2,15 @@
 % Please edit documentation in R/set_credentials.R
 \name{set_credentials}
 \alias{set_credentials}
-\title{Store Netatmo API credentials (name/id/secret) using a \code{keyring}}
+\title{Store Netatmo API credentials (name/id/secret) using \code{keyring}}
 \usage{
 set_credentials()
 }
 \value{
-environment. creates a new keyring called \code{"netatmo"} with \code{"name"}, \code{"id"}, and \code{"secret"} stored.
+Creates a keyring called \code{"netatmo"} with \code{"name"}, \code{"id"}, and \code{"secret"} stored.
 }
 \description{
-Store Netatmo API credentials (name/id/secret) using a \code{keyring}
+Store Netatmo API credentials (name/id/secret) using \code{keyring}
 }
 \examples{
 \dontrun{

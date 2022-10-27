@@ -23,7 +23,7 @@ Get Netatmo station observations
 }
 \examples{
 \dontrun{
-get_oauth2token()
+fetch_token()
 
 e <- get_extent(x = c(6.89, 51.34, 7.13, 51.53))
 stations <- get_publicdata(ext = e)

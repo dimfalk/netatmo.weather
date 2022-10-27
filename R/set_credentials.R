@@ -1,6 +1,6 @@
-#' Store Netatmo API credentials (name/id/secret) using a `keyring`
+#' Store Netatmo API credentials (name/id/secret) using `keyring`
 #'
-#' @return environment. creates a new keyring called `"netatmo"` with `"name"`, `"id"`, and `"secret"` stored.
+#' @return Creates a keyring called `"netatmo"` with `"name"`, `"id"`, and `"secret"` stored.
 #' @export
 #'
 #' @seealso \code{\link{keyring}}
@@ -18,7 +18,7 @@ set_credentials <- function() {
   } else {
 
     keyring::keyring_create(keyring = "netatmo",
-                            password = Sys.getenv("keyring_pw"))
+                            password = Sys.getenv("KEYRING_PASSWORD"))
 
     keyring::key_set(service = "name",
                      keyring = "netatmo",

@@ -19,7 +19,7 @@ Get Netatmo station locations enriched with metadata
 }
 \examples{
 \dontrun{
-get_oauth2token()
+fetch_token()
 
 e <- get_extent(x = c(6.89, 51.34, 7.13, 51.53))
 

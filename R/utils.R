@@ -118,7 +118,7 @@ get_extent <- function(x = NULL,
 
 #' Construct a vector of length 2 and integer type representing UNIX time
 #'
-#' @param x Leave blank, or "recent", or a vector of length 2 containing from/to timestamps as characters.
+#' @param x NULL, or "recent", or a vector of length 2 containing from/to timestamps as characters.
 #' @param res numeric. Measurement resolution in minutes.
 #'
 #' @return numeric. Vector of length 2 containing from/to timestamps as UNIX time.

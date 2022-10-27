@@ -45,7 +45,7 @@ In order to be able to access data, please follow the subsequent steps:
 
 2) Click on your username in the upper right corner and create a new application. Provide mandatory information (*) and save.
 
-3) Credentials will be stored making use of `{keyring}`. To securely encrypt your secrets stored, it is necessary to define a master password in your R user environment, which can be edited via `file.edit("~/.Renviron")`. Create a new environment variable called `keyring_pw`. The new line added now looks something like `keyring_pw = "insert_your_strong_password_here_123!"`. You can also create a password using e.g. `{sodium}` with `keygen() |> bin2hex()`. Restart R to see changes.
+3) Credentials will be stored making use of `{keyring}`. In order to securely encrypt your secrets stored, it is necessary to define a vault password in your user-level `.Renviron`, which can be edited via `file.edit("~/.Renviron")` or by running `usethis::edit_r_environ()`. Create a new environment variable called `KEYRING_PASSWORD`. The new line added now looks something like `KEYRING_PASSWORD = "insert_your_strong_password_here_123!"`. You can also create a password using e.g. `{sodium}` with `keygen() |> bin2hex()`. Restart R to see changes. Eventually inspect the key (privately) via `Sys.getenv("KEYRING_PASSWORD")`.
 
 4) Run `set_credentials()` and copy & paste the information necessary (name/id/secret), as supplied in 2) .
 
@@ -54,17 +54,17 @@ set_credentials()
 #> Note: Keyring 'netatmo' successfully created.
 ```
 
-5) Run `get_oauth2token()` to create an Oauth 2 token based on the specifications provided in 4).
+5) Run `fetch_token()` to create an Oauth 2 token based on the specifications provided in 4).
 
 ```{r}
-get_oauth2token()
+fetch_token()
 ```
 
 6) When asked, whether you want to use a local file to cache OAuth access credentials between R sessions, choose "1: Yes".
 
 7) You'll be redirected to your browser to grant access to your application. Accept and close the browser tab.
 
-Note: `get_oauth2token()` is limited to `"read_station"` scope. Successful authentication is confirmed in the browser. Your token is now stored in `.httr-oauth` in your package directory and as `.sig` in your R environment. 
+Note: `fetch_token()` is limited to `"read_station"` scope. Successful authentication is confirmed in the browser. Your token is now stored in `.httr-oauth` in your package directory and as `.sig` in your R environment. 
 
 In case you wanted to execute **/getpublicdata** and **/getmeasure** API calls from your browser (for debugging reasons or whatever), you'll need to append your access token to your URL: `"&access_token=xxx"`. You'll also be notified if you try to execute requests with your access token missing.
 
@@ -121,7 +121,7 @@ This information can now be used to list stations located in this area (at the t
 ```{r}
 stations <- get_publicdata(ext = e1)
 
-# returning a simple feature collection with 309 features
+# returning a simple feature collection with 310 features
 dim(stations)
 
 # inspect
@@ -134,7 +134,7 @@ However, since the number of stations returned by /getpublicdata seems to be inf
 stations_tiled <- get_publicdata(ext = e1, 
                                  use_tiles = TRUE)
 
-# returning a simple feature collection with 628 features using the same extent as above
+# returning a simple feature collection with 633 features using the same extent as above
 dim(stations_tiled)
 
 # inspect

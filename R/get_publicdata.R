@@ -8,7 +8,7 @@
 #'
 #' @examples
 #' \dontrun{
-#' get_oauth2token()
+#' fetch_token()
 #'
 #' e <- get_extent(x = c(6.89, 51.34, 7.13, 51.53))
 #'
@@ -38,7 +38,7 @@ get_publicdata <- function(ext = NULL,
   stopifnot("`api.netatmo.com` is not available." = curl::nslookup("api.netatmo.com") == "51.145.143.28")
 
   # abort if token is not available
-  stopifnot("OAuth 2.0 token is missing. Run `get_oauth2token()` first." = file.exists(".httr-oauth") && exists(".sig"))
+  stopifnot("OAuth 2.0 token is missing. Run `fetch_token()` first." = file.exists(".httr-oauth") && exists(".sig"))
 
   # pre-processing -------------------------------------------------------------
 
@@ -85,10 +85,10 @@ get_publicdata <- function(ext = NULL,
                              crs = 4326,
                              square = TRUE)
 
-    # how many tiles needed to cover the user-defined bbox?
-    n_tiles <- length(grid)
+    # interate over individual tiles covering user-defined bbox
+    n <- length(grid)
 
-    for (i in 1:n_tiles) {
+    for (i in 1:n) {
 
       # get bbox of the current tile
       ext_tile <- sf::st_bbox(grid[i])

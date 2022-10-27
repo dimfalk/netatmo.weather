@@ -7,7 +7,7 @@
 get_period(x = NULL, res = 5)
 }
 \arguments{
-\item{x}{Leave blank, or "recent", or a vector of length 2 containing from/to timestamps as characters.}
+\item{x}{NULL, or "recent", or a vector of length 2 containing from/to timestamps as characters.}
 
 \item{res}{numeric. Measurement resolution in minutes.}
 }
