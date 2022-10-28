@@ -163,11 +163,7 @@ This information can now be used to list stations located in this area
 ``` r
 stations <- get_publicdata(ext = e1)
 
-# returning a simple feature collection with x features
-dim(stations)
-#> [1] 306  15
-
-# inspect
+# returning a simple feature collection
 stations
 #> Simple feature collection with 306 features and 14 fields
 #> Geometry type: POINT
@@ -177,16 +173,16 @@ stations
 #> # A tibble: 306 × 15
 #>    status time_server         base_…¹ timez…² country altit…³ city  street  mark
 #>  * <chr>  <dttm>              <chr>   <chr>   <chr>     <int> <chr> <chr>  <int>
-#>  1 ok     2022-10-28 15:43:30 70:ee:… Europe… DE          112 Essen Steel…    10
-#>  2 ok     2022-10-28 15:43:30 70:ee:… Europe… DE          114 Essen Steel…    10
-#>  3 ok     2022-10-28 15:43:30 70:ee:… Europe… DE          108 Essen Herwa…    10
-#>  4 ok     2022-10-28 15:43:30 70:ee:… Europe… DE           76 Essen Graff…    10
-#>  5 ok     2022-10-28 15:43:30 70:ee:… Europe… DE           60 Essen Hengl…    10
-#>  6 ok     2022-10-28 15:43:30 70:ee:… Europe… DE           79 Essen Am Kn…    10
-#>  7 ok     2022-10-28 15:43:30 70:ee:… Europe… DE           69 Essen Notte…    10
-#>  8 ok     2022-10-28 15:43:30 70:ee:… Europe… DE           77 Essen Lohmü…    10
-#>  9 ok     2022-10-28 15:43:30 70:ee:… Europe… DE           76 Essen Lohdi…    10
-#> 10 ok     2022-10-28 15:43:30 70:ee:… Europe… DE           98 Essen Märki…    10
+#>  1 ok     2022-10-28 15:48:21 70:ee:… Europe… DE          112 Essen Steel…    10
+#>  2 ok     2022-10-28 15:48:21 70:ee:… Europe… DE          114 Essen Steel…    10
+#>  3 ok     2022-10-28 15:48:21 70:ee:… Europe… DE          108 Essen Herwa…    10
+#>  4 ok     2022-10-28 15:48:21 70:ee:… Europe… DE           76 Essen Graff…    10
+#>  5 ok     2022-10-28 15:48:21 70:ee:… Europe… DE           60 Essen Hengl…    10
+#>  6 ok     2022-10-28 15:48:21 70:ee:… Europe… DE           79 Essen Am Kn…    10
+#>  7 ok     2022-10-28 15:48:21 70:ee:… Europe… DE           69 Essen Notte…    10
+#>  8 ok     2022-10-28 15:48:21 70:ee:… Europe… DE           77 Essen Lohmü…    10
+#>  9 ok     2022-10-28 15:48:21 70:ee:… Europe… DE           76 Essen Lohdi…    10
+#> 10 ok     2022-10-28 15:48:21 70:ee:… Europe… DE           98 Essen Märki…    10
 #> # … with 296 more rows, 6 more variables: n_modules <int>, NAModule1 <chr>,
 #> #   NAModule2 <chr>, NAModule3 <chr>, NAModule4 <lgl>, geometry <POINT [°]>,
 #> #   and abbreviated variable names ¹​base_station, ²​timezone, ³​altitude
@@ -205,30 +201,26 @@ stations_tiled <- get_publicdata(ext = e1,
 #> geometries
 
 # returning a simple feature collection with ca. twice as many features using the same extent as above
-dim(stations_tiled)
-#> [1] 628  15
-
-# inspect
 stations_tiled
-#> Simple feature collection with 628 features and 14 fields
+#> Simple feature collection with 630 features and 14 fields
 #> Geometry type: POINT
 #> Dimension:     XY
 #> Bounding box:  xmin: 6.890062 ymin: 51.34072 xmax: 7.12971 ymax: 51.52976
 #> Geodetic CRS:  WGS 84
-#> # A tibble: 628 × 15
+#> # A tibble: 630 × 15
 #>    status time_server         base_…¹ timez…² country altit…³ city  street  mark
 #>    <chr>  <dttm>              <chr>   <chr>   <chr>     <int> <chr> <chr>  <int>
-#>  1 ok     2022-10-28 15:44:23 70:ee:… Europe… DE           45 Essen Volck…    10
-#>  2 ok     2022-10-28 15:44:23 70:ee:… Europe… DE           46 Essen Eva-H…    10
-#>  3 ok     2022-10-28 15:44:23 70:ee:… Europe… DE           48 Essen Rings…    10
-#>  4 ok     2022-10-28 15:44:23 70:ee:… Europe… DE           98 Essen Laupe…    10
-#>  5 ok     2022-10-28 15:44:23 70:ee:… Europe… DE           46 Essen Johan…     1
-#>  6 ok     2022-10-28 15:44:23 70:ee:… Europe… DE           64 Essen Meist…    10
-#>  7 ok     2022-10-28 15:44:23 70:ee:… Europe… DE           62 Essen Haupt…     1
-#>  8 ok     2022-10-28 15:44:23 70:ee:… Europe… DE           66 Essen Eiche…    10
-#>  9 ok     2022-10-28 15:44:23 70:ee:… Europe… DE           81 Essen Humme…     1
-#> 10 ok     2022-10-28 15:44:23 70:ee:… Europe… DE           45 Mülh… Bauor…     1
-#> # … with 618 more rows, 6 more variables: n_modules <int>, NAModule1 <chr>,
+#>  1 ok     2022-10-28 15:49:14 70:ee:… Europe… DE           45 Essen Volck…    10
+#>  2 ok     2022-10-28 15:49:14 70:ee:… Europe… DE           46 Essen Eva-H…    10
+#>  3 ok     2022-10-28 15:49:14 70:ee:… Europe… DE           48 Essen Rings…    10
+#>  4 ok     2022-10-28 15:49:14 70:ee:… Europe… DE           98 Essen Laupe…    10
+#>  5 ok     2022-10-28 15:49:14 70:ee:… Europe… DE           46 Essen Johan…     1
+#>  6 ok     2022-10-28 15:49:14 70:ee:… Europe… DE           64 Essen Meist…    10
+#>  7 ok     2022-10-28 15:49:14 70:ee:… Europe… DE           62 Essen Haupt…     1
+#>  8 ok     2022-10-28 15:49:14 70:ee:… Europe… DE           66 Essen Eiche…    10
+#>  9 ok     2022-10-28 15:49:14 70:ee:… Europe… DE           81 Essen Humme…     1
+#> 10 ok     2022-10-28 15:49:14 70:ee:… Europe… DE           45 Mülh… Bauor…     1
+#> # … with 620 more rows, 6 more variables: n_modules <int>, NAModule1 <chr>,
 #> #   NAModule2 <chr>, NAModule3 <chr>, NAModule4 <lgl>, geometry <POINT [°]>,
 #> #   and abbreviated variable names ¹​base_station, ²​timezone, ³​altitude
 ```

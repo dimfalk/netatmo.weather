@@ -123,10 +123,7 @@ This information can now be used to list stations located in this area (at the t
 ```{r}
 stations <- get_publicdata(ext = e1)
 
-# returning a simple feature collection with x features
-dim(stations)
-
-# inspect
+# returning a simple feature collection
 stations
 ```
 
@@ -137,9 +134,6 @@ stations_tiled <- get_publicdata(ext = e1,
                                  tiles = TRUE)
 
 # returning a simple feature collection with ca. twice as many features using the same extent as above
-dim(stations_tiled)
-
-# inspect
 stations_tiled
 ```
 
