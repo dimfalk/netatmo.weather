@@ -130,11 +130,11 @@ dim(stations)
 head(stations, 10)
 ```
 
-However, since the number of stations returned by /getpublicdata seems to be influenced by the size of the area queried, the logical argument `use_tiles` was implemented, slicing your area of interest in tiles à 0.05 degrees to be queried separately in order to ensure the maximum number of available stations.
+However, since the number of stations returned by /getpublicdata seems to be influenced by the size of the area queried, the logical argument `tiles` was implemented, slicing your area of interest in tiles à 0.05 degrees to be queried separately in order to ensure the maximum number of available stations.
 
 ```{r}
 stations_tiled <- get_publicdata(ext = e1, 
-                                 use_tiles = TRUE)
+                                 tiles = TRUE)
 
 # returning a simple feature collection with ca. twice as many features using the same extent as above
 dim(stations_tiled)
@@ -189,7 +189,7 @@ class(xts)
 head(xts)
 
 # inspect attribute names appended 
-attributes(xts) |> names() |> tail(-3)
+attributes(xts) |> names() |> tail(-4)
 
 plot(xts, main = "hourly air temperatures", col = "red")
 ```

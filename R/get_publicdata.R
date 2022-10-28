@@ -1,7 +1,7 @@
 #' Get Netatmo station locations enriched with metadata
 #'
 #' @param ext Object of type `sfc_POLYGON`, as provided by `get_extent()`.
-#' @param use_tiles logical. Should fetching be done in spatial slices? More results are to be expected using `TRUE`.
+#' @param tiles logical. Should fetching be done in spatial slices? More results are to be expected using `TRUE`.
 #'
 #' @return Sf object containing station metadata and geometries.
 #' @export
@@ -13,23 +13,23 @@
 #' e <- get_extent(x = c(6.89, 51.34, 7.13, 51.53))
 #'
 #' stations <- get_publicdata(ext = e)
-#' stations <- get_publicdata(ext = e, use_tiles = TRUE)
+#' stations <- get_publicdata(ext = e, tiles = TRUE)
 #' }
 get_publicdata <- function(ext = NULL,
-                           use_tiles = FALSE) {
+                           tiles = FALSE) {
 
   # debugging ------------------------------------------------------------------
 
   # ext <- get_extent(x = c(6.89, 51.34, 7.13, 51.53))
   # ext <- get_extent(x = "Essen")
   # ext <- get_extent(x = "45145")
-  # use_tiles <- TRUE
+  # tiles <- TRUE
 
   # input validation -----------------------------------------------------------
 
   checkmate::assert_class(ext, c("sfc_POLYGON", "sfc"))
 
-  checkmate::assert_logical(use_tiles)
+  checkmate::assert_logical(tiles)
 
   # abort if no connection is available
   stopifnot("Internet connection is not available." = curl::has_internet())
@@ -53,7 +53,7 @@ get_publicdata <- function(ext = NULL,
   # url definition
   base_url <- "https://api.netatmo.com/api/getpublicdata"
 
-  if (use_tiles == FALSE) {
+  if (tiles == FALSE) {
 
     # query definition
     query <- list(
@@ -77,7 +77,7 @@ get_publicdata <- function(ext = NULL,
     # trim stations to original bounding box again, return sf object
     sf::st_intersection(x = r_sf, y = ext)
 
-  } else if (use_tiles == TRUE) {
+  } else if (tiles == TRUE) {
 
     # construct grid for query slicing
     grid <- sf::st_make_grid(ext,
