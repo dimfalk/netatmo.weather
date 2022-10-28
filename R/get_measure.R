@@ -35,7 +35,9 @@ get_measure <- function(devices = NULL,
   # period <- get_period(x = "recent")
   # period <- get_period(x = c("2022-06-06", "2022-06-08"))
   # par <- "sum_rain"
+  # par <- "temperature"
   # res <- 5
+  # res <- 60
 
   # input validation -----------------------------------------------------------
 
@@ -184,6 +186,9 @@ get_measure <- function(devices = NULL,
     # create xts
     xts <- xts::xts(r_df[["values"]], order.by = r_df[["datetimes"]])
 
+    # assign column name
+    names(xts) <- par
+
     # post-processing ----------------------------------------------------------
 
     # sleep to prevent http 429: too many requests and
@@ -201,13 +206,38 @@ get_measure <- function(devices = NULL,
     attr(xts, "TZONE") <- devices[["timezone"]][i]
 
     attr(xts, "OPERATOR") <- "Netatmo S.A."
+
     attr(xts, "SENS_ID") <- devices_subset[[relevant_module]][i]
-    attr(xts, "PARAMETER") <- par
-    attr(xts, "TS_START") <- as.POSIXct(NA) # TODO
-    attr(xts, "TS_END") <- as.POSIXct(NA) # TODO
+
+    attr(xts, "PARAMETER") <- switch(par,
+
+                                     "pressure" = "pressure",
+                                     "min_pressure" = "pressure",
+                                     "max_pressure" = "pressure",
+
+                                     "temperature" = "air temperature",
+                                     "min_temp" = "air temperature",
+                                     "max_temp" = "air temperature",
+
+                                     "humidity" = "humidity",
+                                     "min_hum" = "humidity",
+                                     "max_hum" = "humidity",
+
+                                     "windstrength" = "wind velocity",
+                                     "windangle" = "wind direction",
+                                     "guststrength" = "wind velocity",
+                                     "gustangle" = "wind direction",
+
+                                     "sum_rain" = "precipitation")
+
+    attr(xts, "TS_START") <- zoo::index(xts) |> utils::head(1)
+
+    attr(xts, "TS_END") <- zoo::index(xts) |> utils::tail(1)
+
     attr(xts, "TS_TYPE") <- "measurement"
 
     attr(xts, "MEAS_INTERVALTYPE") <- TRUE
+
     attr(xts, "MEAS_BLOCKING") <- "right"
 
     attr(xts, "MEAS_RESOLUTION") <- res
