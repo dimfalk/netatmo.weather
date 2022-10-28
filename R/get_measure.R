@@ -47,9 +47,11 @@ get_measure <- function(devices = NULL,
 
   checkmate::assert_character(par, len = 1)
 
-  allowed_par <- c("pressure", "min_pressure", "max_pressure", "temperature",
-                   "min_temp", "max_temp", "humidity", "min_hum", "max_hum",
-                   "windstrength", "windangle", "guststrength", "gustangle",
+  allowed_par <- c("temperature", "min_temp", "max_temp",
+                   "humidity", "min_hum", "max_hum",
+                   "pressure", "min_pressure", "max_pressure",
+                   "windstrength", "windangle",
+                   "guststrength", "gustangle",
                    "sum_rain")
 
   checkmate::assert_choice(par, allowed_par)
@@ -80,10 +82,6 @@ get_measure <- function(devices = NULL,
   # parameter mapping
   relevant_module <- switch(par,
 
-                            "pressure" = "base_station",
-                            "min_pressure" = "base_station",
-                            "max_pressure" = "base_station",
-
                             "temperature" = "NAModule1",
                             "min_temp" = "NAModule1",
                             "max_temp" = "NAModule1",
@@ -91,6 +89,10 @@ get_measure <- function(devices = NULL,
                             "humidity" = "NAModule1",
                             "min_hum" = "NAModule1",
                             "max_hum" = "NAModule1",
+
+                            "pressure" = "base_station",
+                            "min_pressure" = "base_station",
+                            "max_pressure" = "base_station",
 
                             "windstrength" = "NAModule2",
                             "windangle" = "NAModule2",
@@ -220,10 +222,6 @@ get_measure <- function(devices = NULL,
 
     attr(xts, "PARAMETER") <- switch(par,
 
-                                     "pressure" = "pressure",
-                                     "min_pressure" = "pressure",
-                                     "max_pressure" = "pressure",
-
                                      "temperature" = "air temperature",
                                      "min_temp" = "air temperature",
                                      "max_temp" = "air temperature",
@@ -231,6 +229,10 @@ get_measure <- function(devices = NULL,
                                      "humidity" = "humidity",
                                      "min_hum" = "humidity",
                                      "max_hum" = "humidity",
+
+                                     "pressure" = "pressure",
+                                     "min_pressure" = "pressure",
+                                     "max_pressure" = "pressure",
 
                                      "windstrength" = "wind velocity",
                                      "windangle" = "wind direction",
@@ -253,10 +255,6 @@ get_measure <- function(devices = NULL,
 
     attr(xts, "MEAS_UNIT") <- switch(par,
 
-                                     "pressure" = "bar",
-                                     "min_pressure" = "bar",
-                                     "max_pressure" = "bar",
-
                                      "temperature" = "degC",
                                      "min_temp" = "degC",
                                      "max_temp" = "degC",
@@ -264,6 +262,10 @@ get_measure <- function(devices = NULL,
                                      "humidity" = "%",
                                      "min_hum" = "%",
                                      "max_hum" = "%",
+
+                                     "pressure" = "bar",
+                                     "min_pressure" = "bar",
+                                     "max_pressure" = "bar",
 
                                      "windstrength" = "m/s",
                                      "windangle" = "deg",
@@ -274,10 +276,6 @@ get_measure <- function(devices = NULL,
 
     attr(xts, "MEAS_STATEMENT") <- switch(par,
 
-                                          "pressure" = "mean",
-                                          "min_pressure" = "min",
-                                          "max_pressure" = "max",
-
                                           "temperature" = "mean",
                                           "min_temp" = "min",
                                           "max_temp" = "max",
@@ -285,6 +283,10 @@ get_measure <- function(devices = NULL,
                                           "humidity" = "mean",
                                           "min_hum" = "min",
                                           "max_hum" = "max",
+
+                                          "pressure" = "mean",
+                                          "min_pressure" = "min",
+                                          "max_pressure" = "max",
 
                                           "windstrength" = "mean",
                                           "windangle" = "mean",

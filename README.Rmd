@@ -123,17 +123,15 @@ This information can now be used to list stations located in this area (at the t
 ```{r}
 stations <- get_publicdata(ext = e1)
 
-# returning a simple feature collection
 stations
 ```
 
-However, since the number of stations returned by /getpublicdata seems to be influenced by the size of the area queried, the logical argument `tiles` was implemented, slicing your area of interest in tiles à 0.05 degrees to be queried separately in order to ensure the maximum number of available stations.
+However, since the number of stations returned by **/getpublicdata** seems to be influenced by the size of the area queried, the logical argument `tiles` was implemented, slicing your area of interest in tiles à 0.05 degrees to be queried separately in order to ensure the maximum number of available stations.
 
 ```{r, message = FALSE}
 stations_tiled <- get_publicdata(ext = e1, 
                                  tiles = TRUE)
 
-# returning a simple feature collection with ca. twice as many features using the same extent as above
 stations_tiled
 ```
 
