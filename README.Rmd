@@ -127,12 +127,12 @@ stations <- get_publicdata(ext = e1)
 dim(stations)
 
 # inspect
-head(stations, 10)
+stations
 ```
 
 However, since the number of stations returned by /getpublicdata seems to be influenced by the size of the area queried, the logical argument `tiles` was implemented, slicing your area of interest in tiles à 0.05 degrees to be queried separately in order to ensure the maximum number of available stations.
 
-```{r}
+```{r, message = FALSE}
 stations_tiled <- get_publicdata(ext = e1, 
                                  tiles = TRUE)
 
@@ -140,7 +140,7 @@ stations_tiled <- get_publicdata(ext = e1,
 dim(stations_tiled)
 
 # inspect
-head(stations_tiled, 10)
+stations_tiled
 ```
 
 ### /getmeasure
@@ -170,18 +170,19 @@ as.POSIXct(p4, origin = "1970-01-01")
 
 This can now be used to acquire observations (iterating over previously identified stations) in form of listed `xts` objects. This might take some time to finish.
 
-```{r}
+```{r, message = FALSE}
 # get subset of data for demonstration purposes
-obs_temperature <- get_measure(devices = stations_tiled[1:10, ], 
-                               period = p2, 
-                               par = "temperature", 
-                               res = 60)
+obs <- get_measure(devices = stations_tiled[1:10, ], 
+                   period = p2, 
+                   par = "temperature", 
+                   res = 60)
 
-class(obs_temperature)
-length(obs_temperature)
+class(obs)
+length(obs)
+names(obs)
 
 # subset to individual xts object
-xts <- obs_temperature[[1]]
+xts <- obs[[1]]
 
 class(xts)
 
