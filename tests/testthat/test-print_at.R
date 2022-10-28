@@ -1,6 +1,8 @@
 test_that("Printing AT works.", {
 
+  skip_if_no_token()
+
   expect_output(print_at())
 
-  expect_equal(print_at() |> capture.output(), "&access_token=6.2831853072")
+  expect_equal(print_at() |> capture.output(), "&access_token=")
 })
