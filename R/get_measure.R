@@ -115,9 +115,18 @@ get_measure <- function(devices = NULL,
   #
   base_url <- "https://api.netatmo.com/api/getmeasure"
 
-  # iterate over relevant mac addresses and get measurements
+  # get n, initialize progress bar
   n <- dim(devices_subset)[1]
 
+  pb <- progress::progress_bar$new(format = "(:spin) [:bar] :percent || Iteration: :current/:total || Elapsed time: :elapsedfull",
+                                   total = n,
+                                   complete = "#",
+                                   incomplete = "-",
+                                   current = ">",
+                                   clear = FALSE,
+                                   width = 100)
+
+  # iterate over relevant mac addresses and get measurements
   for (i in 1:n) {
 
     # query construction
@@ -295,6 +304,9 @@ get_measure <- function(devices = NULL,
 
       xtslist[[i]] <- xts
     }
+
+    # updates current state of progress bar
+    pb$tick()
   }
 
   # definition of unique names

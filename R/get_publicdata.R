@@ -85,9 +85,18 @@ get_publicdata <- function(ext = NULL,
                              crs = 4326,
                              square = TRUE)
 
-    # interate over individual tiles covering user-defined bbox
+    # get n, initialize progress bar
     n <- length(grid)
 
+    pb <- progress::progress_bar$new(format = "(:spin) [:bar] :percent || Iteration: :current/:total || Elapsed time: :elapsedfull",
+                                     total = n,
+                                     complete = "#",
+                                     incomplete = "-",
+                                     current = ">",
+                                     clear = FALSE,
+                                     width = 100)
+
+    # iterate over individual tiles covering user-defined bbox
     for (i in 1:n) {
 
       # get bbox of the current tile
@@ -136,6 +145,9 @@ get_publicdata <- function(ext = NULL,
 
         temp <- rbind(temp, r_sf)
       }
+
+      # updates current state of progress bar
+      pb$tick()
     }
 
     # overwrite time_server values of individual iterations

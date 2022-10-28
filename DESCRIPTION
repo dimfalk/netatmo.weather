@@ -1,6 +1,6 @@
 Package: netatmo.weather
 Title: R interface to access the Netatmo Weather API
-Version: 0.2
+Version: 0.2.1
 Authors@R: 
     person("Dimitri", "Falk", , "falk.dimitri@eglv.de", role = c("aut", "cre"))
 Description: Obtain station locations, metadata and measurements from Netatmo stations for the region specified.
@@ -17,6 +17,7 @@ Imports:
     jsonlite,
     keyring,
     lubridate,
+    progress,
     purrr,
     sf,
     stringr,
