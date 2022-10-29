@@ -41,7 +41,7 @@ get_measure <- function(devices = NULL,
 
   # input validation -----------------------------------------------------------
 
-  checkmate::assert_class(devices, c("sf", "tbl_df", "tbl", "data.frame"))
+  checkmate::assert_class(devices, c("sf", "data.frame"))
 
   checkmate::assert_numeric(period, len = 2)
 
@@ -206,7 +206,7 @@ get_measure <- function(devices = NULL,
 
       paste0("(HTTP status ", code, "): ", r_json[["error"]][["message"]], ".\n",
              "This should never happen with `devices` returned by `get_publicdata()`.\n",
-             "If you provided mac addresses by yourself, check for typos.") |> stop()
+             "If you provided mac addresses by yourself using `set_device()`, check for typos.") |> stop()
     }
 
     # parse json to df

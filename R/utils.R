@@ -189,6 +189,67 @@ get_period <- function(x = NULL,
 
 
 
+#' Manually construct an sf object with user-provided MAC addresses
+#'
+#' @param base_station character. MAC address of Netatmo base station.
+#' @param NAModule1 character. MAC address of Netatmo outdoor module.
+#' @param NAModule2 character. MAC address of Netatmo wind module.
+#' @param NAModule3 character. MAC address of Netatmo precipitation module.
+#' @param lat (optional) numeric. Geodetic latitude in EPSG: 4326.
+#' @param lon (optional) numeric. Geodetic longitude in EPSG: 4326.
+#'
+#' @return Sf object containing relevant MAC addresses for `get_measure()` queries.
+#' @export
+#'
+#' @examples
+#' set_device("70:ee:50:13:54:bc", "02:00:00:13:57:c8", "06:00:00:02:5f:54", "05:00:00:01:48:96")
+set_device <- function(base_station = NULL,
+                       NAModule1 = NULL,
+                       NAModule2 = NULL,
+                       NAModule3 = NULL,
+                       lat = NULL,
+                       lon = NULL) {
+
+  # debugging ------------------------------------------------------------------
+
+  # base_station <- "70:ee:50:13:54:bc"
+  # NAModule1 <- "02:00:00:13:57:c8"
+  # NAModule2 <- "06:00:00:02:5f:54"
+  # NAModule3 <- "05:00:00:01:48:96"
+  # altitude <- 80
+  # lat <- 51.44983
+  # lon <- 7.069292
+
+  # input validation -----------------------------------------------------------
+
+  checkmate::assert_character(base_station, n.chars = 17, pattern = "([a-z0-9]{2}:){5}")
+
+  # main -----------------------------------------------------------------------
+
+  n <- length(base_station)
+
+  temp <- data.frame(status = "man",
+                     time_server = Sys.time(),
+                     base_station = base_station,
+                     timezone = Sys.timezone(),
+                     country = NA,
+                     altitude = NA,
+                     city = NA,
+                     street = NA,
+                     mark = NA,
+                     n_modules = NA,
+                     NAModule1 = NAModule1,
+                     NAModule2 = NAModule2,
+                     NAModule3 = NAModule3,
+                     NAModule4 = NA,
+                     lat = ifelse(is.null(lat), 0, lat),
+                     lon = ifelse(is.null(lon), 0, lon))
+
+  sf::st_as_sf(temp, coords = c("lat", "lon"), crs = "epsg:4326")
+}
+
+
+
 #' Parse json response from `get_publicdata()` call to sf object
 #'
 #' @param json The json object returned by the API.
