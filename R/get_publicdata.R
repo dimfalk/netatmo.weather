@@ -114,6 +114,7 @@ get_publicdata <- function(ext = NULL,
 
       # send request
       r_raw <- httr::GET(url = base_url, query = query, config = .sig)
+      code <- httr::status_code(r_raw)
 
       # parse response
       r_json <- httr::content(r_raw, "text") |> jsonlite::fromJSON()

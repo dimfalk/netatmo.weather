@@ -114,12 +114,22 @@ get_measure <- function(devices = NULL,
   # subset devices
   devices_subset <- devices[!is.na(devices[[relevant_module]]), ]
 
+  # get n
+  n <- dim(devices_subset)[1]
+
+  # abort if there are no stations left after subsetting
+  if (n == 0) {
+
+    paste0("No stations with `", relevant_module,
+           "` present in `devices` being able to provide '", par,
+           "' observations.\n",
+           "Choose another parameter or provide an extended resp. alternative `devices` dataset.") |> stop()
+  }
+
   #
   base_url <- "https://api.netatmo.com/api/getmeasure"
 
-  # get n, initialize progress bar
-  n <- dim(devices_subset)[1]
-
+  # initialize progress bar
   pb <- progress::progress_bar$new(format = "(:spin) [:bar] :percent || Iteration: :current/:total || Elapsed time: :elapsedfull",
                                    total = n,
                                    complete = "#",
@@ -186,9 +196,18 @@ get_measure <- function(devices = NULL,
 
     # send request
     r_raw <- httr::GET(url = base_url, query = query, config = .sig)
+    code <- httr::status_code(r_raw)
 
     # parse response
     r_json <- httr::content(r_raw, "text") |> jsonlite::fromJSON()
+
+    # abort if no device was to be found
+    if (code == 404) {
+
+      paste0("(HTTP status ", code, "): ", r_json[["error"]][["message"]], ".\n",
+             "This should never happen with `devices` returned by `get_publicdata()`.\n",
+             "If you provided mac addresses by yourself, check for typos.") |> stop()
+    }
 
     # parse json to df
     r_df <- data.frame(datetimes = r_json[["body"]] |> names() |> as.numeric() |> as.POSIXct(origin = "1970-01-01"),
