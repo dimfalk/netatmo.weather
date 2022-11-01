@@ -1,6 +1,6 @@
 ## CHANGES IN ... 
 
-## v0.2.2
+## v0.3
 
 * `set_device()` now allows to define arbitrary - but still valid! - MAC addresses to be used with `get_measure()`
 
