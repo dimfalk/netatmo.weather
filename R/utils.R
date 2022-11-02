@@ -250,9 +250,10 @@ set_device <- function(base_station = NULL,
 
 
 
-#' Parse json response from `get_publicdata()` call to sf object
+#' Parse listed response from `get_publicdata()` call to sf object
 #'
-#' @param json The json object returned by the API.
+#' @param x Listed response returned after `jsonlite::fromJSON()` call.
+#' @param meas logical. Should measurements returned by the API also be included?
 #'
 #' @return An sf object.
 #' @keywords internal
@@ -260,73 +261,73 @@ set_device <- function(base_station = NULL,
 #'
 #' @examples
 #' \dontrun{
-#' gpd_json2sf(r_json)
+#' unlist_response(r_list)
 #' }
-gpd_json2sf <- function(json) {
+unlist_response <- function(x, meas = FALSE) {
 
   # debugging ------------------------------------------------------------------
 
-  # json <- r_json
-
-  # input validation -----------------------------------------------------------
-
-  #
+  # x <- r_list
 
   # pre-processing -------------------------------------------------------------
 
-  #
-  n_stations <- dim(json$body)[1]
+  # subset response to main part
+  n <- dim(x[["body"]])[1]
 
-  # init df
-  temp <- data.frame(status = character(n_stations))
+  # init and fill data frame
+  temp <- data.frame(status = character(n))
 
-  temp["status"] <- json$status
-  temp["time_server"] <- json$time_server |> as.POSIXct(origin = "1970-01-01")
+  temp["status"] <- x[["status"]]
+  temp["time_server"] <- x[["time_server"]] |> as.POSIXct(origin = "1970-01-01")
 
-  temp["base_station"] <- json$body$`_id`
+  temp["base_station"] <- x[["body"]][["_id"]]
 
-  temp["x"] <- json$body$place$location |> purrr::map_chr(1) |> as.numeric()
-  temp["y"] <- json$body$place$location |> purrr::map_chr(2) |> as.numeric()
-  temp["timezone"] <- json$body$place$timezone
-  temp["country"] <- json$body$place$country
-  temp["altitude"] <- json$body$place$altitude
-  temp["city"] <- json$body$place$city
-  temp["street"] <- json$body$place$street
+  temp["x"] <- x[["body"]][["place"]][["location"]] |> purrr::map_chr(1) |> as.numeric()
+  temp["y"] <- x[["body"]][["place"]][["location"]] |> purrr::map_chr(2) |> as.numeric()
+  temp["timezone"] <- x[["body"]][["place"]][["timezone"]]
+  temp["country"] <- x[["body"]][["place"]][["country"]]
+  temp["altitude"] <- x[["body"]][["place"]][["altitude"]]
+  temp["city"] <- x[["body"]][["place"]][["city"]]
+  temp["street"] <- x[["body"]][["place"]][["street"]]
 
-  temp["mark"] <- json$body$mark
+  # Flag biased data of outdoor module (temperature/humidity). Not applied on rain and wind gauges observations.
+  # Use case:  Remove data from users using their outdoor module as an additional indoor module or any other weird case.
+  # In order to filter those measurements from the Netatmo weathermap, a mark is computed: 10 = very good, 1 = very bad.
+  temp["mark"] <- x[["body"]][["mark"]]
 
-  temp["n_modules"] <- purrr::map(json$body$modules, length) |> unlist()
+  temp["n_modules"] <- purrr::map(x[["body"]][["modules"]], length) |> unlist()
 
   temp["NAModule1"] <- NA
   temp["NAModule2"] <- NA
   temp["NAModule3"] <- NA
-  temp["NAModule4"] <- NA # TODO: always empty
 
   # main -----------------------------------------------------------------------
 
   ind <- temp[["n_modules"]] |> cumsum()
 
-  for (i in 1:n_stations) {
+  # iterate over base stations
+  for (i in 1:n) {
 
-    module_mac <- json$body$modules[[i]]
+    macs <- x[["body"]][["modules"]][[i]]
 
-    n_modules <- module_mac |> length()
+    n_modules <- macs |> length()
 
     if (i == 1) {
 
-      seq <- 1 : ind[i]
+      seq <- 1:ind[i]
 
     } else {
 
-      seq <- (ind[i-1]+1) : ind[i]
+      seq <- (ind[i-1]+1):ind[i]
     }
 
+    # iterate over associated modules
     for (j in seq) {
 
       # e.g. "NAModule1"
-      module_type <- json$body$module_types[[i, j]]
+      module_type <- x[["body"]][["module_types"]][[i, j]]
 
-      temp[[ module_type ]][i] <- module_mac[which(seq == j)]
+      temp[[module_type]][i] <- macs[which(seq == j)]
     }
   }
 

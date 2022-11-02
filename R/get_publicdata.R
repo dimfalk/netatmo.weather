@@ -68,11 +68,11 @@ get_publicdata <- function(ext = NULL,
     # send request
     r_raw <- httr::GET(url = base_url, query = query, config = .sig)
 
-    # parse response
-    r_json <- httr::content(r_raw, "text") |> jsonlite::fromJSON()
+    # parse response: json to list
+    r_list <- httr::content(r_raw, "text") |> jsonlite::fromJSON()
 
     # parse raw response to sf object and return
-    r_sf <- gpd_json2sf(r_json)
+    r_sf <- unlist_response(r_list)
 
     # trim stations to original bounding box again, return sf object
     sf::st_intersection(x = r_sf, y = ext)
@@ -116,11 +116,11 @@ get_publicdata <- function(ext = NULL,
       r_raw <- httr::GET(url = base_url, query = query, config = .sig)
       code <- httr::status_code(r_raw)
 
-      # parse response
-      r_json <- httr::content(r_raw, "text") |> jsonlite::fromJSON()
+      # parse response: json to list
+      r_list <- httr::content(r_raw, "text") |> jsonlite::fromJSON()
 
       # skip iteration if no objects are returned
-      if (r_json[["body"]] |> length() == 0) {
+      if (r_list[["body"]] |> length() == 0) {
 
         paste0("Note: Query response from tile #", i, " was returned without content.") |> message()
 
@@ -132,7 +132,7 @@ get_publicdata <- function(ext = NULL,
       Sys.sleep(0.5)
 
       # parse raw response to sf object
-      r_sf <- gpd_json2sf(r_json)
+      r_sf <- unlist_response(r_list)
 
       # write sf objects to disk for debugging purposes
       # sf::st_write(sf, paste0("tile_no_", i, ".shp"))
