@@ -126,8 +126,9 @@ get_extent <- function(x = NULL,
 #'
 #' @examples
 #' p1 <- get_period()
-#' p2 <- get_period(x = "recent")
-#' p3 <- get_period(x = c("2022-06-01", "2022-06-04"))
+#' p2 <- get_period(res = 60)
+#' p3 <- get_period(x = "recent")
+#' p4 <- get_period(x = c("2022-06-01", "2022-06-04"))
 get_period <- function(x = NULL,
                        res = 5) {
 
@@ -202,6 +203,7 @@ get_period <- function(x = NULL,
 #' @export
 #'
 #' @examples
+#' set_device("70:ee:50:13:54:bc")
 #' set_device("70:ee:50:13:54:bc", "02:00:00:13:57:c8", "06:00:00:02:5f:54", "05:00:00:01:48:96")
 set_device <- function(base_station = NULL,
                        NAModule1 = NULL,
@@ -216,7 +218,6 @@ set_device <- function(base_station = NULL,
   # NAModule1 <- "02:00:00:13:57:c8"
   # NAModule2 <- "06:00:00:02:5f:54"
   # NAModule3 <- "05:00:00:01:48:96"
-  # altitude <- 80
   # lat <- 51.44983
   # lon <- 7.069292
 
@@ -226,7 +227,11 @@ set_device <- function(base_station = NULL,
 
   # main -----------------------------------------------------------------------
 
-  n <- length(base_station)
+  n_modules <- paste(base_station, NAModule1, NAModule2, NAModule3, sep = " ") |>
+    stringr::str_trim("right") |>
+    stringr::str_split(" ") |>
+    unlist() |>
+    length()
 
   temp <- data.frame(status = "man",
                      time_server = Sys.time(),
@@ -237,15 +242,16 @@ set_device <- function(base_station = NULL,
                      city = NA,
                      street = NA,
                      mark = NA,
-                     n_modules = NA,
-                     NAModule1 = NAModule1,
-                     NAModule2 = NAModule2,
-                     NAModule3 = NAModule3,
-                     NAModule4 = NA,
+                     n_modules = n_modules,
+                     NAModule1 = ifelse(is.null(NAModule1), NA, NAModule1),
+                     NAModule2 = ifelse(is.null(NAModule2), NA, NAModule2),
+                     NAModule3 = ifelse(is.null(NAModule3), NA, NAModule3),
                      lat = ifelse(is.null(lat), 0, lat),
                      lon = ifelse(is.null(lon), 0, lon))
 
-  sf::st_as_sf(temp, coords = c("lat", "lon"), crs = "epsg:4326")
+  tibble::as_tibble(temp) |> sf::st_as_sf(coords = c("lat", "lon"),
+                                          crs = "epsg:4326",
+                                          agr = "identity")
 }
 
 
@@ -253,7 +259,7 @@ set_device <- function(base_station = NULL,
 #' Parse listed response from `get_publicdata()` call to sf object
 #'
 #' @param x Listed response returned after `jsonlite::fromJSON()` call.
-#' @param meas logical. Should measurements returned by the API also be included?
+#' @param meas logical. Should measurements returned by the API be included?
 #'
 #' @return An sf object.
 #' @keywords internal
@@ -262,12 +268,14 @@ set_device <- function(base_station = NULL,
 #' @examples
 #' \dontrun{
 #' unlist_response(r_list)
+#' unlist_response(r_list, meas = TRUE)
 #' }
 unlist_response <- function(x, meas = FALSE) {
 
   # debugging ------------------------------------------------------------------
 
   # x <- r_list
+  # meas <- TRUE
 
   # pre-processing -------------------------------------------------------------
 
@@ -333,7 +341,7 @@ unlist_response <- function(x, meas = FALSE) {
 
   # return sf object
   tibble::as_tibble(temp) |> sf::st_as_sf(coords = c("x", "y"),
-                                          crs = 4326,
+                                          crs = "epsg:4326",
                                           agr = "identity")
 }
 
