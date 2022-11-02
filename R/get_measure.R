@@ -210,7 +210,7 @@ get_measure <- function(devices = NULL,
     }
 
     # parse json to df
-    r_df <- data.frame(datetimes = r_json[["body"]] |> names() |> as.numeric() |> as.POSIXct(origin = "1970-01-01"),
+    r_df <- data.frame(datetimes = r_json[["body"]] |> names() |> as.numeric() |> as.POSIXct(origin = "1970-01-01", tz = "UTC"),
                        values = r_json[["body"]] |> as.numeric())
 
     # create xts
@@ -333,6 +333,6 @@ get_measure <- function(devices = NULL,
   # definition of unique names
   names(xtslist) <- devices_subset[["base_station"]]
 
-  # return list of xts objects
+  # return object
   xtslist
 }

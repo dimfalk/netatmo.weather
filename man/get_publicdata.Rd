@@ -4,12 +4,14 @@
 \alias{get_publicdata}
 \title{Get Netatmo station locations enriched with metadata}
 \usage{
-get_publicdata(ext = NULL, tiles = FALSE)
+get_publicdata(ext = NULL, tiles = FALSE, meas = FALSE)
 }
 \arguments{
 \item{ext}{Object of type \code{sfc_POLYGON}, as provided by \code{get_extent()}.}
 
 \item{tiles}{logical. Should fetching be done in spatial slices? More results are to be expected using \code{TRUE}.}
+
+\item{meas}{logical. Should measurements returned by the API be included?}
 }
 \value{
 Sf object containing station metadata and geometries.
@@ -25,5 +27,6 @@ e <- get_extent(x = c(6.89, 51.34, 7.13, 51.53))
 
 stations <- get_publicdata(ext = e)
 stations <- get_publicdata(ext = e, tiles = TRUE)
+stations <- get_publicdata(ext = e, meas = TRUE)
 }
 }

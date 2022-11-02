@@ -2,6 +2,7 @@
 #'
 #' @param ext Object of type `sfc_POLYGON`, as provided by `get_extent()`.
 #' @param tiles logical. Should fetching be done in spatial slices? More results are to be expected using `TRUE`.
+#' @param meas logical. Should measurements returned by the API be included?
 #'
 #' @return Sf object containing station metadata and geometries.
 #' @export
@@ -14,9 +15,11 @@
 #'
 #' stations <- get_publicdata(ext = e)
 #' stations <- get_publicdata(ext = e, tiles = TRUE)
+#' stations <- get_publicdata(ext = e, meas = TRUE)
 #' }
 get_publicdata <- function(ext = NULL,
-                           tiles = FALSE) {
+                           tiles = FALSE,
+                           meas = FALSE) {
 
   # debugging ------------------------------------------------------------------
 
@@ -24,6 +27,7 @@ get_publicdata <- function(ext = NULL,
   # ext <- get_extent(x = "Essen")
   # ext <- get_extent(x = "45145")
   # tiles <- TRUE
+  # meas <- TRUE
 
   # input validation -----------------------------------------------------------
 
@@ -72,7 +76,7 @@ get_publicdata <- function(ext = NULL,
     r_list <- httr::content(r_raw, "text") |> jsonlite::fromJSON()
 
     # parse raw response to sf object and return
-    r_sf <- unlist_response(r_list)
+    r_sf <- unlist_response(r_list, meas = meas)
 
     # trim stations to original bounding box again, return sf object
     sf::st_intersection(x = r_sf, y = ext)
@@ -132,7 +136,7 @@ get_publicdata <- function(ext = NULL,
       Sys.sleep(0.5)
 
       # parse raw response to sf object
-      r_sf <- unlist_response(r_list)
+      r_sf <- unlist_response(r_list, meas = meas)
 
       # write sf objects to disk for debugging purposes
       # sf::st_write(sf, paste0("tile_no_", i, ".shp"))

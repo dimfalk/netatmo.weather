@@ -1,5 +1,9 @@
 ## CHANGES IN ... 
 
+## v0.4
+
+* `get_publicdata()` now allows to include observations fetched from API response when `meas = TRUE`
+
 ## v0.3
 
 * `set_device()` now allows to define arbitrary - but still valid! - MAC addresses to be used with `get_measure()`
