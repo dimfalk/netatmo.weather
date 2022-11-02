@@ -32,8 +32,8 @@ p1 <- get_period()
 p2 <- get_period(x = "recent")
 p3 <- get_period(x = c("2022-06-06", "2022-06-08"))
 
-get_measure(stations, period = p1, par = "pressure")
-get_measure(stations, period = p2, par = "temperature", res = 30)
-get_measure(stations, period = p3, par = "sum_rain", res = 60)
+meas <- get_measure(stations, period = p1, par = "pressure")
+meas <- get_measure(stations, period = p2, par = "temperature", res = 30)
+meas <- get_measure(stations, period = p3, par = "sum_rain", res = 60)
 }
 }

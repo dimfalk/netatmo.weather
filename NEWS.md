@@ -1,5 +1,9 @@
 ## CHANGES IN ... 
 
+## v0.5
+
+* `as_datatable()` now allows to convert the list of xts objects returned by `get_measure()` to a single data.table object
+
 ## v0.4
 
 * `get_publicdata()` now allows to include observations fetched from API response when `meas = TRUE`

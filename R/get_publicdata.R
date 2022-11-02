@@ -141,7 +141,7 @@ get_publicdata <- function(ext = NULL,
       # write sf objects to disk for debugging purposes
       # sf::st_write(sf, paste0("tile_no_", i, ".shp"))
 
-      #
+      # concatenate objects
       if (i == 1) {
 
         temp <- r_sf

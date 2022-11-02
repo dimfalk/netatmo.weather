@@ -1,6 +1,6 @@
 Package: netatmo.weather
 Title: R interface to access the Netatmo Weather API
-Version: 0.4
+Version: 0.5
 Date: 2022-11-02
 Authors@R: 
     person("Dimitri", "Falk", , "falk.dimitri@eglv.de", role = c("aut", "cre"))
@@ -13,6 +13,7 @@ Depends: R (>= 4.2.0)
 Imports: 
     checkmate,
     curl,
+    data.table,
     dplyr,
     httr,
     jsonlite,

@@ -19,9 +19,9 @@
 #' p2 <- get_period(x = "recent")
 #' p3 <- get_period(x = c("2022-06-06", "2022-06-08"))
 #'
-#' get_measure(stations, period = p1, par = "pressure")
-#' get_measure(stations, period = p2, par = "temperature", res = 30)
-#' get_measure(stations, period = p3, par = "sum_rain", res = 60)
+#' meas <- get_measure(stations, period = p1, par = "pressure")
+#' meas <- get_measure(stations, period = p2, par = "temperature", res = 30)
+#' meas <- get_measure(stations, period = p3, par = "sum_rain", res = 60)
 #' }
 get_measure <- function(devices = NULL,
                         period = NULL,
@@ -316,7 +316,7 @@ get_measure <- function(devices = NULL,
 
     attr(xts, "REMARKS") <- NA
 
-    # initialize and fill list with xts objects
+    # concatenate objects
     if (i == 1) {
 
       xtslist <- list(xts)
