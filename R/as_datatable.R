@@ -51,7 +51,7 @@ as_datatable <- function(x = NULL) {
     temp <- data.frame(p_id = character(m))
 
     # fill data frame
-    temp["p_id"] <- attr(xts, "STAT_ID")
+    temp["p_id"] <- i
     temp["time"] <- zoo::index(xts)
     temp["ta"] <- zoo::coredata(xts) |> as.numeric()
     temp["lon"] <- attr(xts, "X")
