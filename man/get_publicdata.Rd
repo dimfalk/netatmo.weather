@@ -2,7 +2,7 @@
 % Please edit documentation in R/get_publicdata.R
 \name{get_publicdata}
 \alias{get_publicdata}
-\title{Get Netatmo station locations enriched with metadata}
+\title{Retrieves publicly shared weather data from outdoor modules within a predefined area}
 \usage{
 get_publicdata(ext = NULL, tiles = FALSE, meas = FALSE)
 }
@@ -17,7 +17,7 @@ get_publicdata(ext = NULL, tiles = FALSE, meas = FALSE)
 Sf object containing station metadata and geometries.
 }
 \description{
-Get Netatmo station locations enriched with metadata
+Retrieves publicly shared weather data from outdoor modules within a predefined area
 }
 \examples{
 \dontrun{

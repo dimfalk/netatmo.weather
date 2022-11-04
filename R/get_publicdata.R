@@ -1,4 +1,4 @@
-#' Get Netatmo station locations enriched with metadata
+#' Retrieves publicly shared weather data from outdoor modules within a predefined area
 #'
 #' @param ext Object of type `sfc_POLYGON`, as provided by `get_extent()`.
 #' @param tiles logical. Should fetching be done in spatial slices? More results are to be expected using `TRUE`.
@@ -69,6 +69,9 @@ get_publicdata <- function(ext = NULL,
       filter = "false"
     )
 
+    # user notification
+    paste0("/getpublicdata: Fetching stations from the following area: ", sf::st_bbox(ext) |> as.character() |> paste(collapse =  ", "), " ...") |> message()
+
     # send request
     r_raw <- httr::GET(url = base_url, query = query, config = .sig)
 
@@ -115,6 +118,9 @@ get_publicdata <- function(ext = NULL,
         required_data = "temperature",
         filter = "false"
       )
+
+      # user notification
+      paste0("/getpublicdata: Fetching stations from the following area: ", sf::st_bbox(ext) |> as.character() |> paste(collapse =  ", "), " ...") |> message()
 
       # send request
       r_raw <- httr::GET(url = base_url, query = query, config = .sig)

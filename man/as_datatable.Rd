@@ -17,6 +17,14 @@ Convert a list of \code{xts} objects into a single \code{data.table} for CrowdQC
 }
 \examples{
 \dontrun{
+fetch_token()
+
+e <- get_extent(x = c(6.89, 51.34, 7.13, 51.53))
+stations <- get_publicdata(ext = e)
+
+p <- get_period(res = 60)
+meas <- get_measure(stations, period = p, par = "temperature", res = 60)
+
 dt <- as_datatable(meas)
 }
 }

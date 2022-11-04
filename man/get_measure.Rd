@@ -2,7 +2,7 @@
 % Please edit documentation in R/get_measure.R
 \name{get_measure}
 \alias{get_measure}
-\title{Get Netatmo station observations}
+\title{Retrieve data from a device or module}
 \usage{
 get_measure(devices = NULL, period = NULL, par = NULL, res = 5)
 }
@@ -19,7 +19,7 @@ get_measure(devices = NULL, period = NULL, par = NULL, res = 5)
 List of \code{xts} objects.
 }
 \description{
-Get Netatmo station observations
+Retrieve data from a device or module
 }
 \examples{
 \dontrun{
@@ -29,11 +29,12 @@ e <- get_extent(x = c(6.89, 51.34, 7.13, 51.53))
 stations <- get_publicdata(ext = e)
 
 p1 <- get_period()
-p2 <- get_period(x = "recent")
-p3 <- get_period(x = c("2022-06-06", "2022-06-08"))
+p2 <- get_period(res = 60)
+p3 <- get_period(x = "recent")
+p4 <- get_period(x = c("2022-06-06", "2022-06-08"))
 
-meas <- get_measure(stations, period = p1, par = "pressure")
-meas <- get_measure(stations, period = p2, par = "temperature", res = 30)
-meas <- get_measure(stations, period = p3, par = "sum_rain", res = 60)
+meas <- get_measure(stations, period = p2, par = "pressure")
+meas <- get_measure(stations, period = p3, par = "temperature", res = 30)
+meas <- get_measure(stations, period = p4, par = "sum_rain", res = 60)
 }
 }

@@ -1,4 +1,4 @@
-#' Get Netatmo station observations
+#' Retrieve data from a device or module
 #'
 #' @param devices Sf object as provided by `get_publicdata()`.
 #' @param period numeric. From/to period vector as provided by `get_period()`.
@@ -16,12 +16,13 @@
 #' stations <- get_publicdata(ext = e)
 #'
 #' p1 <- get_period()
-#' p2 <- get_period(x = "recent")
-#' p3 <- get_period(x = c("2022-06-06", "2022-06-08"))
+#' p2 <- get_period(res = 60)
+#' p3 <- get_period(x = "recent")
+#' p4 <- get_period(x = c("2022-06-06", "2022-06-08"))
 #'
-#' meas <- get_measure(stations, period = p1, par = "pressure")
-#' meas <- get_measure(stations, period = p2, par = "temperature", res = 30)
-#' meas <- get_measure(stations, period = p3, par = "sum_rain", res = 60)
+#' meas <- get_measure(stations, period = p2, par = "pressure")
+#' meas <- get_measure(stations, period = p3, par = "temperature", res = 30)
+#' meas <- get_measure(stations, period = p4, par = "sum_rain", res = 60)
 #' }
 get_measure <- function(devices = NULL,
                         period = NULL,
@@ -32,6 +33,7 @@ get_measure <- function(devices = NULL,
 
   # devices <- stations
   # period <- get_period()
+  # period <- get_period(res = 60)
   # period <- get_period(x = "recent")
   # period <- get_period(x = c("2022-06-06", "2022-06-08"))
   # par <- "sum_rain"
@@ -137,6 +139,11 @@ get_measure <- function(devices = NULL,
                                    current = ">",
                                    clear = FALSE,
                                    width = 100)
+
+  # user notification
+  paste0("/getmeasure: Fetching ", par, " measurements (", res, " min) from ",
+         as.POSIXct(period, origin = "1970-01-01") |> format("%Y-%m-%d") |> paste(collapse =  " to "),
+         " for ", n, " stations ...") |> message()
 
   # iterate over relevant mac addresses and get measurements
   for (i in 1:n) {
