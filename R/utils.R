@@ -32,6 +32,8 @@ get_extent <- function(x = NULL,
     checkmate::testCharacter(x, len = 1),
   )
 
+  checkmate::assert_numeric(epsg, len = 1)
+
   # main -----------------------------------------------------------------------
 
   # vector of length 4 containing numeric representing coordinates -------------
@@ -149,6 +151,11 @@ get_period <- function(x = NULL,
     checkmate::test_choice(x, allowed_p),
     checkmate::test_character(x, len = 2, n.chars = 10)
   )
+
+  checkmate::assert_numeric(res, len = 1)
+
+  allowed_res <- c(5, 30, 60, 180, 360, 1440)
+  checkmate::assert_choice(res, allowed_res)
 
   # main -----------------------------------------------------------------------
 
