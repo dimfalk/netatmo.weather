@@ -8,10 +8,10 @@ get_extent(x = NULL, epsg = 4326)
 }
 \arguments{
 \item{x}{Vector of length 4 containing numeric representing coordinates (xmin, ymin, xmax, ymax),
-or string of length 1 representing the name of a municipality,
-or string of nchar 5 representing a postal zip code.}
+or character of length 1 representing the name of a municipality,
+or character of nchar 5 representing a postal zip code.}
 
-\item{epsg}{(optional) Coordinate reference system definition.}
+\item{epsg}{numeric. Coordinate reference system definition.}
 }
 \value{
 Object of type \code{sfc_POLYGON}.
