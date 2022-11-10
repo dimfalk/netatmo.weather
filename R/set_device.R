@@ -12,6 +12,7 @@
 #'
 #' @examples
 #' set_device("70:ee:50:13:54:bc")
+#' set_device("70:ee:50:13:54:bc", lat = 51.5, lon = 7.0)
 #' set_device("70:ee:50:13:54:bc", "02:00:00:13:57:c8", "06:00:00:02:5f:54", "05:00:00:01:48:96")
 set_device <- function(base_station = NULL,
                        NAModule1 = NULL,
@@ -32,6 +33,31 @@ set_device <- function(base_station = NULL,
   # input validation -----------------------------------------------------------
 
   checkmate::assert_character(base_station, n.chars = 17, pattern = "([a-z0-9]{2}:){5}")
+
+  if(!is.null(NAModule1)) {
+
+    checkmate::assert_character(NAModule1, n.chars = 17, pattern = "([a-z0-9]{2}:){5}")
+  }
+
+  if(!is.null(NAModule2)) {
+
+    checkmate::assert_character(NAModule2, n.chars = 17, pattern = "([a-z0-9]{2}:){5}")
+  }
+
+  if(!is.null(NAModule2)) {
+
+    checkmate::assert_character(NAModule2, n.chars = 17, pattern = "([a-z0-9]{2}:){5}")
+  }
+
+  if(!is.null(lat)) {
+
+    checkmate::assert_numeric(lat, len = 1, lower = -90, upper = 90)
+  }
+
+  if(!is.null(lon)) {
+
+    checkmate::assert_numeric(lon, len = 1, lower = -180, upper = 180)
+  }
 
   # main -----------------------------------------------------------------------
 
