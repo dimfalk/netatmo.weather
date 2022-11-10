@@ -1,25 +1,17 @@
-## CHANGES IN ... 
+# version 0.5
 
-## v0.5
+## features
 
-* `as_datatable()` now allows to convert the list of xts objects returned by `get_measure()` to a single data.table object
+- `set_device()` now allows to define arbitrary - but still valid! - MAC addresses to be used with `get_measure()`
+- `as_datatable()` now allows to convert the list of xts objects returned by `get_measure()` to a single data.table object
 
-## v0.4
 
-* `get_publicdata()` now allows to include observations fetched from API response when `meas = TRUE`
+## enhancements
 
-## v0.3
+- Credentials are now stored in the "netatmo" keyring
+- `get_publicdata(tiles = TRUE)` and `get_measure()` now have a progress bar included
+- `get_publicdata()` now allows to include observations fetched from API response when `meas = TRUE`
 
-* `set_device()` now allows to define arbitrary - but still valid! - MAC addresses to be used with `get_measure()`
 
-## v0.2.1
+## bug fixes 
 
-* `get_publicdata(tiles = TRUE)` and `get_measure()` now have a progress bar included
-
-## v0.2
-
-* Credentials are now stored in the "netatmo" keyring 
-
-## v0.1
-
-* Initial package release
