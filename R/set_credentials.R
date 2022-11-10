@@ -14,7 +14,7 @@ set_credentials <- function() {
   # error handling -------------------------------------------------------------
 
   # abort if keyring password is missing
-  stopifnot("Environment variable 'KEYRING_PASSWORD' is missing in `.Renviron`. Edit your file via `usethis::edit_r_environ()`." = Sys.getenv("KEYRING_PASSWORD") !=  "")
+  stopifnot("Environment variable 'KEYRING_PASSWORD' is missing in your user-level `.Renviron`. Edit file via `usethis::edit_r_environ()`." = Sys.getenv("KEYRING_PASSWORD") !=  "")
 
   # ----------------------------------------------------------------------------
 

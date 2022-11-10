@@ -47,7 +47,7 @@ In order to be able to access data, please follow the subsequent steps:
 
 3) Credentials will be stored making use of `{keyring}`. In order to securely encrypt your secrets stored, it is necessary to define a vault password in your user-level `.Renviron`, which can be edited via `file.edit("~/.Renviron")` or by running `usethis::edit_r_environ()`. Create a new environment variable called `KEYRING_PASSWORD`. 
 
-The new line added now looks something like `KEYRING_PASSWORD = "insert_your_strong_password_here_123!"`. You can also create a password using e.g. `{sodium}` with `keygen() |> bin2hex()`. Restart R to see changes. Eventually inspect the key (privately) via `Sys.getenv("KEYRING_PASSWORD")`.
+The new line added now looks something like `KEYRING_PASSWORD = "<insert_your_strong_password_here_123!>"`. You can also create a password using e.g. `{sodium}` with `keygen() |> bin2hex()`. Restart R to see changes. Eventually inspect the key (privately) via `Sys.getenv("KEYRING_PASSWORD")`.
 
 4) Run `set_credentials()` and copy & paste the information necessary (id/secret), as supplied in 2) .
 
@@ -56,21 +56,16 @@ set_credentials()
 #> Note: Keyring 'netatmo' successfully created.
 ```
 
-5) Run `fetch_token()` to create an Oauth 2 token based on the specifications provided in 4).
+5) Run `fetch_token()` to create an Oauth 2 token based on the specifications provided in 4). When asked, whether you want to use a local file to cache OAuth access credentials between R sessions, choose "1: Yes". You'll be redirected to your browser to grant access to your application. Accept and close the browser tab.
 
 ```{r}
 fetch_token()
 ```
-
-6) When asked, whether you want to use a local file to cache OAuth access credentials between R sessions, choose "1: Yes".
-
-7) You'll be redirected to your browser to grant access to your application. Accept and close the browser tab.
-
-Note: `fetch_token()` is limited to `"read_station"` scope. Successful authentication is confirmed in the browser. Your token is now stored in `.httr-oauth` in your package directory and as `.sig` in your R environment. 
+Successful authentication is confirmed in the browser. Your token is now stored to disk as `.httr-oauth` in your working directory. 
 
 In case you wanted to execute **/getpublicdata** and **/getmeasure** API calls from your browser (for debugging reasons or whatever), you'll need to append your access token to your URL: `"&access_token=xxx"`. You'll also be notified if you try to execute requests with your access token missing.
 
-You can access your access and refresh token consisting of a key and secret making use of little helpers provided:
+You can access your tokens consisting of a key and secret making use of little helpers provided:
 
 ``` r
 print_at()
@@ -80,7 +75,7 @@ print_rt()
 #> "&refresh_token=62361e03ca18e13802546z20|6ce2fb2490a615d58b16e874fz4eb579"
 ```
 
-Token expire after 3 hours and have to be refreshed again in order to be used. `{netatmo.weather}` does so in the background automatically without the user noticing. But if you're using your access token in a browser session temporarily, make use of these little helpers provided:
+Tokens expire after 3 hours and have to be refreshed again in order to be used. `{netatmo.weather}` does so in the background automatically without the user noticing. But if you're using your access token in a browser session temporarily, make use of these little helpers provided:
 
 ``` r
 is_expired()

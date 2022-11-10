@@ -1,5 +1,5 @@
 Package: netatmo.weather
-Title: R interface to access the Netatmo Weather API
+Title: R wrapper for Netatmo Weather API
 Version: 0.5
 Date: 2022-11-10
 Authors@R: 
