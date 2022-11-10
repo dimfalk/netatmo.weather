@@ -20,6 +20,6 @@ Construct a vector of length 2 and integer type representing UNIX time
 \examples{
 p1 <- get_period()
 p2 <- get_period(res = 60)
-p3 <- get_period(x = "recent")
-p4 <- get_period(x = c("2022-06-01", "2022-06-04"))
+p3 <- get_period("recent")
+p4 <- get_period(c("2022-06-01", "2022-06-04"))
 }
