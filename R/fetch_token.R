@@ -9,7 +9,7 @@
 #' }
 fetch_token <- function() {
 
-  # input validation -----------------------------------------------------------
+  # error handling -------------------------------------------------------------
 
   # abort if no connection is available
   stopifnot("Internet connection is not available." = curl::has_internet())
@@ -33,15 +33,11 @@ fetch_token <- function() {
 
   keyring::keyring_lock("netatmo")
 
-  af_token <- httr::oauth2.0_token(ep,
-                                   app,
-                                   scope = "read_station")
+  httr::oauth2.0_token(ep,
+                       app,
+                       scope = "read_station")
 
-  # assigning locally beforehand quiets concerns of R CMD check
-  .sig <- httr::config(token = af_token)
-  .sig <<- .sig
-
-  message("Note: OAuth 2.0 token successfully created as `.sig`.")
+  message("Note: OAuth 2.0 token successfully stored in file `.httr-oauth`.")
 }
 
 
@@ -57,12 +53,15 @@ fetch_token <- function() {
 #' }
 print_at <- function() {
 
-  # input validation -----------------------------------------------------------
+  # error handling -------------------------------------------------------------
 
   # abort if token is not available
-  stopifnot("OAuth 2.0 token is missing. Run `fetch_token()` first." = file.exists(".httr-oauth") && exists(".sig"))
+  stopifnot("OAuth 2.0 token is missing. Run `fetch_token()` first." = file.exists(".httr-oauth"))
 
   # main -----------------------------------------------------------------------
+
+  # read token
+  .sig <- readRDS(".httr-oauth")[[1]] |> httr::config(token = _)
 
   paste("&access_token=",
         .sig[["auth_token"]][["credentials"]][["access_token"]],
@@ -82,12 +81,15 @@ print_at <- function() {
 #' }
 print_rt <- function() {
 
-  # input validation -----------------------------------------------------------
+  # error handling -------------------------------------------------------------
 
   # abort if token is not available
-  stopifnot("OAuth 2.0 token is missing. Run `fetch_token()` first." = file.exists(".httr-oauth") && exists(".sig"))
+  stopifnot("OAuth 2.0 token is missing. Run `fetch_token()` first." = file.exists(".httr-oauth"))
 
   # main -----------------------------------------------------------------------
+
+  # read token
+  .sig <- readRDS(".httr-oauth")[[1]] |> httr::config(token = _)
 
   paste("&refresh_token=",
         .sig[["auth_token"]][["credentials"]][["refresh_token"]],
@@ -108,7 +110,7 @@ print_rt <- function() {
 #' }
 is_expired <- function() {
 
-  # input validation -----------------------------------------------------------
+  # error handling -------------------------------------------------------------
 
   # abort if no connection is available
   stopifnot("Internet connection is not available." = curl::has_internet())
@@ -117,7 +119,7 @@ is_expired <- function() {
   stopifnot("`api.netatmo.com` is not available." = curl::nslookup("api.netatmo.net") == "51.145.143.28")
 
   # abort if token is not available
-  stopifnot("OAuth 2.0 token is missing. Run `fetch_token()` first." = file.exists(".httr-oauth") && exists(".sig"))
+  stopifnot("OAuth 2.0 token is missing. Run `fetch_token()` first." = file.exists(".httr-oauth"))
 
   # main -----------------------------------------------------------------------
 
@@ -131,6 +133,9 @@ is_expired <- function() {
     required_data = "temperature",
     filter = "false"
   )
+
+  # read token
+  .sig <- readRDS(".httr-oauth")[[1]] |> httr::config(token = _)
 
   # send request
   r_raw <- httr::GET(url = base_url, query = query, config = .sig)
@@ -163,7 +168,7 @@ is_expired <- function() {
 #' }
 refresh_at <- function() {
 
-  # input validation -----------------------------------------------------------
+  # error handling -------------------------------------------------------------
 
   # abort if no connection is available
   stopifnot("Internet connection is not available." = curl::has_internet())
@@ -172,9 +177,12 @@ refresh_at <- function() {
   stopifnot("`api.netatmo.com` is not available." = curl::nslookup("api.netatmo.net") == "51.145.143.28")
 
   # abort if token is not available
-  stopifnot("OAuth 2.0 token is missing. Run `fetch_token()` first." = file.exists(".httr-oauth") && exists(".sig"))
+  stopifnot("OAuth 2.0 token is missing. Run `fetch_token()` first." = file.exists(".httr-oauth"))
 
   # main -----------------------------------------------------------------------
+
+  # read token
+  .sig <- readRDS(".httr-oauth")[[1]] |> httr::config(token = _)
 
   .sig[["auth_token"]]$refresh()
 }

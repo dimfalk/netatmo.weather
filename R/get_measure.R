@@ -41,6 +41,17 @@ get_measure <- function(devices = NULL,
   # res <- 5
   # res <- 60
 
+  # error handling -------------------------------------------------------------
+
+  # abort if no connection is available
+  stopifnot("Internet connection is not available." = curl::has_internet())
+
+  # abort if target host is not available
+  stopifnot("`api.netatmo.com` is not available." = curl::nslookup("api.netatmo.com") == "51.145.143.28")
+
+  # abort if token is not available
+  stopifnot("OAuth 2.0 token is missing. Run `fetch_token()` first." = file.exists(".httr-oauth"))
+
   # input validation -----------------------------------------------------------
 
   checkmate::assert_class(devices, c("sf", "data.frame"))
@@ -63,15 +74,6 @@ get_measure <- function(devices = NULL,
   allowed_res <- c(5, 30, 60, 180, 360, 1440)
 
   checkmate::assert_choice(res, allowed_res)
-
-  # abort if no connection is available
-  stopifnot("Internet connection is not available." = curl::has_internet())
-
-  # abort if target host is not available
-  stopifnot("`api.netatmo.com` is not available." = curl::nslookup("api.netatmo.com") == "51.145.143.28")
-
-  # abort if token is not available
-  stopifnot("OAuth 2.0 token is missing. Run `fetch_token()` first." = file.exists(".httr-oauth") && exists(".sig"))
 
   # pre-processing -------------------------------------------------------------
 
@@ -130,6 +132,9 @@ get_measure <- function(devices = NULL,
 
   #
   base_url <- "https://api.netatmo.com/api/getmeasure"
+
+  # read token
+  .sig <- readRDS(".httr-oauth")[[1]] |> httr::config(token = _)
 
   # initialize progress bar
   pb <- progress::progress_bar$new(format = "(:spin) [:bar] :percent || Iteration: :current/:total || Elapsed time: :elapsedfull",

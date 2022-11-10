@@ -22,9 +22,9 @@ skip_if_host_down <- function(){
 
 skip_if_no_auth <- function() {
 
-  if (!any(keyring::keyring_list()[["keyring"]] == "netatmo")) {
+  if (identical(Sys.getenv("CYPHR_PASSWORD"), "")) {
 
-    testthat::skip("No authentication information available. Skipping.")
+    testthat::skip("No authentication available. Skipping.")
   }
 }
 
@@ -32,7 +32,7 @@ skip_if_no_auth <- function() {
 
 skip_if_no_token <- function() {
 
-  if (!exists(".sig")) {
+  if (!file.exists(".httr-oauth")) {
 
     testthat::skip("No Oauth 2.0 token available. Skipping.")
   }

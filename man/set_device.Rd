@@ -34,5 +34,6 @@ Manually construct an sf object with user-provided MAC addresses
 }
 \examples{
 set_device("70:ee:50:13:54:bc")
+set_device("70:ee:50:13:54:bc", lat = 51.5, lon = 7.0)
 set_device("70:ee:50:13:54:bc", "02:00:00:13:57:c8", "06:00:00:02:5f:54", "05:00:00:01:48:96")
 }

@@ -29,11 +29,7 @@ get_publicdata <- function(ext = NULL,
   # tiles <- TRUE
   # meas <- TRUE
 
-  # input validation -----------------------------------------------------------
-
-  checkmate::assert_class(ext, c("sfc_POLYGON", "sfc"))
-
-  checkmate::assert_logical(tiles)
+  # error handling -------------------------------------------------------------
 
   # abort if no connection is available
   stopifnot("Internet connection is not available." = curl::has_internet())
@@ -42,7 +38,15 @@ get_publicdata <- function(ext = NULL,
   stopifnot("`api.netatmo.com` is not available." = curl::nslookup("api.netatmo.com") == "51.145.143.28")
 
   # abort if token is not available
-  stopifnot("OAuth 2.0 token is missing. Run `fetch_token()` first." = file.exists(".httr-oauth") && exists(".sig"))
+  stopifnot("OAuth 2.0 token is missing. Run `fetch_token()` first." = file.exists(".httr-oauth"))
+
+  # input validation -----------------------------------------------------------
+
+  checkmate::assert_class(ext, c("sfc_POLYGON", "sfc"))
+
+  checkmate::assert_logical(tiles)
+
+  checkmate::assert_logical(meas)
 
   # pre-processing -------------------------------------------------------------
 
@@ -56,6 +60,9 @@ get_publicdata <- function(ext = NULL,
 
   # url definition
   base_url <- "https://api.netatmo.com/api/getpublicdata"
+
+  # read token
+  .sig <- readRDS(".httr-oauth")[[1]] |> httr::config(token = _)
 
   if (tiles == FALSE) {
 
