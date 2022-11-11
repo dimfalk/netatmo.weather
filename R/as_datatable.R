@@ -59,7 +59,7 @@ as_datatable <- function(x = NULL) {
     temp["z"] <- attr(xts, "Z")
 
     # concatenate objects
-    if (i == 1) {
+    if (!exists("res")) {
 
       res <- temp
 

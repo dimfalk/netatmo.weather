@@ -329,7 +329,7 @@ get_measure <- function(devices = NULL,
     attr(xts, "REMARKS") <- NA
 
     # concatenate objects
-    if (i == 1) {
+    if (!exists("xtslist")) {
 
       xtslist <- list(xts)
 
