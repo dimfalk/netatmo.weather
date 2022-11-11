@@ -16,6 +16,7 @@ knitr::opts_chunk$set(
 # netatmo.weather
 
 <!-- badges: start -->
+[![Codecov test coverage](https://codecov.io/gh/falk-env/netatmo.weather/branch/main/graph/badge.svg)](https://app.codecov.io/gh/falk-env/netatmo.weather?branch=main)
 <!-- badges: end -->
 
 The goal of netatmo.weather is to provide access to Netatmo measurements and station metadata making use of the Netatmo Weather API.

@@ -28,6 +28,7 @@ Imports:
     xts
 LazyData: true
 Suggests:
+    covr,
     cyphr,
     sodium,
     testthat (>= 3.0.0)

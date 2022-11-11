@@ -18,7 +18,7 @@ set_credentials <- function() {
 
   # ----------------------------------------------------------------------------
 
-  if (any(keyring::keyring_list()[["keyring"]] == "netatmo")) {
+  if ("netatmo" %in% keyring::keyring_list()[["keyring"]]) {
 
     message("Note: Keyring 'netatmo' already exists.")
 

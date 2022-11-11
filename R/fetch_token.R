@@ -18,7 +18,7 @@ fetch_token <- function() {
   stopifnot("`api.netatmo.com` is not available." = curl::nslookup("api.netatmo.net") == "51.145.143.28")
 
   # abort if app technical parameters are missing, c.f. https://dev.netatmo.com/
-  stopifnot("Client ID and secret are missing. Run `set_credentials()` first." = any(keyring::keyring_list()[["keyring"]] == "netatmo"))
+  stopifnot("Client ID and secret are missing. Run `set_credentials()` first." = "netatmo" %in% keyring::keyring_list()[["keyring"]])
 
   # main -----------------------------------------------------------------------
 
