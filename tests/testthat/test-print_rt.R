@@ -1,8 +1,8 @@
+skip_if_no_token()
+
+skip_if_no_auth()
+
 test_that("Printing RT works.", {
-
-  skip_if_no_token()
-
-  skip_if_no_auth()
 
   expect_output(print_rt())
 
