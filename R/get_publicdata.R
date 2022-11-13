@@ -168,6 +168,9 @@ get_publicdata <- function(ext = NULL,
     # overwrite time_server values of individual iterations
     temp[["time_server"]] <- temp[["time_server"]] |> max()
 
+    # suppress warning, c.f. r-spatial/sf#406
+    sf::st_agr(temp) <- "constant"
+
     # trim stations due to overlapping tiles to original bounding box again
     temp <- sf::st_intersection(x = temp, y = ext)
 
