@@ -15,3 +15,4 @@
 
 ## bug fixes 
 
+- attributes of sf object acquired by `get_publicdata()` are now assumed to be spatially constant
