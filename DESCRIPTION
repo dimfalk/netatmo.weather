@@ -8,7 +8,7 @@ Description: Obtain station locations, metadata and measurements from Netatmo st
 License: GPL (>= 3)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.1
+RoxygenNote: 7.2.2
 Depends: R (>= 4.2.0)
 Imports: 
     checkmate,
