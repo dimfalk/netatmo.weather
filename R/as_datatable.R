@@ -23,7 +23,7 @@ as_datatable <- function(x = NULL) {
 
   # x <- meas
 
-  # input validation -----------------------------------------------------------
+  # check arguments ------------------------------------------------------------
 
   checkmate::assert_class(x, "list")
   checkmate::assert_class(x[[1]], c("xts", "zoo"))

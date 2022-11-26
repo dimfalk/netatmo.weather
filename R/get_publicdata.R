@@ -40,7 +40,7 @@ get_publicdata <- function(ext = NULL,
   # abort if token is not available
   stopifnot("OAuth 2.0 token is missing. Run `fetch_token()` first." = file.exists(".httr-oauth"))
 
-  # input validation -----------------------------------------------------------
+  # check arguments ------------------------------------------------------------
 
   checkmate::assert_class(ext, c("sfc_POLYGON", "sfc"))
 

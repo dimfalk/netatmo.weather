@@ -24,7 +24,7 @@ get_extent <- function(x = NULL,
   # x <- "45145"
   # epsg <- 4326
 
-  # input validation -----------------------------------------------------------
+  # check arguments ------------------------------------------------------------
 
   checkmate::assert(
 

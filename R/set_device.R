@@ -30,7 +30,7 @@ set_device <- function(base_station = NULL,
   # lat <- 51.44983
   # lon <- 7.069292
 
-  # input validation -----------------------------------------------------------
+  # check arguments ------------------------------------------------------------
 
   checkmate::assert_character(base_station, n.chars = 17, pattern = "([a-z0-9]{2}:){5}")
 

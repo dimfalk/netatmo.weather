@@ -16,7 +16,7 @@ set_credentials <- function() {
   # abort if keyring password is missing
   stopifnot("Environment variable 'KEYRING_PASSWORD' is missing in your user-level `.Renviron`. Edit file via `usethis::edit_r_environ()`." = Sys.getenv("KEYRING_PASSWORD") !=  "")
 
-  # ----------------------------------------------------------------------------
+  # main -----------------------------------------------------------------------
 
   if ("netatmo" %in% keyring::keyring_list()[["keyring"]]) {
 

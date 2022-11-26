@@ -19,6 +19,10 @@ unlist_response <- function(x, meas = FALSE) {
   # x <- r_list
   # meas <- TRUE
 
+  # check arguments ------------------------------------------------------------
+
+  # is.list / response?
+
   # pre-processing -------------------------------------------------------------
 
   # subset response to main part
