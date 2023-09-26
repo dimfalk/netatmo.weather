@@ -11,7 +11,7 @@ and station metadata making use of the Netatmo Weather API.
 You can install the development version of netatmo.weather with:
 
 ``` r
-install.packages("devtools")
+# install.packages("devtools")
 devtools::install_github("dimfalk/netatmo.weather")
 ```
 
@@ -19,6 +19,7 @@ and load the package via
 
 ``` r
 library(netatmo.weather)
+#> 0.5.1
 ```
 
 ## Getting Started
@@ -155,29 +156,36 @@ This information can now be used to list stations located in this area
 ``` r
 stations <- get_publicdata(ext = e1)
 #> /getpublicdata: Fetching stations from the following area: 6.89, 51.34, 7.13, 51.53 ...
+#> Warning: Automatic coercion from double to character was deprecated in purrr 1.0.0.
+#> ℹ Please use an explicit call to `as.character()` within `map_chr()` instead.
+#> ℹ The deprecated feature was likely used in the netatmo.weather package.
+#>   Please report the issue to the authors.
+#> This warning is displayed once every 8 hours.
+#> Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
+#> generated.
 
 stations
-#> Simple feature collection with 309 features and 13 fields
+#> Simple feature collection with 310 features and 13 fields
 #> Geometry type: POINT
 #> Dimension:     XY
-#> Bounding box:  xmin: 6.891979 ymin: 51.34072 xmax: 7.12971 ymax: 51.52976
+#> Bounding box:  xmin: 6.891979 ymin: 51.34127 xmax: 7.129903 ymax: 51.52976
 #> Geodetic CRS:  WGS 84
-#> # A tibble: 309 × 14
-#>    status time_server         base_…¹ timez…² country altit…³ city  street  mark
-#>  * <chr>  <dttm>              <chr>   <chr>   <chr>     <int> <chr> <chr>  <int>
-#>  1 ok     2022-11-16 15:59:11 70:ee:… Europe… DE          112 Essen Steel…    10
-#>  2 ok     2022-11-16 15:59:11 70:ee:… Europe… DE          114 Essen Steel…    10
-#>  3 ok     2022-11-16 15:59:11 70:ee:… Europe… DE          108 Essen Herwa…    10
-#>  4 ok     2022-11-16 15:59:11 70:ee:… Europe… DE           76 Essen Graff…    10
-#>  5 ok     2022-11-16 15:59:11 70:ee:… Europe… DE           60 Essen Hengl…    10
-#>  6 ok     2022-11-16 15:59:11 70:ee:… Europe… DE           79 Essen Am Kn…    10
-#>  7 ok     2022-11-16 15:59:11 70:ee:… Europe… DE           69 Essen Notte…    10
-#>  8 ok     2022-11-16 15:59:11 70:ee:… Europe… DE           77 Essen Lohmü…     1
-#>  9 ok     2022-11-16 15:59:11 70:ee:… Europe… DE           76 Essen Lohdi…    10
-#> 10 ok     2022-11-16 15:59:11 70:ee:… Europe… DE           98 Essen Märki…    10
-#> # … with 299 more rows, 5 more variables: n_modules <int>, NAModule1 <chr>,
-#> #   NAModule2 <chr>, NAModule3 <chr>, geometry <POINT [°]>, and abbreviated
-#> #   variable names ¹​base_station, ²​timezone, ³​altitude
+#> # A tibble: 310 × 14
+#>    status time_server         base_station      timezone  country altitude city 
+#>  * <chr>  <dttm>              <chr>             <chr>     <chr>      <int> <chr>
+#>  1 ok     2023-09-26 12:16:30 70:ee:50:6b:34:74 Europe/B… DE           112 Essen
+#>  2 ok     2023-09-26 12:16:30 70:ee:50:04:ce:cc Europe/B… DE           114 Essen
+#>  3 ok     2023-09-26 12:16:30 70:ee:50:74:0d:4a Europe/B… DE           108 Essen
+#>  4 ok     2023-09-26 12:16:30 70:ee:50:a2:01:6a Europe/B… DE           108 Essen
+#>  5 ok     2023-09-26 12:16:30 70:ee:50:13:54:bc Europe/B… DE            79 Essen
+#>  6 ok     2023-09-26 12:16:30 70:ee:50:01:da:22 Europe/B… DE            98 Essen
+#>  7 ok     2023-09-26 12:16:30 70:ee:50:a5:9f:7a Europe/B… DE            69 Essen
+#>  8 ok     2023-09-26 12:16:30 70:ee:50:05:06:2a Europe/B… DE            69 Essen
+#>  9 ok     2023-09-26 12:16:30 70:ee:50:36:f4:76 Europe/B… DE            77 Essen
+#> 10 ok     2023-09-26 12:16:30 70:ee:50:33:0b:c8 Europe/B… DE            98 Essen
+#> # ℹ 300 more rows
+#> # ℹ 7 more variables: street <chr>, mark <int>, n_modules <int>,
+#> #   NAModule1 <chr>, NAModule2 <chr>, NAModule3 <chr>, geometry <POINT [°]>
 ```
 
 However, since the number of stations returned by **/getpublicdata**
@@ -191,27 +199,27 @@ stations_tiled <- get_publicdata(ext = e1,
                                  tiles = TRUE)
 
 stations_tiled
-#> Simple feature collection with 633 features and 13 fields
+#> Simple feature collection with 635 features and 13 fields
 #> Geometry type: POINT
 #> Dimension:     XY
-#> Bounding box:  xmin: 6.890067 ymin: 51.34072 xmax: 7.12971 ymax: 51.52976
+#> Bounding box:  xmin: 6.890067 ymin: 51.34127 xmax: 7.129903 ymax: 51.52976
 #> Geodetic CRS:  WGS 84
-#> # A tibble: 633 × 14
-#>    status time_server         base_…¹ timez…² country altit…³ city  street  mark
-#>    <chr>  <dttm>              <chr>   <chr>   <chr>     <int> <chr> <chr>  <int>
-#>  1 ok     2022-11-16 16:00:06 70:ee:… Europe… DE           45 Essen Volck…    10
-#>  2 ok     2022-11-16 16:00:06 70:ee:… Europe… DE           46 Essen Eva-H…    10
-#>  3 ok     2022-11-16 16:00:06 70:ee:… Europe… DE           48 Essen Rings…     1
-#>  4 ok     2022-11-16 16:00:06 70:ee:… Europe… DE           98 Essen Laupe…    10
-#>  5 ok     2022-11-16 16:00:06 70:ee:… Europe… DE           46 Essen Johan…     1
-#>  6 ok     2022-11-16 16:00:06 70:ee:… Europe… DE           57 Essen Marti…     1
-#>  7 ok     2022-11-16 16:00:06 70:ee:… Europe… DE           64 Essen Meist…    10
-#>  8 ok     2022-11-16 16:00:06 70:ee:… Europe… DE           62 Essen Haupt…    10
-#>  9 ok     2022-11-16 16:00:06 70:ee:… Europe… DE           64 Essen Wilhe…    10
-#> 10 ok     2022-11-16 16:00:06 70:ee:… Europe… DE           66 Essen Eiche…    10
-#> # … with 623 more rows, 5 more variables: n_modules <int>, NAModule1 <chr>,
-#> #   NAModule2 <chr>, NAModule3 <chr>, geometry <POINT [°]>, and abbreviated
-#> #   variable names ¹​base_station, ²​timezone, ³​altitude
+#> # A tibble: 635 × 14
+#>    status time_server         base_station      timezone  country altitude city 
+#>    <chr>  <dttm>              <chr>             <chr>     <chr>      <int> <chr>
+#>  1 ok     2023-09-26 12:17:29 70:ee:50:84:48:5a Europe/B… DE            45 Essen
+#>  2 ok     2023-09-26 12:17:29 70:ee:50:7a:81:24 Europe/B… DE            46 Essen
+#>  3 ok     2023-09-26 12:17:29 70:ee:50:00:c6:8a Europe/B… DE            46 Essen
+#>  4 ok     2023-09-26 12:17:29 70:ee:50:90:94:40 Europe/B… DE            57 Essen
+#>  5 ok     2023-09-26 12:17:29 70:ee:50:7f:f6:c8 Europe/B… DE            61 Essen
+#>  6 ok     2023-09-26 12:17:29 70:ee:50:7a:94:9a Europe/B… DE            61 Essen
+#>  7 ok     2023-09-26 12:17:29 70:ee:50:7b:12:86 Europe/B… DE            66 Essen
+#>  8 ok     2023-09-26 12:17:29 70:ee:50:05:3b:2c Europe/B… DE            81 Essen
+#>  9 ok     2023-09-26 12:17:29 70:ee:50:58:84:c8 Europe/B… DE            45 Mülh…
+#> 10 ok     2023-09-26 12:17:29 70:ee:50:5f:46:0e Europe/B… DE            45 Mülh…
+#> # ℹ 625 more rows
+#> # ℹ 7 more variables: street <chr>, mark <int>, n_modules <int>,
+#> #   NAModule1 <chr>, NAModule2 <chr>, NAModule3 <chr>, geometry <POINT [°]>
 ```
 
 ### /getmeasure
@@ -232,17 +240,17 @@ To assist you with the latter going backwards from `Sys.time()`,
 # default: `res = 5`
 p1 <- get_period()
 as.POSIXct(p1, origin = "1970-01-01")
-#> [1] "2022-11-13 02:40:00 CET" "2022-11-16 16:00:00 CET"
+#> [1] "2023-09-22 22:40:00 CEST" "2023-09-26 12:00:00 CEST"
 
 # here: `res = 60` corresponding to hourly data
 p2 <- get_period(res = 60)
 as.POSIXct(p2, origin = "1970-01-01")
-#> [1] "2022-10-05 01:00:00 CEST" "2022-11-16 16:00:00 CET"
+#> [1] "2023-08-14 20:00:00 CEST" "2023-09-26 12:00:00 CEST"
 
 # querying the last 24 hours, maybe convenient for scheduled jobs
 p3 <- get_period("recent")
 as.POSIXct(p3, origin = "1970-01-01")
-#> [1] "2022-11-15 16:00:00 CET" "2022-11-16 16:00:00 CET"
+#> [1] "2023-09-25 12:00:00 CEST" "2023-09-26 12:00:00 CEST"
 
 # self-defined period
 p4 <- get_period(c("2022-06-01", "2022-06-04"))
@@ -266,10 +274,10 @@ class(obs)
 length(obs)
 #> [1] 10
 names(obs)
-#>  [1] "70:ee:50:84:48:5a" "70:ee:50:7a:81:24" "70:ee:50:90:91:d6"
-#>  [4] "70:ee:50:1f:63:d2" "70:ee:50:00:c6:8a" "70:ee:50:02:5a:1c"
-#>  [7] "70:ee:50:17:cf:02" "70:ee:50:7f:f6:c8" "70:ee:50:5e:ff:a4"
-#> [10] "70:ee:50:7b:12:86"
+#>  [1] "70:ee:50:84:48:5a" "70:ee:50:7a:81:24" "70:ee:50:00:c6:8a"
+#>  [4] "70:ee:50:90:94:40" "70:ee:50:7f:f6:c8" "70:ee:50:7a:94:9a"
+#>  [7] "70:ee:50:7b:12:86" "70:ee:50:05:3b:2c" "70:ee:50:58:84:c8"
+#> [10] "70:ee:50:5f:46:0e"
 
 # subset to individual xts object
 xts <- obs[[1]]
@@ -283,12 +291,12 @@ head(xts)
 #>   NOTE: set 'options(xts_check_TZ = FALSE)'to disable this warning
 #>     This note is displayed once per session
 #>                     temperature
-#> 2022-10-04 23:00:00        10.6
-#> 2022-10-05 00:00:00        10.7
-#> 2022-10-05 01:00:00        11.0
-#> 2022-10-05 02:00:00        11.2
-#> 2022-10-05 03:00:00        11.5
-#> 2022-10-05 04:00:00        11.8
+#> 2023-08-14 18:00:00        24.7
+#> 2023-08-14 19:00:00        23.1
+#> 2023-08-14 20:00:00        22.0
+#> 2023-08-14 21:00:00        21.1
+#> 2023-08-14 22:00:00        20.7
+#> 2023-08-14 23:00:00        20.5
 
 # inspect attribute names appended 
 attributes(xts) |> names() |> tail(-4)

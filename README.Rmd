@@ -22,7 +22,7 @@ The goal of netatmo.weather is to provide access to Netatmo measurements and sta
 You can install the development version of netatmo.weather with:
 
 ``` r
-install.packages("devtools")
+# install.packages("devtools")
 devtools::install_github("dimfalk/netatmo.weather")
 ```
 
