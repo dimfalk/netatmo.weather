@@ -1,4 +1,4 @@
-# version 0.5
+# version 0.5.2
 
 ## features
 
@@ -16,3 +16,4 @@
 ## bug fixes 
 
 - attributes of sf object acquired by `get_publicdata()` are now assumed to be spatially constant
+- internal pre-check `curl::nslookup("api.netatmo.com")` updated to recent public IP

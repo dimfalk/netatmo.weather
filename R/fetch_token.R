@@ -15,15 +15,15 @@ fetch_token <- function() {
   stopifnot("Internet connection is not available." = curl::has_internet())
 
   # abort if target host is not available
-  stopifnot("`api.netatmo.com` is not available." = curl::nslookup("api.netatmo.net") == "51.145.143.28")
+  stopifnot("`api.netatmo.com` is not available." = curl::nslookup("api.netatmo.com") == "20.23.199.179")
 
   # abort if app technical parameters are missing, c.f. https://dev.netatmo.com/
   stopifnot("Client ID and secret are missing. Run `set_credentials()` first." = "netatmo" %in% keyring::keyring_list()[["keyring"]])
 
   # main -----------------------------------------------------------------------
 
-  ep <- httr::oauth_endpoint(authorize = "https://api.netatmo.net/oauth2/authorize",
-                             access = "https://api.netatmo.net/oauth2/token")
+  ep <- httr::oauth_endpoint(authorize = "https://api.netatmo.com/oauth2/authorize",
+                             access = "https://api.netatmo.com/oauth2/token")
 
   keyring::keyring_unlock("netatmo", password = Sys.getenv("KEYRING_PASSWORD"))
 
@@ -116,7 +116,7 @@ is_expired <- function() {
   stopifnot("Internet connection is not available." = curl::has_internet())
 
   # abort if target host is not available
-  stopifnot("`api.netatmo.com` is not available." = curl::nslookup("api.netatmo.net") == "51.145.143.28")
+  stopifnot("`api.netatmo.com` is not available." = curl::nslookup("api.netatmo.net") == "20.23.199.179")
 
   # abort if token is not available
   stopifnot("OAuth 2.0 token is missing. Run `fetch_token()` first." = file.exists(".httr-oauth"))
@@ -174,7 +174,7 @@ refresh_at <- function() {
   stopifnot("Internet connection is not available." = curl::has_internet())
 
   # abort if target host is not available
-  stopifnot("`api.netatmo.com` is not available." = curl::nslookup("api.netatmo.net") == "51.145.143.28")
+  stopifnot("`api.netatmo.com` is not available." = curl::nslookup("api.netatmo.net") == "20.23.199.179")
 
   # abort if token is not available
   stopifnot("OAuth 2.0 token is missing. Run `fetch_token()` first." = file.exists(".httr-oauth"))
