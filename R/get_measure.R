@@ -58,8 +58,6 @@ get_measure <- function(devices = NULL,
 
   checkmate::assert_numeric(period, len = 2)
 
-  checkmate::assert_character(par, len = 1)
-
   allowed_par <- c("temperature", "min_temp", "max_temp",
                    "humidity", "min_hum", "max_hum",
                    "pressure", "min_pressure", "max_pressure",
@@ -68,8 +66,6 @@ get_measure <- function(devices = NULL,
                    "sum_rain")
 
   checkmate::assert_choice(par, allowed_par)
-
-  checkmate::assert_numeric(res, len = 1)
 
   allowed_res <- c(5, 30, 60, 180, 360, 1440)
 
@@ -148,12 +144,19 @@ get_measure <- function(devices = NULL,
   # user notification
   paste0("/getmeasure: Fetching ", par, " measurements (", res, " min) from ",
          as.POSIXct(period, origin = "1970-01-01") |> format("%Y-%m-%d") |> paste(collapse =  " to "),
-         " for ", n, " stations ...") |> message()
+         " for ", n, " station(s) ...") |> message()
 
   # iterate over relevant mac addresses and get measurements
   for (i in 1:n) {
 
     # query construction
+
+    # `optimize`: For mobile apps we recommend `true` to save bandwidth.
+    # If bandwidth isn't an issue, we recommend `false` as it is easier to parse.
+
+    # `real_time`: If scale different than max, timestamps are by default offset + scale/2.
+    # To get exact timestamps, use `true`. Default is `false`.
+
     query <- switch(relevant_module,
 
                     "base_station" = list(
@@ -222,7 +225,7 @@ get_measure <- function(devices = NULL,
     }
 
     # parse json to df
-    r_df <- data.frame(datetimes = r_json[["body"]] |> names() |> as.numeric() |> as.POSIXct(origin = "1970-01-01", tz = "UTC"),
+    r_df <- data.frame(datetimes = r_json[["body"]] |> names() |> as.numeric() |> as.POSIXct(origin = "1970-01-01", tz = "Europe/Berlin"),
                        values = r_json[["body"]] |> as.numeric())
 
     # create xts

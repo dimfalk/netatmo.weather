@@ -32,14 +32,12 @@ get_period <- function(x = NULL,
     checkmate::test_character(x, len = 2, n.chars = 10)
   )
 
-  checkmate::assert_numeric(res, len = 1)
-
   allowed_res <- c(5, 30, 60, 180, 360, 1440)
   checkmate::assert_choice(res, allowed_res)
 
   # main -----------------------------------------------------------------------
 
-  now <- lubridate::now()
+  now <- lubridate::now("Europe/Berlin")
 
   # default: in case no input is defined by the user
   if (is.null(x)) {

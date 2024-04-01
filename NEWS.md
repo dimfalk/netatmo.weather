@@ -1,4 +1,4 @@
-# version 0.5.2
+# version 0.5.3
 
 ## features
 
@@ -17,3 +17,4 @@
 
 - attributes of sf object acquired by `get_publicdata()` are now assumed to be spatially constant
 - internal pre-check `curl::nslookup("api.netatmo.com")` updated to recent public IP
+- explicit and consistent `"Europe/Berlin"` timezone definition 
