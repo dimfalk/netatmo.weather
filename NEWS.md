@@ -1,4 +1,4 @@
-# version 0.5.3
+# version 0.5.4
 
 ## features
 
@@ -11,6 +11,7 @@
 - Credentials are now stored in the "netatmo" keyring
 - `get_publicdata(tiles = TRUE)` and `get_measure()` now have a progress bar included
 - `get_publicdata()` now allows to include observations fetched from API response when `meas = TRUE`
+- `get_measure()` now internally splitting up large queries exceeding 1024 values into chunks
 
 
 ## bug fixes 

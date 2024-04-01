@@ -135,11 +135,12 @@ To assist you with the latter going backwards from `Sys.time()`, `get_period()` 
 
 ```{r}
 # per default returning the maximum number of observations (1024) as a function of `res` chosen
-# default: `res = 5`
-p1 <- get_period()
+
+# 5-minutely data
+p1 <- get_period(res = 5)
 as.POSIXct(p1, origin = "1970-01-01")
 
-# here: `res = 60` corresponding to hourly data
+# hourly data
 p2 <- get_period(res = 60)
 as.POSIXct(p2, origin = "1970-01-01")
 
@@ -148,7 +149,7 @@ p3 <- get_period("recent")
 as.POSIXct(p3, origin = "1970-01-01")
 
 # self-defined period
-p4 <- get_period(c("2022-06-01", "2022-06-04"))
+p4 <- get_period(c("2024-03-01", "2024-04-01"))
 as.POSIXct(p4, origin = "1970-01-01")
 ```
 

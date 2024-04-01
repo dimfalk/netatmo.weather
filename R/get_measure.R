@@ -120,8 +120,8 @@ get_measure <- function(devices = NULL,
   # abort if there are no stations left after subsetting
   if (n == 0) {
 
-    paste0("No stations with `", relevant_module,
-           "` present in `devices` being able to provide '", par,
+    paste0("No stations with '", relevant_module,
+           "' present in `devices` being able to provide '", par,
            "' observations.\n",
            "Choose another parameter or provide an extended resp. alternative `devices` dataset.") |> stop()
   }
@@ -209,136 +209,172 @@ get_measure <- function(devices = NULL,
 
     # main ---------------------------------------------------------------------
 
-    # send request
-    r_raw <- httr::GET(url = base_url, query = query, config = .sig)
-    code <- httr::status_code(r_raw)
+    # split datetimes in chunks à 1024 values
+    datetimes_seq <- seq(from = query[["date_begin"]],
+                         to = query[["date_end"]],
+                         by = 60 * res)
 
-    # parse response
-    r_json <- httr::content(r_raw, "text") |> jsonlite::fromJSON()
+    datetimes_list <- split(datetimes_seq, ceiling(seq_along(datetimes_seq) / 1024))
 
-    # abort if no device was to be found
-    if (code == 404) {
+    # eventually iterate over multiple periods to get the entire period
+    m <- length(datetimes_list)
 
-      paste0("(HTTP status ", code, "): ", r_json[["error"]][["message"]], ".\n",
-             "This should never happen with `devices` returned by `get_publicdata()`.\n",
-             "If you provided mac addresses by yourself using `set_device()`, check for typos.") |> stop()
+    for (j in 1:m) {
+
+      # relevant
+      datetimes <- datetimes_list[[j]]
+
+      # TODO: skip iteration if only one object is included, fix this in the future!
+      if (length(datetimes) == 1) {
+
+        next
+      }
+
+      # overwrite range in original query
+      query[["date_begin"]] <- datetimes[[1]]
+      query[["date_end"]] <- datetimes[[length(datetimes)]]
+
+      # send request
+      r_raw <- httr::GET(url = base_url, query = query, config = .sig)
+      code <- httr::status_code(r_raw)
+
+      # abort if no device was to be found
+      if (code == 404) {
+
+        paste0("(HTTP status ", code, "): ", r_json[["error"]][["message"]], ".\n",
+               "This should never happen with `devices` returned by `get_publicdata()`.\n",
+               "If you provided mac addresses by yourself using `set_device()`, check for typos.") |> stop()
+      }
+
+      # parse response
+      r_json <- httr::content(r_raw, "text") |> jsonlite::fromJSON()
+
+      # parse json to df
+      r_df <- data.frame(datetimes = r_json[["body"]] |> names() |> as.numeric() |> as.POSIXct(origin = "1970-01-01", tz = "Europe/Berlin"),
+                         values = r_json[["body"]] |> as.numeric())
+
+      # create xts
+      xts <- xts::xts(r_df[["values"]], order.by = r_df[["datetimes"]])
+
+      # assign column name
+      names(xts) <- par
+
+      # merge xts objects
+      if (!exists("xts_merge")) {
+
+        xts_merge <- xts
+
+      } else {
+
+        xts_merge <- rbind(xts_merge, xts)
+      }
+
+      # sleep to prevent http 429: too many requests and
+      # http 403 (error code 26): user usage reached (50 req. per 10 s)
+      Sys.sleep(0.5)
     }
-
-    # parse json to df
-    r_df <- data.frame(datetimes = r_json[["body"]] |> names() |> as.numeric() |> as.POSIXct(origin = "1970-01-01", tz = "Europe/Berlin"),
-                       values = r_json[["body"]] |> as.numeric())
-
-    # create xts
-    xts <- xts::xts(r_df[["values"]], order.by = r_df[["datetimes"]])
-
-    # assign column name
-    names(xts) <- par
 
     # post-processing ----------------------------------------------------------
 
-    # sleep to prevent http 429: too many requests and
-    # http 403 (error code 26): user usage reached (50 req. per 10 s)
-    Sys.sleep(0.5)
-
     # meta data definition
     # subset of basis parameters from `timeseriesIO::xts_init()`
-    attr(xts, "STAT_ID") <- devices_subset[["base_station"]][i]
+    attr(xts_merge, "STAT_ID") <- devices_subset[["base_station"]][i]
 
-    attr(xts, "X") <- sf::st_coordinates(devices_subset[i, ])[1]
-    attr(xts, "Y") <- sf::st_coordinates(devices_subset[i, ])[2]
-    attr(xts, "Z") <- devices_subset[["altitude"]][i]
-    attr(xts, "CRS_EPSG") <- "4326"
-    attr(xts, "TZONE") <- devices[["timezone"]][i]
+    attr(xts_merge, "X") <- sf::st_coordinates(devices_subset[i, ])[1]
+    attr(xts_merge, "Y") <- sf::st_coordinates(devices_subset[i, ])[2]
+    attr(xts_merge, "Z") <- devices_subset[["altitude"]][i]
+    attr(xts_merge, "CRS_EPSG") <- "4326"
+    attr(xts_merge, "TZONE") <- devices[["timezone"]][i]
 
-    attr(xts, "OPERATOR") <- "Netatmo S.A."
+    attr(xts_merge, "OPERATOR") <- "Netatmo S.A."
 
-    attr(xts, "SENS_ID") <- devices_subset[[relevant_module]][i]
+    attr(xts_merge, "SENS_ID") <- devices_subset[[relevant_module]][i]
 
-    attr(xts, "PARAMETER") <- switch(par,
+    attr(xts_merge, "PARAMETER") <- switch(par,
 
-                                     "temperature" = "air temperature",
-                                     "min_temp" = "air temperature",
-                                     "max_temp" = "air temperature",
+                                           "temperature" = "air temperature",
+                                           "min_temp" = "air temperature",
+                                           "max_temp" = "air temperature",
 
-                                     "humidity" = "humidity",
-                                     "min_hum" = "humidity",
-                                     "max_hum" = "humidity",
+                                           "humidity" = "humidity",
+                                           "min_hum" = "humidity",
+                                           "max_hum" = "humidity",
 
-                                     "pressure" = "pressure",
-                                     "min_pressure" = "pressure",
-                                     "max_pressure" = "pressure",
+                                           "pressure" = "pressure",
+                                           "min_pressure" = "pressure",
+                                           "max_pressure" = "pressure",
 
-                                     "windstrength" = "wind velocity",
-                                     "windangle" = "wind direction",
-                                     "guststrength" = "wind velocity",
-                                     "gustangle" = "wind direction",
+                                           "windstrength" = "wind velocity",
+                                           "windangle" = "wind direction",
+                                           "guststrength" = "wind velocity",
+                                           "gustangle" = "wind direction",
 
-                                     "sum_rain" = "precipitation")
+                                           "sum_rain" = "precipitation")
 
-    attr(xts, "TS_START") <- zoo::index(xts) |> utils::head(1)
+    attr(xts_merge, "TS_START") <- zoo::index(xts_merge) |> utils::head(1)
 
-    attr(xts, "TS_END") <- zoo::index(xts) |> utils::tail(1)
+    attr(xts_merge, "TS_END") <- zoo::index(xts_merge) |> utils::tail(1)
 
-    attr(xts, "TS_TYPE") <- "measurement"
+    attr(xts_merge, "TS_TYPE") <- "measurement"
 
-    attr(xts, "MEAS_INTERVALTYPE") <- TRUE
+    attr(xts_merge, "MEAS_INTERVALTYPE") <- TRUE
 
-    attr(xts, "MEAS_BLOCKING") <- "right"
+    attr(xts_merge, "MEAS_BLOCKING") <- "right"
 
-    attr(xts, "MEAS_RESOLUTION") <- res
+    attr(xts_merge, "MEAS_RESOLUTION") <- res
 
-    attr(xts, "MEAS_UNIT") <- switch(par,
+    attr(xts_merge, "MEAS_UNIT") <- switch(par,
 
-                                     "temperature" = "degC",
-                                     "min_temp" = "degC",
-                                     "max_temp" = "degC",
+                                           "temperature" = "degC",
+                                           "min_temp" = "degC",
+                                           "max_temp" = "degC",
 
-                                     "humidity" = "%",
-                                     "min_hum" = "%",
-                                     "max_hum" = "%",
+                                           "humidity" = "%",
+                                           "min_hum" = "%",
+                                           "max_hum" = "%",
 
-                                     "pressure" = "bar",
-                                     "min_pressure" = "bar",
-                                     "max_pressure" = "bar",
+                                           "pressure" = "bar",
+                                           "min_pressure" = "bar",
+                                           "max_pressure" = "bar",
 
-                                     "windstrength" = "m/s",
-                                     "windangle" = "deg",
-                                     "guststrength" = "m/s",
-                                     "gustangle" = "deg",
+                                           "windstrength" = "m/s",
+                                           "windangle" = "deg",
+                                           "guststrength" = "m/s",
+                                           "gustangle" = "deg",
 
-                                     "sum_rain" = "mm")
+                                           "sum_rain" = "mm")
 
-    attr(xts, "MEAS_STATEMENT") <- switch(par,
+    attr(xts_merge, "MEAS_STATEMENT") <- switch(par,
 
-                                          "temperature" = "mean",
-                                          "min_temp" = "min",
-                                          "max_temp" = "max",
+                                                "temperature" = "mean",
+                                                "min_temp" = "min",
+                                                "max_temp" = "max",
 
-                                          "humidity" = "mean",
-                                          "min_hum" = "min",
-                                          "max_hum" = "max",
+                                                "humidity" = "mean",
+                                                "min_hum" = "min",
+                                                "max_hum" = "max",
 
-                                          "pressure" = "mean",
-                                          "min_pressure" = "min",
-                                          "max_pressure" = "max",
+                                                "pressure" = "mean",
+                                                "min_pressure" = "min",
+                                                "max_pressure" = "max",
 
-                                          "windstrength" = "mean",
-                                          "windangle" = "mean",
-                                          "guststrength" = "max",
-                                          "gustangle" = "max",
+                                                "windstrength" = "mean",
+                                                "windangle" = "mean",
+                                                "guststrength" = "max",
+                                                "gustangle" = "max",
 
-                                          "sum_rain" = "sum")
+                                                "sum_rain" = "sum")
 
-    attr(xts, "REMARKS") <- NA
+    attr(xts_merge, "REMARKS") <- NA
 
     # concatenate objects
     if (!exists("xtslist")) {
 
-      xtslist <- list(xts)
+      xtslist <- list(xts_merge)
 
     } else {
 
-      xtslist[[i]] <- xts
+      xtslist[[i]] <- xts_merge
     }
 
     # updates current state of progress bar

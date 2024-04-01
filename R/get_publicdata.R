@@ -141,10 +141,6 @@ get_publicdata <- function(ext = NULL,
         next
       }
 
-      # sleep to prevent http 429: too many requests and
-      # http 403 (error code 26): user usage reached (50 req. per 10 s)
-      Sys.sleep(0.5)
-
       # parse raw response to sf object
       r_sf <- unlist_response(r_list, meas = meas)
 
@@ -160,6 +156,10 @@ get_publicdata <- function(ext = NULL,
 
         temp <- rbind(temp, r_sf)
       }
+
+      # sleep to prevent http 429: too many requests and
+      # http 403 (error code 26): user usage reached (50 req. per 10 s)
+      Sys.sleep(0.5)
 
       # updates current state of progress bar
       pb$tick()

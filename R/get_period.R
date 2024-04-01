@@ -56,17 +56,6 @@ get_period <- function(x = NULL,
 
     to <- x[2] |> strptime(format = "%Y-%m-%d") |> as.POSIXct()
     from <- x[1] |> strptime(format = "%Y-%m-%d") |> as.POSIXct()
-
-    #
-    timediff_min <- (as.integer(to) - as.integer(from)) / 60
-    n_queried <- timediff_min / res
-
-    # throw warning if limit is exceeded
-    if (n_queried > 1024) {
-
-      paste0("Based on the defined period '", from, "/", to, "' and the chosen resolution '", res, " min',
-             you are trying to access ", n_queried, " values. Allowed maximum is 1024. The result may be incomplete.") |> warning()
-    }
   }
 
   # return object
