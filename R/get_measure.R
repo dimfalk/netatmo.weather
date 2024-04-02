@@ -32,7 +32,7 @@ get_measure <- function(devices = NULL,
   # debugging ------------------------------------------------------------------
 
   # devices <- stations
-  # devices <- stations[1, ]
+  # devices <- stations[1:10, ]
 
   # period <- get_period(res = 5)
   # period <- get_period(res = 60)
@@ -396,6 +396,9 @@ get_measure <- function(devices = NULL,
 
       xtslist[[i]] <- xts_merge
     }
+
+    # clear object for next iteration
+    rm(xts_merge)
 
     # updates current state of progress bar
     pb$tick()
