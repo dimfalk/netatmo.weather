@@ -134,27 +134,24 @@ get_publicdata <- function(ext = NULL,
       r_list <- httr::content(r_raw, "text") |> jsonlite::fromJSON()
 
       # skip iteration if no objects are returned
-      if (r_list[["body"]] |> length() == 0) {
+      if (length(r_list[["body"]]) == 0) {
 
-        paste0("Note: Query response from tile #", i, " was returned without content.") |> message()
+        paste0("Note: Query response for tile #", i, " was returned without content.") |> message()
 
         next
       }
 
-      # parse raw response to sf object
+      # parse response to sf object
       r_sf <- unlist_response(r_list, meas = meas)
 
-      # write sf objects to disk for debugging purposes
-      # sf::st_write(sf, paste0("tile_no_", i, ".shp"))
-
       # concatenate objects
-      if (!exists("temp")) {
+      if (!exists("stations")) {
 
-        temp <- r_sf
+        stations <- r_sf
 
       } else {
 
-        temp <- rbind(temp, r_sf)
+        stations <- rbind(stations, r_sf)
       }
 
       # sleep to prevent http 429: too many requests and
@@ -166,15 +163,15 @@ get_publicdata <- function(ext = NULL,
     }
 
     # overwrite time_server values of individual iterations
-    temp[["time_server"]] <- temp[["time_server"]] |> max()
+    stations[["time_server"]] <- stations[["time_server"]] |> max()
 
     # suppress warning, c.f. r-spatial/sf#406
-    sf::st_agr(temp) <- "constant"
+    sf::st_agr(stations) <- "constant"
 
     # trim stations due to overlapping tiles to original bounding box again
-    temp <- sf::st_intersection(x = temp, y = ext)
+    stations <- sf::st_intersection(x = stations, y = ext)
 
     # return cleaned sf object
-    dplyr::distinct(temp)
+    dplyr::distinct(stations)
   }
 }

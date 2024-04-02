@@ -240,20 +240,33 @@ get_measure <- function(devices = NULL,
       r_raw <- httr::GET(url = base_url, query = query, config = .sig)
       code <- httr::status_code(r_raw)
 
+      # parse response
+      r_list <- httr::content(r_raw, "text") |> jsonlite::fromJSON()
+
       # abort if no device was to be found
       if (code == 404) {
 
-        paste0("(HTTP status ", code, "): ", r_json[["error"]][["message"]], ".\n",
+        msg <- r_list[["error"]][["message"]]
+
+        paste0("(HTTP status ", code, "): ", msg, ".\n",
                "This should never happen with `devices` returned by `get_publicdata()`.\n",
                "If you provided mac addresses by yourself using `set_device()`, check for typos.") |> stop()
       }
 
-      # parse response
-      r_json <- httr::content(r_raw, "text") |> jsonlite::fromJSON()
+      # skip iteration if no data is returned
+      if (length(r_list[["body"]]) == 0) {
+
+        paste0("Note: Query response for device '", devices_subset[1, ][["base_station"]],
+               "' and period ", as.POSIXct(query[["date_begin"]], origin = "1970-01-01") |> format("%Y-%m-%d"), " to ",
+               as.POSIXct(query[["date_end"]], origin = "1970-01-01") |> format("%Y-%m-%d"),
+               " was returned without content.") |> message()
+
+        next
+      }
 
       # parse json to df
-      r_df <- data.frame(datetimes = r_json[["body"]] |> names() |> as.numeric() |> as.POSIXct(origin = "1970-01-01", tz = "Europe/Berlin"),
-                         values = r_json[["body"]] |> as.numeric())
+      r_df <- data.frame(datetimes = r_list[["body"]] |> names() |> as.numeric() |> as.POSIXct(origin = "1970-01-01", tz = "Europe/Berlin"),
+                         values = r_list[["body"]] |> as.numeric())
 
       # create xts
       xts <- xts::xts(r_df[["values"]], order.by = r_df[["datetimes"]])
@@ -277,6 +290,11 @@ get_measure <- function(devices = NULL,
     }
 
     # post-processing ----------------------------------------------------------
+
+    if (!exists("xts_merge")) {
+
+      stop("No data available for selected device(s) and defined period of time. ")
+    }
 
     # meta data definition
     # subset of basis parameters from `timeseriesIO::xts_init()`

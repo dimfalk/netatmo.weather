@@ -1,4 +1,4 @@
-# version 0.5.5
+# version 0.5.6
 
 ## features
 
@@ -12,6 +12,7 @@
 - `get_publicdata(tiles = TRUE)` and `get_measure()` now have a progress bar included
 - `get_publicdata()` now allows to include observations fetched from API response when `meas = TRUE`
 - `get_measure()` now internally splitting up large queries exceeding 1024 values into chunks
+- `get_measure()` now internally skipping iterations without data returned instead of failing
 
 
 ## bug fixes 
