@@ -58,6 +58,8 @@ get_measure <- function(devices = NULL,
 
   checkmate::assert_numeric(period, len = 2)
 
+  checkmate::assert_numeric(period[1], lower = 1325372400)
+
   allowed_par <- c("temperature", "min_temp", "max_temp",
                    "humidity", "min_hum", "max_hum",
                    "pressure", "min_pressure", "max_pressure",

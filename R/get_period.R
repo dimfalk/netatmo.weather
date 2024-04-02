@@ -1,6 +1,6 @@
 #' Construct a vector of length 2 and integer type representing UNIX time
 #'
-#' @param x NULL, or "recent", or a vector of length 2 containing from/to timestamps as characters.
+#' @param x NULL, or "recent", or a character vector of length 2 representing two timestamps (from/to).
 #' @param res numeric. Measurement resolution in minutes.
 #'
 #' @return numeric. Vector of length 2 containing from/to timestamps as UNIX time.
@@ -10,7 +10,7 @@
 #' p1 <- get_period()
 #' p2 <- get_period(res = 60)
 #' p3 <- get_period("recent")
-#' p4 <- get_period(c("2022-06-01", "2022-06-04"))
+#' p4 <- get_period(c("2024-03-01", "2024-04-01"))
 get_period <- function(x = NULL,
                        res = 5) {
 
@@ -56,6 +56,12 @@ get_period <- function(x = NULL,
 
     to <- x[2] |> strptime(format = "%Y-%m-%d") |> as.POSIXct()
     from <- x[1] |> strptime(format = "%Y-%m-%d") |> as.POSIXct()
+
+    if (as.POSIXct(strptime("2012-01-01", format = "%Y-%m-%d")) > from) {
+
+      paste0("Netatmo's Smart Home Weather Station launched in 2012. \n",
+             "  Please select a later start date for measurement data acquisition.") |> warning()
+    }
   }
 
   # return object
