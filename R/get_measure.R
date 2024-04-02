@@ -20,9 +20,9 @@
 #' p3 <- get_period("recent")
 #' p4 <- get_period(c("2022-06-06", "2022-06-08"))
 #'
-#' meas <- get_measure(stations, period = p2, par = "pressure")
-#' meas <- get_measure(stations, period = p3, par = "temperature", res = 30)
-#' meas <- get_measure(stations, period = p4, par = "sum_rain", res = 60)
+#' obs <- get_measure(stations, period = p2, par = "pressure")
+#' obs <- get_measure(stations, period = p3, par = "temperature", res = 30)
+#' obs <- get_measure(stations, period = p4, par = "sum_rain", res = 60)
 #' }
 get_measure <- function(devices = NULL,
                         period = NULL,
@@ -32,12 +32,16 @@ get_measure <- function(devices = NULL,
   # debugging ------------------------------------------------------------------
 
   # devices <- stations
-  # period <- get_period()
+  # devices <- stations[1, ]
+
+  # period <- get_period(res = 5)
   # period <- get_period(res = 60)
   # period <- get_period(x = "recent")
   # period <- get_period(x = c("2022-06-06", "2022-06-08"))
+
   # par <- "sum_rain"
   # par <- "temperature"
+
   # res <- 5
   # res <- 60
 
@@ -212,9 +216,11 @@ get_measure <- function(devices = NULL,
     # main ---------------------------------------------------------------------
 
     # split datetimes in chunks à 1024 values
+    width <- 60 * res
+
     datetimes_seq <- seq(from = query[["date_begin"]],
-                         to = query[["date_end"]],
-                         by = 60 * res)
+                         to = query[["date_end"]] - width,
+                         by = width)
 
     datetimes_list <- split(datetimes_seq, ceiling(seq_along(datetimes_seq) / 1024))
 
@@ -225,12 +231,6 @@ get_measure <- function(devices = NULL,
 
       # relevant
       datetimes <- datetimes_list[[j]]
-
-      # TODO: skip iteration if only one object is included, fix this in the future!
-      if (length(datetimes) == 1) {
-
-        next
-      }
 
       # overwrite range in original query
       query[["date_begin"]] <- datetimes[[1]]
@@ -293,7 +293,7 @@ get_measure <- function(devices = NULL,
 
     if (!exists("xts_merge")) {
 
-      stop("No data available for selected device(s) and defined period of time. ")
+      stop("No data available for selected device(s) and defined period of time.")
     }
 
     # meta data definition
