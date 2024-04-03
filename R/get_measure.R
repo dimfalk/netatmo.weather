@@ -138,19 +138,19 @@ get_measure <- function(devices = NULL,
   # read token
   .sig <- readRDS(".httr-oauth")[[1]] |> httr::config(token = _)
 
+  # user notification
+  paste0("/getmeasure: Fetching ", par, " measurements (", res, " min) from ",
+         as.POSIXct(period, origin = "1970-01-01") |> format("%Y-%m-%d") |> paste(collapse =  " to "),
+         " for ", n, " station(s) ...") |> message()
+
   # initialize progress bar
-  pb <- progress::progress_bar$new(format = "(:spin) [:bar] :percent || Iteration: :current/:total || Elapsed time: :elapsedfull \n",
+  pb <- progress::progress_bar$new(format = "(:spin) [:bar] :percent || Iteration: :current/:total || Elapsed time: :elapsedfull",
                                    total = n,
                                    complete = "#",
                                    incomplete = "-",
                                    current = ">",
                                    clear = FALSE,
                                    width = 100)
-
-  # user notification
-  paste0("/getmeasure: Fetching ", par, " measurements (", res, " min) from ",
-         as.POSIXct(period, origin = "1970-01-01") |> format("%Y-%m-%d") |> paste(collapse =  " to "),
-         " for ", n, " station(s) ...") |> message()
 
   # iterate over relevant mac addresses and get measurements
   for (i in 1:n) {
@@ -256,7 +256,7 @@ get_measure <- function(devices = NULL,
       # skip iteration if no data is returned
       if (length(r_list[["body"]]) == 0) {
 
-        paste0("Note: Query response for device '", devices_subset[1, ][["NAMain"]],
+        paste0("\n Note: Query response for device '", devices_subset[1, ][["NAMain"]],
                "' and period ", as.POSIXct(query[["date_begin"]], origin = "1970-01-01") |> format("%Y-%m-%d"), " to ",
                as.POSIXct(query[["date_end"]], origin = "1970-01-01") |> format("%Y-%m-%d"),
                " was returned without content.") |> message()
@@ -293,7 +293,7 @@ get_measure <- function(devices = NULL,
 
     if (!exists("xts_merge")) {
 
-      stop("No data available for selected device(s) and defined period of time.")
+      "No data available for selected device(s) and defined period of time." |> stop()
     }
 
     # meta data definition

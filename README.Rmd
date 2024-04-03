@@ -123,6 +123,7 @@ However, since the number of stations returned by **/getpublicdata** seems to be
 ```{r, message = FALSE}
 stations_tiled <- get_publicdata(ext = e1, 
                                  tiles = TRUE)
+#> /getpublicdata: Fetching stations from the following area: 6.89, 51.34, 7.13, 51.53 ...
 
 stations_tiled
 ```
@@ -161,6 +162,7 @@ obs <- get_measure(devices = stations_tiled[1:10, ],
                    period = p2, 
                    par = "temperature", 
                    res = 60)
+#> /getmeasure: Fetching temperature measurements (60 min) from 2024-02-21 to 2024-04-03 for 10 station(s) ...
 
 class(obs)
 length(obs)
