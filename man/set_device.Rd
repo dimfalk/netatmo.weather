@@ -5,7 +5,7 @@
 \title{Manually construct an sf object with user-provided MAC addresses}
 \usage{
 set_device(
-  base_station = NULL,
+  NAMain = NULL,
   NAModule1 = NULL,
   NAModule2 = NULL,
   NAModule3 = NULL,
@@ -14,7 +14,7 @@ set_device(
 )
 }
 \arguments{
-\item{base_station}{character. MAC address of Netatmo base station.}
+\item{NAMain}{character. MAC address of Netatmo base station.}
 
 \item{NAModule1}{character. MAC address of Netatmo outdoor module.}
 
@@ -33,7 +33,6 @@ Sf object containing relevant MAC addresses for \code{get_measure()} queries.
 Manually construct an sf object with user-provided MAC addresses
 }
 \examples{
-set_device("70:ee:50:13:54:bc")
-set_device("70:ee:50:13:54:bc", lat = 51.5, lon = 7.0)
+set_device("70:ee:50:13:54:bc", "02:00:00:13:57:c8", lat = 51.5, lon = 7.0)
 set_device("70:ee:50:13:54:bc", "02:00:00:13:57:c8", "06:00:00:02:5f:54", "05:00:00:01:48:96")
 }

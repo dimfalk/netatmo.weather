@@ -136,7 +136,7 @@ get_publicdata <- function(ext = NULL,
       # skip iteration if no objects are returned
       if (length(r_list[["body"]]) == 0) {
 
-        paste0("Note: Query response for tile #", i, " was returned without content.") |> message()
+        paste0("\n Note: Query response for tile #", i, " was returned without content.") |> message()
 
         next
       }

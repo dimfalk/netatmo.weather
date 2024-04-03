@@ -1,6 +1,6 @@
 Package: netatmo.weather
 Title: R wrapper for Netatmo Weather API
-Version: 0.5.9
+Version: 0.5.10
 Date: 2024-04-03
 Authors@R: 
     person("Dimitri", "Falk", , "falk.dimitri@eglv.de", role = c("aut", "cre"))

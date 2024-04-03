@@ -96,9 +96,9 @@ get_measure <- function(devices = NULL,
                             "min_hum" = "NAModule1",
                             "max_hum" = "NAModule1",
 
-                            "pressure" = "base_station",
-                            "min_pressure" = "base_station",
-                            "max_pressure" = "base_station",
+                            "pressure" = "NAMain",
+                            "min_pressure" = "NAMain",
+                            "max_pressure" = "NAMain",
 
                             "windstrength" = "NAModule2",
                             "windangle" = "NAModule2",
@@ -139,7 +139,7 @@ get_measure <- function(devices = NULL,
   .sig <- readRDS(".httr-oauth")[[1]] |> httr::config(token = _)
 
   # initialize progress bar
-  pb <- progress::progress_bar$new(format = "(:spin) [:bar] :percent || Iteration: :current/:total || Elapsed time: :elapsedfull",
+  pb <- progress::progress_bar$new(format = "(:spin) [:bar] :percent || Iteration: :current/:total || Elapsed time: :elapsedfull \n",
                                    total = n,
                                    complete = "#",
                                    incomplete = "-",
@@ -165,8 +165,8 @@ get_measure <- function(devices = NULL,
 
     query <- switch(relevant_module,
 
-                    "base_station" = list(
-                      device_id = devices_subset[[i, "base_station"]],
+                    "NAMain" = list(
+                      device_id = devices_subset[[i, "NAMain"]],
                       scale = res_code,
                       type = par,
                       date_begin = period[1],
@@ -177,7 +177,7 @@ get_measure <- function(devices = NULL,
                     ),
 
                     "NAModule1" = list(
-                      device_id = devices_subset[[i, "base_station"]],
+                      device_id = devices_subset[[i, "NAMain"]],
                       module_id = devices_subset[[i, "NAModule1"]],
                       scale = res_code,
                       type = par,
@@ -189,7 +189,7 @@ get_measure <- function(devices = NULL,
                     ),
 
                     "NAModule2" = list(
-                      device_id = devices_subset[[i, "base_station"]],
+                      device_id = devices_subset[[i, "NAMain"]],
                       module_id = devices_subset[[i, "NAModule2"]],
                       scale = res_code,
                       type = par,
@@ -201,7 +201,7 @@ get_measure <- function(devices = NULL,
                     ),
 
                     "NAModule3" = list(
-                      device_id = devices_subset[[i, "base_station"]],
+                      device_id = devices_subset[[i, "NAMain"]],
                       module_id = devices_subset[[i, "NAModule3"]],
                       scale = res_code,
                       type = par,
@@ -256,7 +256,7 @@ get_measure <- function(devices = NULL,
       # skip iteration if no data is returned
       if (length(r_list[["body"]]) == 0) {
 
-        paste0("Note: Query response for device '", devices_subset[1, ][["base_station"]],
+        paste0("Note: Query response for device '", devices_subset[1, ][["NAMain"]],
                "' and period ", as.POSIXct(query[["date_begin"]], origin = "1970-01-01") |> format("%Y-%m-%d"), " to ",
                as.POSIXct(query[["date_end"]], origin = "1970-01-01") |> format("%Y-%m-%d"),
                " was returned without content.") |> message()
@@ -298,7 +298,7 @@ get_measure <- function(devices = NULL,
 
     # meta data definition
     # subset of basis parameters from `timeseriesIO::xts_init()`
-    attr(xts_merge, "STAT_ID") <- devices_subset[["base_station"]][i]
+    attr(xts_merge, "STAT_ID") <- devices_subset[["NAMain"]][i]
 
     attr(xts_merge, "X") <- sf::st_coordinates(devices_subset[i, ])[1]
     attr(xts_merge, "Y") <- sf::st_coordinates(devices_subset[i, ])[2]
@@ -405,7 +405,7 @@ get_measure <- function(devices = NULL,
   }
 
   # definition of unique names
-  names(xtslist) <- devices_subset[["base_station"]]
+  names(xtslist) <- devices_subset[["NAMain"]]
 
   # return object
   xtslist

@@ -1,6 +1,6 @@
 #' Manually construct an sf object with user-provided MAC addresses
 #'
-#' @param base_station character. MAC address of Netatmo base station.
+#' @param NAMain character. MAC address of Netatmo base station.
 #' @param NAModule1 character. MAC address of Netatmo outdoor module.
 #' @param NAModule2 character. MAC address of Netatmo wind module.
 #' @param NAModule3 character. MAC address of Netatmo precipitation module.
@@ -11,10 +11,9 @@
 #' @export
 #'
 #' @examples
-#' set_device("70:ee:50:13:54:bc")
-#' set_device("70:ee:50:13:54:bc", lat = 51.5, lon = 7.0)
+#' set_device("70:ee:50:13:54:bc", "02:00:00:13:57:c8", lat = 51.5, lon = 7.0)
 #' set_device("70:ee:50:13:54:bc", "02:00:00:13:57:c8", "06:00:00:02:5f:54", "05:00:00:01:48:96")
-set_device <- function(base_station = NULL,
+set_device <- function(NAMain = NULL,
                        NAModule1 = NULL,
                        NAModule2 = NULL,
                        NAModule3 = NULL,
@@ -23,7 +22,7 @@ set_device <- function(base_station = NULL,
 
   # debugging ------------------------------------------------------------------
 
-  # base_station <- "70:ee:50:13:54:bc"
+  # NAMain <- "70:ee:50:13:54:bc"
   # NAModule1 <- "02:00:00:13:57:c8"
   # NAModule2 <- "06:00:00:02:5f:54"
   # NAModule3 <- "05:00:00:01:48:96"
@@ -32,7 +31,7 @@ set_device <- function(base_station = NULL,
 
   # check arguments ------------------------------------------------------------
 
-  checkmate::assert_character(base_station, n.chars = 17, pattern = "([a-z0-9]{2}:){5}")
+  checkmate::assert_character(NAMain, n.chars = 17, pattern = "([a-z0-9]{2}:){5}")
 
   if(!is.null(NAModule1)) {
 
@@ -61,7 +60,7 @@ set_device <- function(base_station = NULL,
 
   # main -----------------------------------------------------------------------
 
-  n_modules <- paste(base_station, NAModule1, NAModule2, NAModule3, sep = " ") |>
+  n_modules <- paste(NAModule1, NAModule2, NAModule3, sep = " ") |>
     stringr::str_trim("right") |>
     stringr::str_split(" ") |>
     unlist() |>
@@ -69,7 +68,7 @@ set_device <- function(base_station = NULL,
 
   temp <- data.frame(status = "man",
                      time_server = Sys.time(),
-                     base_station = base_station,
+                     NAMain = NAMain,
                      timezone = Sys.timezone(),
                      country = NA,
                      altitude = NA,

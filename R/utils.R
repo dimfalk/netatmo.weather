@@ -36,7 +36,7 @@ unlist_response <- function(x, meas = FALSE) {
   temp["time_server"] <- x[["time_server"]] |> as.POSIXct(origin = "1970-01-01", tz = "Europe/Berlin")
 
   # body/id
-  temp["base_station"] <- x[["body"]][["_id"]]
+  temp["NAMain"] <- x[["body"]][["_id"]]
 
   # body/place
   temp["x"] <- x[["body"]][["place"]][["location"]] |> purrr::map_chr(1) |> as.numeric()
@@ -120,7 +120,7 @@ unlist_response <- function(x, meas = FALSE) {
     macs <- names(obs_all)
 
     # names to access mac addresses
-    ind <- c("base_station", "NAModule1", "NAModule2", "NAModule3")
+    ind <- c("NAMain", "NAModule1", "NAModule2", "NAModule3")
 
     # iterate over base stations
     for (i in 1:n) {
@@ -141,7 +141,7 @@ unlist_response <- function(x, meas = FALSE) {
         obs <- obs_all[mac][i, ]
 
         # sort observations into relevant columns based on parameter provided
-        if (j == "base_station") {
+        if (j == "NAMain") {
 
           datetimes <- obs[["res"]] |> unlist() |> names() |> stringr::str_sub(start = 1, end = 10) |> as.integer() |> as.POSIXct(origin = "1970-01-01", tz = "UTC")
           values <- obs[["res"]] |> unlist() |> as.double()
