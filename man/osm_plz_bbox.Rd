@@ -3,12 +3,12 @@
 \docType{data}
 \name{osm_plz_bbox}
 \alias{osm_plz_bbox}
-\title{Bounding box polygon representation of zip code areas in Germany}
+\title{Bounding box polygon representation of postal code areas in Germany}
 \format{
 Simple feature collection of type POLYGON with 8,170 features and 1 field:
 \describe{
-\item{plz}{zip codes}
-\item{geometry}{bbox coordinates}
+\item{plz}{character. Postal code.}
+\item{geometry}{Bounding box coordinates.}
 }
 }
 \source{
@@ -21,7 +21,7 @@ osm_plz_bbox
 \url{https://www.suche-postleitzahl.org/downloads}
 }
 \details{
-A subset/derivate of 5-digit zip code data provided by OpenStreetMap
+A subset/derivate of 5-digit postal code data provided by OpenStreetMap
 }
 \note{
 Last access: 2022-10-20

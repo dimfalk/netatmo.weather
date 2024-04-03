@@ -4,8 +4,8 @@
 #'
 #' @format Simple feature collection of type POLYGON with 10,994 features and 1 field:
 #' \describe{
-#'   \item{GEN}{municipality name}
-#'   \item{geometry}{bbox coordinates}
+#'   \item{GEN}{character. Municipality name.}
+#'   \item{geometry}{Bounding box coordinates.}
 #' }
 #' @source <https://daten.gdz.bkg.bund.de/produkte/vg/vg250_ebenen_1231/aktuell/vg250_12-31.utm32s.shape.ebenen.zip>
 #' @note Last access: 2022-10-20
@@ -16,14 +16,14 @@
 
 
 
-#' Bounding box polygon representation of zip code areas in Germany
+#' Bounding box polygon representation of postal code areas in Germany
 #'
-#' A subset/derivate of 5-digit zip code data provided by OpenStreetMap
+#' A subset/derivate of 5-digit postal code data provided by OpenStreetMap
 #'
 #' @format Simple feature collection of type POLYGON with 8,170 features and 1 field:
 #' \describe{
-#'   \item{plz}{zip codes}
-#'   \item{geometry}{bbox coordinates}
+#'   \item{plz}{character. Postal code.}
+#'   \item{geometry}{Bounding box coordinates.}
 #' }
 #' @source <https://downloads.suche-postleitzahl.org/v2/public/plz-5stellig.shp.zip>
 #' @note Last access: 2022-10-20

@@ -7,8 +7,8 @@
 \format{
 Simple feature collection of type POLYGON with 10,994 features and 1 field:
 \describe{
-\item{GEN}{municipality name}
-\item{geometry}{bbox coordinates}
+\item{GEN}{character. Municipality name.}
+\item{geometry}{Bounding box coordinates.}
 }
 }
 \source{
