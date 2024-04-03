@@ -19,7 +19,7 @@ and load the package via
 
 ``` r
 library(netatmo.weather)
-#> 0.5.8
+#> 0.5.11
 ```
 
 ## Getting Started
@@ -156,36 +156,29 @@ This information can now be used to list stations located in this area
 ``` r
 stations <- get_publicdata(ext = e1)
 #> /getpublicdata: Fetching stations from the following area: 6.89, 51.34, 7.13, 51.53 ...
-#> Warning: Automatic coercion from double to character was deprecated in purrr 1.0.0.
-#> ℹ Please use an explicit call to `as.character()` within `map_chr()` instead.
-#> ℹ The deprecated feature was likely used in the netatmo.weather package.
-#>   Please report the issue to the authors.
-#> This warning is displayed once every 8 hours.
-#> Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
-#> generated.
 
 stations
-#> Simple feature collection with 308 features and 13 fields
+#> Simple feature collection with 306 features and 13 fields
 #> Geometry type: POINT
 #> Dimension:     XY
 #> Bounding box:  xmin: 6.890067 ymin: 51.34127 xmax: 7.129903 ymax: 51.52976
 #> Geodetic CRS:  WGS 84
-#> # A tibble: 308 × 14
-#>    status time_server         base_station      timezone  country altitude city 
-#>  * <chr>  <dttm>              <chr>             <chr>     <chr>      <int> <chr>
-#>  1 ok     2024-04-02 10:45:04 70:ee:50:01:c7:c6 Europe/B… DE           111 Essen
-#>  2 ok     2024-04-02 10:45:04 70:ee:50:6b:34:74 Europe/B… DE           112 Essen
-#>  3 ok     2024-04-02 10:45:04 70:ee:50:04:ce:cc Europe/B… DE           114 Essen
-#>  4 ok     2024-04-02 10:45:04 70:ee:50:a9:cd:04 Europe/B… DE           108 Essen
-#>  5 ok     2024-04-02 10:45:04 70:ee:50:a2:01:6a Europe/B… DE           108 Essen
-#>  6 ok     2024-04-02 10:45:04 70:ee:50:02:c9:10 Europe/B… DE            60 Essen
-#>  7 ok     2024-04-02 10:45:04 70:ee:50:a5:9f:7a Europe/B… DE            69 Essen
-#>  8 ok     2024-04-02 10:45:04 70:ee:50:05:06:2a Europe/B… DE            69 Essen
-#>  9 ok     2024-04-02 10:45:04 70:ee:50:36:f4:76 Europe/B… DE            77 Essen
-#> 10 ok     2024-04-02 10:45:04 70:ee:50:af:31:5e Europe/B… DE           101 Essen
-#> # ℹ 298 more rows
-#> # ℹ 7 more variables: street <chr>, mark <int>, n_modules <int>,
-#> #   NAModule1 <chr>, NAModule2 <chr>, NAModule3 <chr>, geometry <POINT [°]>
+#> # A tibble: 306 × 14
+#>    status time_server         NAMain      timezone country altitude city  street
+#>  * <chr>  <dttm>              <chr>       <chr>    <chr>      <int> <chr> <chr> 
+#>  1 ok     2024-04-03 22:48:19 70:ee:50:0… Europe/… DE           111 Essen A 52  
+#>  2 ok     2024-04-03 22:48:19 70:ee:50:6… Europe/… DE           112 Essen Steel…
+#>  3 ok     2024-04-03 22:48:19 70:ee:50:0… Europe/… DE           114 Essen Steel…
+#>  4 ok     2024-04-03 22:48:19 70:ee:50:a… Europe/… DE           108 Essen Laure…
+#>  5 ok     2024-04-03 22:48:19 70:ee:50:a… Europe/… DE           108 Essen Eligi…
+#>  6 ok     2024-04-03 22:48:19 70:ee:50:0… Europe/… DE            60 Essen Hengl…
+#>  7 ok     2024-04-03 22:48:19 70:ee:50:a… Europe/… DE            69 Essen Notte…
+#>  8 ok     2024-04-03 22:48:19 70:ee:50:0… Europe/… DE            69 Essen Notte…
+#>  9 ok     2024-04-03 22:48:19 70:ee:50:3… Europe/… DE            77 Essen Lohmü…
+#> 10 ok     2024-04-03 22:48:19 70:ee:50:a… Europe/… DE           101 Essen Bochu…
+#> # ℹ 296 more rows
+#> # ℹ 6 more variables: mark <int>, n_modules <int>, NAModule1 <chr>,
+#> #   NAModule2 <chr>, NAModule3 <chr>, geometry <POINT [°]>
 ```
 
 However, since the number of stations returned by **/getpublicdata**
@@ -199,27 +192,27 @@ stations_tiled <- get_publicdata(ext = e1,
                                  tiles = TRUE)
 
 stations_tiled
-#> Simple feature collection with 632 features and 13 fields
+#> Simple feature collection with 628 features and 13 fields
 #> Geometry type: POINT
 #> Dimension:     XY
 #> Bounding box:  xmin: 6.890067 ymin: 51.34127 xmax: 7.129903 ymax: 51.52976
 #> Geodetic CRS:  WGS 84
-#> # A tibble: 632 × 14
-#>    status time_server         base_station      timezone  country altitude city 
-#>    <chr>  <dttm>              <chr>             <chr>     <chr>      <int> <chr>
-#>  1 ok     2024-04-02 10:45:58 70:ee:50:84:48:5a Europe/B… DE            45 Essen
-#>  2 ok     2024-04-02 10:45:58 70:ee:50:7a:81:24 Europe/B… DE            46 Essen
-#>  3 ok     2024-04-02 10:45:58 70:ee:50:af:62:5e Europe/B… DE            63 Essen
-#>  4 ok     2024-04-02 10:45:58 70:ee:50:af:86:16 Europe/B… DE            93 Essen
-#>  5 ok     2024-04-02 10:45:58 70:ee:50:12:f8:62 Europe/B… DE            48 Essen
-#>  6 ok     2024-04-02 10:45:58 70:ee:50:a4:68:a2 Europe/B… DE            57 Essen
-#>  7 ok     2024-04-02 10:45:58 70:ee:50:16:0e:06 Europe/B… DE            81 Essen
-#>  8 ok     2024-04-02 10:45:58 70:ee:50:7f:f6:c8 Europe/B… DE            61 Essen
-#>  9 ok     2024-04-02 10:45:58 70:ee:50:7a:94:9a Europe/B… DE            61 Essen
-#> 10 ok     2024-04-02 10:45:58 70:ee:50:7b:12:86 Europe/B… DE            66 Essen
-#> # ℹ 622 more rows
-#> # ℹ 7 more variables: street <chr>, mark <int>, n_modules <int>,
-#> #   NAModule1 <chr>, NAModule2 <chr>, NAModule3 <chr>, geometry <POINT [°]>
+#> # A tibble: 628 × 14
+#>    status time_server         NAMain      timezone country altitude city  street
+#>    <chr>  <dttm>              <chr>       <chr>    <chr>      <int> <chr> <chr> 
+#>  1 ok     2024-04-03 22:49:11 70:ee:50:8… Europe/… DE            45 Essen Volck…
+#>  2 ok     2024-04-03 22:49:11 70:ee:50:7… Europe/… DE            46 Essen Eva-H…
+#>  3 ok     2024-04-03 22:49:11 70:ee:50:a… Europe/… DE            63 Essen Am Mö…
+#>  4 ok     2024-04-03 22:49:11 70:ee:50:a… Europe/… DE            93 Essen Senge…
+#>  5 ok     2024-04-03 22:49:11 70:ee:50:1… Europe/… DE            48 Essen Johan…
+#>  6 ok     2024-04-03 22:49:11 70:ee:50:a… Europe/… DE            57 Essen Marti…
+#>  7 ok     2024-04-03 22:49:11 70:ee:50:1… Europe/… DE            81 Essen Akade…
+#>  8 ok     2024-04-03 22:49:11 70:ee:50:7… Europe/… DE            61 Essen Haupt…
+#>  9 ok     2024-04-03 22:49:11 70:ee:50:7… Europe/… DE            61 Essen Haupt…
+#> 10 ok     2024-04-03 22:49:11 70:ee:50:7… Europe/… DE            66 Essen Eiche…
+#> # ℹ 618 more rows
+#> # ℹ 6 more variables: mark <int>, n_modules <int>, NAModule1 <chr>,
+#> #   NAModule2 <chr>, NAModule3 <chr>, geometry <POINT [°]>
 ```
 
 ### /getmeasure
@@ -241,17 +234,17 @@ To assist you with the latter going backwards from `Sys.time()`,
 # 5-minutely data
 p1 <- get_period(res = 5)
 as.POSIXct(p1, origin = "1970-01-01")
-#> [1] "2024-03-29 19:40:00 CET"  "2024-04-02 10:00:00 CEST"
+#> [1] "2024-03-31 08:40:00 CEST" "2024-04-03 22:00:00 CEST"
 
 # hourly data
 p2 <- get_period(res = 60)
 as.POSIXct(p2, origin = "1970-01-01")
-#> [1] "2024-02-19 17:00:00 CET"  "2024-04-02 10:00:00 CEST"
+#> [1] "2024-02-21 05:00:00 CET"  "2024-04-03 22:00:00 CEST"
 
 # querying the last 24 hours, maybe convenient for scheduled jobs
 p3 <- get_period("recent")
 as.POSIXct(p3, origin = "1970-01-01")
-#> [1] "2024-04-01 10:00:00 CEST" "2024-04-02 10:00:00 CEST"
+#> [1] "2024-04-02 22:00:00 CEST" "2024-04-03 22:00:00 CEST"
 
 # self-defined period
 p4 <- get_period(c("2024-03-01", "2024-04-01"))
@@ -292,12 +285,12 @@ head(xts)
 #>   NOTE: set 'options(xts_check_TZ = FALSE)' to disable this warning
 #>     This note is displayed once per session
 #>                     temperature
-#> 2024-02-19 17:00:00        10.3
-#> 2024-02-19 18:00:00         9.7
-#> 2024-02-19 19:00:00         9.5
-#> 2024-02-19 20:00:00         9.2
-#> 2024-02-19 21:00:00         9.0
-#> 2024-02-19 22:00:00         8.7
+#> 2024-02-21 05:00:00         8.6
+#> 2024-02-21 06:00:00         8.8
+#> 2024-02-21 07:00:00         8.8
+#> 2024-02-21 08:00:00         9.0
+#> 2024-02-21 09:00:00         9.5
+#> 2024-02-21 10:00:00         9.9
 
 # inspect attribute names appended 
 attributes(xts) |> names() |> tail(-4)

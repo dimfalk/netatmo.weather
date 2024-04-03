@@ -39,8 +39,8 @@ unlist_response <- function(x, meas = FALSE) {
   temp["NAMain"] <- x[["body"]][["_id"]]
 
   # body/place
-  temp["x"] <- x[["body"]][["place"]][["location"]] |> purrr::map_chr(1) |> as.numeric()
-  temp["y"] <- x[["body"]][["place"]][["location"]] |> purrr::map_chr(2) |> as.numeric()
+  temp["x"] <- x[["body"]][["place"]][["location"]] |> purrr::map_dbl(1)
+  temp["y"] <- x[["body"]][["place"]][["location"]] |> purrr::map_dbl(2)
   temp["timezone"] <- x[["body"]][["place"]][["timezone"]]
   temp["country"] <- x[["body"]][["place"]][["country"]]
   temp["altitude"] <- x[["body"]][["place"]][["altitude"]]
@@ -94,7 +94,6 @@ unlist_response <- function(x, meas = FALSE) {
   # include measurements provided?
   if (meas == TRUE) {
 
-    # append relevant columns to data frame
     temp["temperature_datetime"] <- as.POSIXct(NA)
     temp["temperature"] <- NA
 
@@ -180,9 +179,11 @@ unlist_response <- function(x, meas = FALSE) {
   }
 
   # return sf object
-  tibble::as_tibble(temp) |> sf::st_as_sf(coords = c("x", "y"),
-                                          crs = "epsg:4326",
-                                          agr = "identity")
+  result <- tibble::as_tibble(temp) |> sf::st_as_sf(coords = c("x", "y"),
+                                                    crs = "epsg:4326",
+                                                    agr = "identity")
+
+  result
 }
 
 
