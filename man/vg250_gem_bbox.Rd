@@ -5,10 +5,11 @@
 \alias{vg250_gem_bbox}
 \title{Bounding box polygon representation of municipalities in Germany (VG250 31.12.2021)}
 \format{
-Simple feature collection of type POLYGON with 10,994 features and 1 field:
+Simple feature collection of type POLYGON with 10,994 features and 2 fields:
 \describe{
 \item{GEN}{character. Municipality name.}
-\item{geometry}{Bounding box coordinates.}
+
+\item{geometry}{sfc_GEOMETRY. Bounding box coordinates.}
 }
 }
 \source{

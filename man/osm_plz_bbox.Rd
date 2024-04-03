@@ -5,10 +5,11 @@
 \alias{osm_plz_bbox}
 \title{Bounding box polygon representation of postal code areas in Germany}
 \format{
-Simple feature collection of type POLYGON with 8,170 features and 1 field:
+Simple feature collection of type POLYGON with 8,170 features and 2 fields:
 \describe{
 \item{plz}{character. Postal code.}
-\item{geometry}{Bounding box coordinates.}
+
+\item{geometry}{sfc_GEOMETRY. Bounding box coordinates.}
 }
 }
 \source{
