@@ -1,4 +1,4 @@
-# version 0.5.13
+# version 0.5.14
 
 ## features
 
@@ -14,6 +14,7 @@
 - `get_measure()` now internally splitting up large queries exceeding 1024 values into chunks
 - `get_measure()` now internally skipping iterations without data returned instead of failing
 - `"base_station"` column returned by `get_publicdata()` renamed to `"NAMain"`, in compliance with official naming convention
+- xts objects returned by `get_measure()` now come with a `CREATED_WITH` and `CREATED_AT` attribute
 
 
 ## bug fixes 

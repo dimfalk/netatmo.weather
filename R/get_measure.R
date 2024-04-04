@@ -388,6 +388,12 @@ get_measure <- function(devices = NULL,
 
                                                 "sum_rain" = "sum")
 
+    pkg <- "netatmo.weather"
+
+    attr(xts_merge, "CREATED_WITH") <- paste0(pkg, " ", utils::packageVersion(pkg))
+
+    attr(xts_merge, "CREATED_AT") <- lubridate::now() |> format("%Y-%m-%d %H:%M:%S %Z")
+
     attr(xts_merge, "REMARKS") <- NA
 
     # concatenate objects
