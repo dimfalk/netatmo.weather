@@ -142,7 +142,7 @@ get_measure <- function(devices = NULL,
 
   # user notification
   paste0("/getmeasure: Fetching ", par, " measurements (", res, " min) from ",
-         as.POSIXct(period, origin = "1970-01-01") |> format("%Y-%m-%d %H:%M %Z") |> paste(collapse =  " to "),
+         as.POSIXct(period, origin = "1970-01-01", tz = "UTC") |> format("%Y-%m-%d %H:%M %Z") |> paste(collapse =  " to "),
          " for ", n, " station(s) ...") |> message()
 
   # initialize progress bar
@@ -260,7 +260,7 @@ get_measure <- function(devices = NULL,
 
         paste0("\n Note: Query response for device '", devices_subset[1, ][["NAMain"]], "' and period ",
                c(query[["date_begin"]], query[["date_end"]]) |>
-                 as.POSIXct(origin = "1970-01-01") |>
+                 as.POSIXct(origin = "1970-01-01", tz = "UTC") |>
                  format("%Y-%m-%d %H:%M %Z") |>
                  paste(collapse =  " to "), " was returned without content.") |> message()
 
@@ -268,7 +268,7 @@ get_measure <- function(devices = NULL,
       }
 
       # parse json to df
-      r_df <- data.frame(datetimes = r_list[["body"]] |> names() |> as.numeric() |> as.POSIXct(origin = "1970-01-01", tz = "Europe/Berlin"),
+      r_df <- data.frame(datetimes = r_list[["body"]] |> names() |> as.numeric() |> as.POSIXct(origin = "1970-01-01", tz = "UTC"),
                          values = r_list[["body"]] |> as.numeric())
 
       # create xts
@@ -307,7 +307,7 @@ get_measure <- function(devices = NULL,
     attr(xts_merge, "Y") <- sf::st_coordinates(devices_subset[i, ])[2]
     attr(xts_merge, "Z") <- devices_subset[["altitude"]][i]
     attr(xts_merge, "CRS_EPSG") <- "4326"
-    attr(xts_merge, "TZONE") <- devices[["timezone"]][i]
+    attr(xts_merge, "TZONE") <- "UTC"
 
     attr(xts_merge, "OPERATOR") <- "Netatmo S.A."
 

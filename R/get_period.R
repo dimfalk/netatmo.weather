@@ -37,7 +37,7 @@ get_period <- function(x = NULL,
 
   # main -----------------------------------------------------------------------
 
-  now <- lubridate::now("Europe/Berlin")
+  now <- lubridate::now("UTC")
 
   # default: in case no input is defined by the user
   if (is.null(x)) {
@@ -54,10 +54,10 @@ get_period <- function(x = NULL,
     # in case a vector of timestamps is provided c("YYYY-MM-DD", "YYYY-MM-DD")
   } else if (inherits(x, "character") && all.equal(nchar(x), c(10, 10))) {
 
-    to <- x[2] |> strptime(format = "%Y-%m-%d") |> as.POSIXct()
-    from <- x[1] |> strptime(format = "%Y-%m-%d") |> as.POSIXct()
+    to <- x[2] |> strptime(format = "%Y-%m-%d", tz = "UTC") |> as.POSIXct()
+    from <- x[1] |> strptime(format = "%Y-%m-%d", tz = "UTC") |> as.POSIXct()
 
-    if (as.POSIXct(strptime("2012-01-01", format = "%Y-%m-%d")) > from) {
+    if (strptime("2012-01-01", format = "%Y-%m-%d", tz = "UTC") |> as.POSIXct() > from) {
 
       paste0("Netatmo's Smart Home Weather Station launched in 2012. \n",
              "  Please select a later start date for measurement data acquisition.") |> warning()

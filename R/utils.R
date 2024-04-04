@@ -33,7 +33,7 @@ unlist_response <- function(x, meas = FALSE) {
 
   # server info
   temp["status"] <- x[["status"]]
-  temp["time_server"] <- x[["time_server"]] |> as.POSIXct(origin = "1970-01-01", tz = "Europe/Berlin")
+  temp["time_server"] <- x[["time_server"]] |> as.POSIXct(origin = "1970-01-01", tz = "UTC")
 
   # body/id
   temp["NAMain"] <- x[["body"]][["_id"]]
