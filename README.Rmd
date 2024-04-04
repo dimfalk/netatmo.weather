@@ -162,7 +162,7 @@ obs <- get_measure(devices = stations_tiled[1:10, ],
                    period = p2, 
                    par = "temperature", 
                    res = 60)
-#> /getmeasure: Fetching temperature measurements (60 min) from 2024-02-21 to 2024-04-03 for 10 station(s) ...
+#> /getmeasure: Fetching temperature measurements (60 min) from 2024-02-22 06:00 CET to 2024-04-04 23:00 CEST for 10 station(s) ...
 
 class(obs)
 length(obs)

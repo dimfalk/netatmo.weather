@@ -31,8 +31,10 @@ get_measure <- function(devices = NULL,
 
   # debugging ------------------------------------------------------------------
 
-  # devices <- stations
-  # devices <- stations[1:10, ]
+  # e <- get_extent(c(6.89, 51.34, 7.13, 51.53))
+
+  # devices <- get_publicdata(ext = e)
+  # devices <- devices[1:10, ]
 
   # period <- get_period(res = 5)
   # period <- get_period(res = 60)
@@ -140,7 +142,7 @@ get_measure <- function(devices = NULL,
 
   # user notification
   paste0("/getmeasure: Fetching ", par, " measurements (", res, " min) from ",
-         as.POSIXct(period, origin = "1970-01-01") |> format("%Y-%m-%d") |> paste(collapse =  " to "),
+         as.POSIXct(period, origin = "1970-01-01") |> format("%Y-%m-%d %H:%M %Z") |> paste(collapse =  " to "),
          " for ", n, " station(s) ...") |> message()
 
   # initialize progress bar
@@ -256,10 +258,11 @@ get_measure <- function(devices = NULL,
       # skip iteration if no data is returned
       if (length(r_list[["body"]]) == 0) {
 
-        paste0("\n Note: Query response for device '", devices_subset[1, ][["NAMain"]],
-               "' and period ", as.POSIXct(query[["date_begin"]], origin = "1970-01-01") |> format("%Y-%m-%d"), " to ",
-               as.POSIXct(query[["date_end"]], origin = "1970-01-01") |> format("%Y-%m-%d"),
-               " was returned without content.") |> message()
+        paste0("\n Note: Query response for device '", devices_subset[1, ][["NAMain"]], "' and period ",
+               c(query[["date_begin"]], query[["date_end"]]) |>
+                 as.POSIXct(origin = "1970-01-01") |>
+                 format("%Y-%m-%d %H:%M %Z") |>
+                 paste(collapse =  " to "), " was returned without content.") |> message()
 
         next
       }
