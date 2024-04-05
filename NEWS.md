@@ -1,4 +1,4 @@
-# version 0.5.15
+# version 0.5.16
 
 ## features
 
@@ -15,7 +15,7 @@
 - `get_measure()` now internally skipping iterations without data returned instead of failing
 - `"base_station"` column returned by `get_publicdata()` renamed to `"NAMain"`, in compliance with official naming convention
 - xts objects returned by `get_measure()` now come with a `CREATED_WITH` and `CREATED_AT` attribute
-- `get_period()` now accepts intervals in accordance with ISO 8601
+- `get_period()` now accepts intervals in accordance with ISO 8601, also taking `%H:%M` information into account
 
 
 ## bug fixes 

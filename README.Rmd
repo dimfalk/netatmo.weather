@@ -152,6 +152,9 @@ as.POSIXct(p3, tz = "UTC")
 # self-defined period
 p4 <- get_period("2024-03-01/2024-04-01")
 as.POSIXct(p4, tz = "UTC")
+
+p5 <- get_period("2024-04-01 12:00/2024-04-01 18:00")
+as.POSIXct(p5, tz = "UTC")
 ```
 
 This can now be used to acquire observations (iterating over previously identified stations) in form of listed `xts` objects. This might take some time to finish.

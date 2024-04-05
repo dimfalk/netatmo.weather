@@ -18,8 +18,9 @@ numeric. Vector of length 2 representing an interval definition in UNIX time.
 Construct a vector of length 2 and integer type representing UNIX time
 }
 \examples{
-p1 <- get_period(res = 5)
-p2 <- get_period(res = 60)
-p3 <- get_period("recent")
-p4 <- get_period("2024-03-01/2024-04-01")
+get_period(res = 5)
+get_period(res = 60)
+get_period("recent")
+get_period("2024-03-01/2024-04-01")
+get_period("2024-04-01 12:00/2024-04-01 18:00")
 }

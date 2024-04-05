@@ -7,10 +7,11 @@
 #' @export
 #'
 #' @examples
-#' p1 <- get_period(res = 5)
-#' p2 <- get_period(res = 60)
-#' p3 <- get_period("recent")
-#' p4 <- get_period("2024-03-01/2024-04-01")
+#' get_period(res = 5)
+#' get_period(res = 60)
+#' get_period("recent")
+#' get_period("2024-03-01/2024-04-01")
+#' get_period("2024-04-01 12:00/2024-04-01 18:00")
 get_period <- function(x = NULL,
                        res = 5) {
 
@@ -19,19 +20,22 @@ get_period <- function(x = NULL,
   # x <- NULL
   # x <- "recent"
   # x <- "2022-06-01/2022-06-04"
+  # x <- "2024-04-01 12:00/2024-04-01 18:00"
   # res <- 5
 
   # check arguments ------------------------------------------------------------
 
   allowed_p <- c("recent")
 
-  regex <- "[0-9]{4}-[0-9]{2}-[0-9]{2}/[0-9]{4}-[0-9]{2}-[0-9]{2}"
+  regex_ymd <- "[0-9]{4}-[0-9]{2}-[0-9]{2}/[0-9]{4}-[0-9]{2}-[0-9]{2}"
+  regex_ymdhm <- "[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}/[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}"
 
   checkmate::assert(
 
     checkmate::testNull(x),
     checkmate::test_choice(x, allowed_p),
-    checkmate::test_character(x, len = 1, n.chars = 21, pattern = regex)
+    checkmate::test_character(x, len = 1, n.chars = 21, pattern = regex_ymd),
+    checkmate::test_character(x, len = 1, n.chars = 33, pattern = regex_ymdhm)
   )
 
   allowed_res <- c(5, 30, 60, 180, 360, 1440)
@@ -48,13 +52,13 @@ get_period <- function(x = NULL,
     from <- to - 60 * res * 1024
 
     # query the last 24 hours only
-  } else if (inherits(x, "character") && length(x) == 1 && x == "recent") {
+  } else if (x == "recent") {
 
     to <-  now |> lubridate::floor_date(unit = "hour")
     from <- to - 60 * 60 * 24
 
     # in case an interval is provided, e.g. "YYYY-MM-DD/YYYY-MM-DD"
-  } else if (stringr::str_detect(x, regex)) {
+  } else if (stringr::str_detect(x, regex_ymd) || stringr::str_detect(x, regex_ymdhm)) {
 
     to <- stringr::str_split_i(x, pattern = "/", i = 2) |> as.POSIXct(tz = "UTC")
     from <- stringr::str_split_i(x, pattern = "/", i = 1) |> as.POSIXct(tz = "UTC")
