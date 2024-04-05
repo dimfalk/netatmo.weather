@@ -121,8 +121,7 @@ stations
 However, since the number of stations returned by **/getpublicdata** seems to be influenced by the size of the area queried, the logical argument `tiles` was implemented, slicing your area of interest in tiles à 0.05 degrees to be queried separately in order to ensure the maximum number of available stations.
 
 ```{r, message = FALSE}
-stations_tiled <- get_publicdata(ext = e1, 
-                                 tiles = TRUE)
+stations_tiled <- get_publicdata(ext = e1, tiles = TRUE)
 #> /getpublicdata: Fetching stations from the following area: 6.89, 51.34, 7.13, 51.53 ...
 
 stations_tiled
@@ -165,7 +164,7 @@ obs <- get_measure(devices = stations_tiled[1:10, ],
                    period = p2, 
                    par = "temperature", 
                    res = 60)
-#> /getmeasure: Fetching temperature measurements (60 min) from 2024-02-22 06:00 CET to 2024-04-04 23:00 CEST for 10 station(s) ...
+#> /getmeasure: Fetching temperature measurements (60 min) from 2024-02-23 07:00 UTC to 2024-04-05 23:00 UTC for 10 station(s) ...
 
 class(obs)
 length(obs)

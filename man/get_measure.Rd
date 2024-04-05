@@ -28,10 +28,10 @@ fetch_token()
 e <- get_extent(c(6.89, 51.34, 7.13, 51.53))
 stations <- get_publicdata(ext = e)
 
-p1 <- get_period()
+p1 <- get_period(res = 5)
 p2 <- get_period(res = 60)
 p3 <- get_period("recent")
-p4 <- get_period(c("2022-06-06", "2022-06-08"))
+p4 <- get_period("2024-03-01/2024-04-01")
 
 obs <- get_measure(stations, period = p2, par = "pressure")
 obs <- get_measure(stations, period = p3, par = "temperature", res = 30)

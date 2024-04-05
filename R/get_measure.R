@@ -15,10 +15,10 @@
 #' e <- get_extent(c(6.89, 51.34, 7.13, 51.53))
 #' stations <- get_publicdata(ext = e)
 #'
-#' p1 <- get_period()
+#' p1 <- get_period(res = 5)
 #' p2 <- get_period(res = 60)
 #' p3 <- get_period("recent")
-#' p4 <- get_period(c("2022-06-06", "2022-06-08"))
+#' p4 <- get_period("2024-03-01/2024-04-01")
 #'
 #' obs <- get_measure(stations, period = p2, par = "pressure")
 #' obs <- get_measure(stations, period = p3, par = "temperature", res = 30)
@@ -39,7 +39,7 @@ get_measure <- function(devices = NULL,
   # period <- get_period(res = 5)
   # period <- get_period(res = 60)
   # period <- get_period(x = "recent")
-  # period <- get_period(x = c("2022-06-06", "2022-06-08"))
+  # period <- get_period(x = "2024-03-01/2024-04-01")
 
   # par <- "sum_rain"
   # par <- "temperature"
@@ -258,11 +258,11 @@ get_measure <- function(devices = NULL,
       # skip iteration if no data is returned
       if (length(r_list[["body"]]) == 0) {
 
-        paste0("\n Note: Query response for device '", devices_subset[1, ][["NAMain"]], "' and period ",
+        paste0("Query response for device '", devices_subset[1, ][["NAMain"]], "' and period ",
                c(query[["date_begin"]], query[["date_end"]]) |>
                  as.POSIXct(origin = "1970-01-01", tz = "UTC") |>
                  format("%Y-%m-%d %H:%M %Z") |>
-                 paste(collapse =  " to "), " was returned without content.") |> message()
+                 paste(collapse =  " to "), " was returned without content.") |> warning()
 
         next
       }
