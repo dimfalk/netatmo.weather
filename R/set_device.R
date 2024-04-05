@@ -31,21 +31,21 @@ set_device <- function(NAMain = NULL,
 
   # check arguments ------------------------------------------------------------
 
-  checkmate::assert_character(NAMain, n.chars = 17, pattern = "([a-z0-9]{2}:){5}")
+  checkmate::assert_character(NAMain, n.chars = 17, pattern = "([a-z0-9]{2}:){5}[a-z0-9]{2}")
 
   if(!is.null(NAModule1)) {
 
-    checkmate::assert_character(NAModule1, n.chars = 17, pattern = "([a-z0-9]{2}:){5}")
+    checkmate::assert_character(NAModule1, n.chars = 17, pattern = "([a-z0-9]{2}:){5}[a-z0-9]{2}")
   }
 
   if(!is.null(NAModule2)) {
 
-    checkmate::assert_character(NAModule2, n.chars = 17, pattern = "([a-z0-9]{2}:){5}")
+    checkmate::assert_character(NAModule2, n.chars = 17, pattern = "([a-z0-9]{2}:){5}[a-z0-9]{2}")
   }
 
   if(!is.null(NAModule2)) {
 
-    checkmate::assert_character(NAModule2, n.chars = 17, pattern = "([a-z0-9]{2}:){5}")
+    checkmate::assert_character(NAModule2, n.chars = 17, pattern = "([a-z0-9]{2}:){5}[a-z0-9]{2}")
   }
 
   if(!is.null(lat)) {

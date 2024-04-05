@@ -7,19 +7,19 @@
 get_period(x = NULL, res = 5)
 }
 \arguments{
-\item{x}{NULL, or "recent", or a character vector of length 2 representing two timestamps (from/to).}
+\item{x}{NULL, or "recent", or character representation of an interval in accordance with ISO 8601.}
 
 \item{res}{numeric. Measurement resolution in minutes.}
 }
 \value{
-numeric. Vector of length 2 containing from/to timestamps as UNIX time.
+numeric. Vector of length 2 representing an interval definition in UNIX time.
 }
 \description{
 Construct a vector of length 2 and integer type representing UNIX time
 }
 \examples{
-p1 <- get_period()
+p1 <- get_period(res = 5)
 p2 <- get_period(res = 60)
 p3 <- get_period("recent")
-p4 <- get_period(c("2024-03-01", "2024-04-01"))
+p4 <- get_period("2024-03-01/2024-04-01")
 }

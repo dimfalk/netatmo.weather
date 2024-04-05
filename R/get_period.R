@@ -1,16 +1,16 @@
 #' Construct a vector of length 2 and integer type representing UNIX time
 #'
-#' @param x NULL, or "recent", or a character vector of length 2 representing two timestamps (from/to).
+#' @param x NULL, or "recent", or character representation of an interval in accordance with ISO 8601.
 #' @param res numeric. Measurement resolution in minutes.
 #'
-#' @return numeric. Vector of length 2 containing from/to timestamps as UNIX time.
+#' @return numeric. Vector of length 2 representing an interval definition in UNIX time.
 #' @export
 #'
 #' @examples
-#' p1 <- get_period()
+#' p1 <- get_period(res = 5)
 #' p2 <- get_period(res = 60)
 #' p3 <- get_period("recent")
-#' p4 <- get_period(c("2024-03-01", "2024-04-01"))
+#' p4 <- get_period("2024-03-01/2024-04-01")
 get_period <- function(x = NULL,
                        res = 5) {
 
@@ -18,18 +18,20 @@ get_period <- function(x = NULL,
 
   # x <- NULL
   # x <- "recent"
-  # x <- c("2022-06-01", "2022-06-04")
+  # x <- "2022-06-01/2022-06-04"
   # res <- 5
 
   # check arguments ------------------------------------------------------------
 
   allowed_p <- c("recent")
 
+  regex <- "[0-9]{4}-[0-9]{2}-[0-9]{2}/[0-9]{4}-[0-9]{2}-[0-9]{2}"
+
   checkmate::assert(
 
     checkmate::testNull(x),
     checkmate::test_choice(x, allowed_p),
-    checkmate::test_character(x, len = 2, n.chars = 10)
+    checkmate::test_character(x, len = 1, n.chars = 21, pattern = regex)
   )
 
   allowed_res <- c(5, 30, 60, 180, 360, 1440)
@@ -51,11 +53,11 @@ get_period <- function(x = NULL,
     to <-  now |> lubridate::floor_date(unit = "hour")
     from <- to - 60 * 60 * 24
 
-    # in case a vector of timestamps is provided c("YYYY-MM-DD", "YYYY-MM-DD")
-  } else if (inherits(x, "character") && all.equal(nchar(x), c(10, 10))) {
+    # in case an interval is provided, e.g. "YYYY-MM-DD/YYYY-MM-DD"
+  } else if (stringr::str_detect(x, regex)) {
 
-    to <- x[2] |> strptime(format = "%Y-%m-%d", tz = "UTC") |> as.POSIXct()
-    from <- x[1] |> strptime(format = "%Y-%m-%d", tz = "UTC") |> as.POSIXct()
+    to <- stringr::str_split_i(x, pattern = "/", i = 2) |> as.POSIXct(tz = "UTC")
+    from <- stringr::str_split_i(x, pattern = "/", i = 1) |> as.POSIXct(tz = "UTC")
 
     if (strptime("2012-01-01", format = "%Y-%m-%d", tz = "UTC") |> as.POSIXct() > from) {
 
