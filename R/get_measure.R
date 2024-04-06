@@ -34,7 +34,7 @@ get_measure <- function(devices = NULL,
   # e <- get_extent(c(6.89, 51.34, 7.13, 51.53))
 
   # devices <- get_publicdata(ext = e)
-  # devices <- devices[1:10, ]
+  # devices <- devices[1, ]
 
   # period <- get_period(res = 5)
   # period <- get_period(res = 60)
@@ -122,7 +122,7 @@ get_measure <- function(devices = NULL,
   # subset devices
   devices_subset <- devices[!is.na(devices[[relevant_module]]), ]
 
-  # get n
+  # get number of stations
   n <- dim(devices_subset)[1]
 
   # abort if there are no stations left after subsetting
@@ -217,14 +217,15 @@ get_measure <- function(devices = NULL,
 
     # main ---------------------------------------------------------------------
 
-    # split datetimes in chunks à 1024 values
+    # split datetimes in chunks à 1025 values;
+    # based on interval interpretations, you need to query one additional value
     width <- 60 * res
 
     datetimes_seq <- seq(from = query[["date_begin"]],
-                         to = query[["date_end"]] - width,
+                         to = query[["date_end"]],
                          by = width)
 
-    datetimes_list <- split(datetimes_seq, ceiling(seq_along(datetimes_seq) / 1024))
+    datetimes_list <- split(datetimes_seq, ceiling(seq_along(datetimes_seq) / 1025))
 
     # eventually iterate over multiple periods to get the entire period
     m <- length(datetimes_list)
@@ -234,9 +235,18 @@ get_measure <- function(devices = NULL,
       # relevant
       datetimes <- datetimes_list[[j]]
 
-      # overwrite range in original query
-      query[["date_begin"]] <- datetimes[[1]]
-      query[["date_end"]] <- datetimes[[length(datetimes)]]
+      # overwrite range in initial query and continue with subsets
+      if (length(datetimes) > 1) {
+
+        query[["date_begin"]] <- datetimes[[1]]
+        query[["date_end"]] <- datetimes[[length(datetimes)]]
+
+      } else {
+
+        # workaround if only one single timestamp is available
+        query[["date_begin"]] <- datetimes[[1]] - width
+        query[["date_end"]] <- datetimes[[1]]
+      }
 
       # send request
       r_raw <- httr::GET(url = base_url, query = query, config = .sig)

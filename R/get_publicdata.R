@@ -99,7 +99,7 @@ get_publicdata <- function(ext = NULL,
                              crs = 4326,
                              square = TRUE)
 
-    # get n, initialize progress bar
+    # get number of tiles, initialize progress bar
     n <- length(grid)
 
     pb <- progress::progress_bar$new(format = "(:spin) [:bar] :percent || Iteration: :current/:total || Elapsed time: :elapsedfull",

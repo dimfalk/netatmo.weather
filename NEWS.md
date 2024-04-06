@@ -1,4 +1,4 @@
-# version 0.5.17
+# version 0.5.18
 
 ## features
 
@@ -23,3 +23,4 @@
 - attributes of sf object acquired by `get_publicdata()` are now assumed to be spatially constant
 - internal pre-check `curl::nslookup("api.netatmo.com")` updated to recent public IP
 - explicit and consistent `"UTC"` timezone definition 
+- `get_measure()` does not dismiss the last value anymore, based on the period queried
