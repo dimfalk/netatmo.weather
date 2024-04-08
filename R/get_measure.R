@@ -146,7 +146,7 @@ get_measure <- function(devices = NULL,
          " for ", n, " station(s) ...") |> message()
 
   # estimate m
-  nm <- n * ceiling((period[2] - period[1]) / 60 / res / 1024)
+  nm <- get_n_queries(n, res, period)
 
   # check for possible violations, initialize progress bar
   if (nm > 500) {

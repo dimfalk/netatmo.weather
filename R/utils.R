@@ -1,6 +1,6 @@
 #' Parse listed response from `get_publicdata()` call to sf object
 #'
-#' @param x Listed response returned after `jsonlite::fromJSON()` call.
+#' @param x list. Response returned after `jsonlite::fromJSON()` call.
 #' @param meas logical. Should measurements returned by the API be included?
 #'
 #' @return An sf object.

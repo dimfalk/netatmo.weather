@@ -19,7 +19,7 @@ and load the package via
 
 ``` r
 library(netatmo.weather)
-#> 0.5.18
+#> 0.5.20
 ```
 
 ## Getting Started
@@ -158,25 +158,25 @@ stations <- get_publicdata(ext = e1)
 #> /getpublicdata: Fetching stations from the following area: 6.89, 51.34, 7.13, 51.53 ...
 
 stations
-#> Simple feature collection with 307 features and 13 fields
+#> Simple feature collection with 306 features and 13 fields
 #> Geometry type: POINT
 #> Dimension:     XY
 #> Bounding box:  xmin: 6.890067 ymin: 51.34127 xmax: 7.129903 ymax: 51.52976
 #> Geodetic CRS:  WGS 84
-#> # A tibble: 307 × 14
+#> # A tibble: 306 × 14
 #>    status time_server         NAMain      timezone country altitude city  street
 #>  * <chr>  <dttm>              <chr>       <chr>    <chr>      <int> <chr> <chr> 
-#>  1 ok     2024-04-06 22:25:22 70:ee:50:0… Europe/… DE           111 Essen A 52  
-#>  2 ok     2024-04-06 22:25:22 70:ee:50:6… Europe/… DE           112 Essen Steel…
-#>  3 ok     2024-04-06 22:25:22 70:ee:50:0… Europe/… DE           114 Essen Steel…
-#>  4 ok     2024-04-06 22:25:22 70:ee:50:a… Europe/… DE           108 Essen Eligi…
-#>  5 ok     2024-04-06 22:25:22 70:ee:50:0… Europe/… DE            60 Essen Hengl…
-#>  6 ok     2024-04-06 22:25:22 70:ee:50:1… Europe/… DE            79 Essen Am Kn…
-#>  7 ok     2024-04-06 22:25:22 70:ee:50:a… Europe/… DE            69 Essen Notte…
-#>  8 ok     2024-04-06 22:25:22 70:ee:50:0… Europe/… DE            69 Essen Notte…
-#>  9 ok     2024-04-06 22:25:22 70:ee:50:3… Europe/… DE            77 Essen Lohmü…
-#> 10 ok     2024-04-06 22:25:22 70:ee:50:a… Europe/… DE           101 Essen Bochu…
-#> # ℹ 297 more rows
+#>  1 ok     2024-04-08 23:22:55 70:ee:50:0… Europe/… DE           111 Essen A 52  
+#>  2 ok     2024-04-08 23:22:55 70:ee:50:6… Europe/… DE           112 Essen Steel…
+#>  3 ok     2024-04-08 23:22:55 70:ee:50:0… Europe/… DE           114 Essen Steel…
+#>  4 ok     2024-04-08 23:22:55 70:ee:50:a… Europe/… DE           108 Essen Laure…
+#>  5 ok     2024-04-08 23:22:55 70:ee:50:a… Europe/… DE           108 Essen Eligi…
+#>  6 ok     2024-04-08 23:22:55 70:ee:50:0… Europe/… DE            60 Essen Hengl…
+#>  7 ok     2024-04-08 23:22:55 70:ee:50:a… Europe/… DE            69 Essen Notte…
+#>  8 ok     2024-04-08 23:22:55 70:ee:50:0… Europe/… DE            69 Essen Notte…
+#>  9 ok     2024-04-08 23:22:55 70:ee:50:3… Europe/… DE            77 Essen Lohmü…
+#> 10 ok     2024-04-08 23:22:55 70:ee:50:a… Europe/… DE           101 Essen Bochu…
+#> # ℹ 296 more rows
 #> # ℹ 6 more variables: mark <int>, n_modules <int>, NAModule1 <chr>,
 #> #   NAModule2 <chr>, NAModule3 <chr>, geometry <POINT [°]>
 ```
@@ -192,25 +192,25 @@ stations_tiled <- get_publicdata(ext = e1, tiles = TRUE)
 #> /getpublicdata: Fetching stations from the following area: 6.89, 51.34, 7.13, 51.53 ...
 
 stations_tiled
-#> Simple feature collection with 632 features and 13 fields
+#> Simple feature collection with 624 features and 13 fields
 #> Geometry type: POINT
 #> Dimension:     XY
 #> Bounding box:  xmin: 6.890067 ymin: 51.34127 xmax: 7.129903 ymax: 51.52976
 #> Geodetic CRS:  WGS 84
-#> # A tibble: 632 × 14
+#> # A tibble: 624 × 14
 #>    status time_server         NAMain      timezone country altitude city  street
 #>    <chr>  <dttm>              <chr>       <chr>    <chr>      <int> <chr> <chr> 
-#>  1 ok     2024-04-06 22:26:20 70:ee:50:8… Europe/… DE            45 Essen Volck…
-#>  2 ok     2024-04-06 22:26:20 70:ee:50:7… Europe/… DE            46 Essen Eva-H…
-#>  3 ok     2024-04-06 22:26:20 70:ee:50:a… Europe/… DE            63 Essen Am Mö…
-#>  4 ok     2024-04-06 22:26:20 70:ee:50:a… Europe/… DE            93 Essen Senge…
-#>  5 ok     2024-04-06 22:26:20 70:ee:50:1… Europe/… DE            48 Essen Johan…
-#>  6 ok     2024-04-06 22:26:20 70:ee:50:a… Europe/… DE            57 Essen Marti…
-#>  7 ok     2024-04-06 22:26:20 70:ee:50:1… Europe/… DE            81 Essen Akade…
-#>  8 ok     2024-04-06 22:26:20 70:ee:50:7… Europe/… DE            61 Essen Haupt…
-#>  9 ok     2024-04-06 22:26:20 70:ee:50:7… Europe/… DE            61 Essen Haupt…
-#> 10 ok     2024-04-06 22:26:20 70:ee:50:7… Europe/… DE            66 Essen Eiche…
-#> # ℹ 622 more rows
+#>  1 ok     2024-04-08 23:23:49 70:ee:50:8… Europe/… DE            45 Essen Volck…
+#>  2 ok     2024-04-08 23:23:49 70:ee:50:7… Europe/… DE            46 Essen Eva-H…
+#>  3 ok     2024-04-08 23:23:49 70:ee:50:a… Europe/… DE            63 Essen Am Mö…
+#>  4 ok     2024-04-08 23:23:49 70:ee:50:a… Europe/… DE            93 Essen Senge…
+#>  5 ok     2024-04-08 23:23:49 70:ee:50:1… Europe/… DE            48 Essen Johan…
+#>  6 ok     2024-04-08 23:23:49 70:ee:50:a… Europe/… DE            57 Essen Marti…
+#>  7 ok     2024-04-08 23:23:49 70:ee:50:1… Europe/… DE            81 Essen Akade…
+#>  8 ok     2024-04-08 23:23:49 70:ee:50:7… Europe/… DE            61 Essen Haupt…
+#>  9 ok     2024-04-08 23:23:49 70:ee:50:7… Europe/… DE            61 Essen Haupt…
+#> 10 ok     2024-04-08 23:23:49 70:ee:50:7… Europe/… DE            66 Essen Eiche…
+#> # ℹ 614 more rows
 #> # ℹ 6 more variables: mark <int>, n_modules <int>, NAModule1 <chr>,
 #> #   NAModule2 <chr>, NAModule3 <chr>, geometry <POINT [°]>
 ```
@@ -234,19 +234,19 @@ To assist you with the latter going backwards from
 # 5-minutely data
 p1 <- get_period(res = 5)
 as.POSIXct(p1, tz = "UTC")
-#> [1] "2024-04-03 08:40:00 UTC" "2024-04-06 22:00:00 UTC"
+#> [1] "2024-04-05 09:40:00 UTC" "2024-04-08 23:00:00 UTC"
 
 # hourly data
 p2 <- get_period(res = 60)
 as.POSIXct(p2, tz = "UTC")
-#> [1] "2024-02-24 06:00:00 UTC" "2024-04-06 22:00:00 UTC"
+#> [1] "2024-02-26 07:00:00 UTC" "2024-04-08 23:00:00 UTC"
 
 # querying the last 24 hours, maybe convenient for scheduled jobs
 p3 <- get_period("recent")
 as.POSIXct(p3, tz = "UTC")
-#> [1] "2024-04-05 22:00:00 UTC" "2024-04-06 22:00:00 UTC"
+#> [1] "2024-04-07 23:00:00 UTC" "2024-04-08 23:00:00 UTC"
 
-# self-defined period
+# self-defined periods
 p4 <- get_period("2024-03-01/2024-04-01")
 as.POSIXct(p4, tz = "UTC")
 #> [1] "2024-03-01 UTC" "2024-04-01 UTC"
@@ -266,7 +266,7 @@ obs <- get_measure(devices = stations_tiled[1:10, ],
                    period = p2, 
                    par = "temperature", 
                    res = 60)
-#> /getmeasure: Fetching temperature measurements (60 min) from 2024-02-23 07:00 UTC to 2024-04-05 23:00 UTC for 10 station(s) ...
+#> /getmeasure: Fetching temperature measurements (60 min) from 2024-02-26 07:00 UTC to 2024-04-08 23:00 UTC for 10 station(s) ...
 
 class(obs)
 #> [1] "list"
@@ -286,7 +286,7 @@ class(xts)
 
 # inspect index range
 zoo::index(xts) |> range()
-#> [1] "2024-02-24 06:00:00 UTC" "2024-04-06 21:00:00 UTC"
+#> [1] "2024-02-26 07:00:00 UTC" "2024-04-08 22:00:00 UTC"
 
 # inspect index/coredata
 head(xts)
@@ -294,12 +294,12 @@ head(xts)
 #>   NOTE: set 'options(xts_check_TZ = FALSE)' to disable this warning
 #>     This note is displayed once per session
 #>                     temperature
-#> 2024-02-24 06:00:00         5.5
-#> 2024-02-24 07:00:00         5.8
-#> 2024-02-24 08:00:00         6.6
-#> 2024-02-24 09:00:00         6.7
-#> 2024-02-24 10:00:00         7.8
-#> 2024-02-24 11:00:00         8.9
+#> 2024-02-26 07:00:00         5.2
+#> 2024-02-26 08:00:00         5.4
+#> 2024-02-26 09:00:00         5.7
+#> 2024-02-26 10:00:00         5.9
+#> 2024-02-26 11:00:00         6.5
+#> 2024-02-26 12:00:00         7.2
 
 # inspect attribute names appended 
 attributes(xts) |> names() |> tail(-4)
