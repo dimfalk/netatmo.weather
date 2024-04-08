@@ -145,9 +145,24 @@ get_measure <- function(devices = NULL,
          as.POSIXct(period, origin = "1970-01-01", tz = "UTC") |> format("%Y-%m-%d %H:%M %Z") |> paste(collapse =  " to "),
          " for ", n, " station(s) ...") |> message()
 
-  # initialize progress bar
+  # estimate m
+  nm <- n * ceiling((period[2] - period[1]) / 60 / res / 1024)
+
+  # check for possible violations, initialize progress bar
+  if (nm > 500) {
+
+    input <- menu(c("Yes", "No"),
+                  title = "You are about to exceed your hourly limit of 500 requests (and risking to be temporarily banned from the API).
+                    Do you really want to continue?")
+
+    if (input == 2) {
+
+      "Current request aborted by the user." |> stop()
+    }
+  }
+
   pb <- progress::progress_bar$new(format = "(:spin) [:bar] :percent || Iteration: :current/:total || Elapsed time: :elapsedfull",
-                                   total = n,
+                                   total = nm,
                                    complete = "#",
                                    incomplete = "-",
                                    current = ">",
@@ -297,6 +312,9 @@ get_measure <- function(devices = NULL,
         xts_merge <- rbind(xts_merge, xts)
       }
 
+      # updates current state of progress bar
+      pb$tick()
+
       # sleep to prevent http 429: too many requests and
       # http 403 (error code 26): user usage reached (50 req. per 10 s)
       Sys.sleep(0.5)
@@ -418,9 +436,6 @@ get_measure <- function(devices = NULL,
 
     # clear object for next iteration
     rm(xts_merge)
-
-    # updates current state of progress bar
-    pb$tick()
   }
 
   # definition of unique names

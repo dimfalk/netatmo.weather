@@ -99,8 +99,20 @@ get_publicdata <- function(ext = NULL,
                              crs = 4326,
                              square = TRUE)
 
-    # get number of tiles, initialize progress bar
+    # get number of tiles, check for possible violations, initialize progress bar
     n <- length(grid)
+
+    if (n > 500) {
+
+      input <- menu(c("Yes", "No"),
+                    title = "You are about to exceed your hourly limit of 500 requests (and risking to be temporarily banned from the API).
+                    Do you really want to continue?")
+
+      if (input == 2) {
+
+        "Current request aborted by the user." |> stop()
+      }
+    }
 
     pb <- progress::progress_bar$new(format = "(:spin) [:bar] :percent || Iteration: :current/:total || Elapsed time: :elapsedfull",
                                      total = n,
