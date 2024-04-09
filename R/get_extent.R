@@ -3,18 +3,20 @@
 #' @param x Vector of length 4 containing numeric representing coordinates (xmin, ymin, xmax, ymax),
 #'   or character of length 1 representing the name of a municipality,
 #'   or character of nchar 5 representing a postal zip code.
-#' @param epsg numeric. Coordinate reference system definition.
+#' @param crs numeric. Coordinate reference system definition.
 #'
 #' @return Object of type `sfc_POLYGON`.
 #' @export
 #'
+#' @seealso [get_publicdata()]
+#'
 #' @examples
 #' e1 <- get_extent(c(6.89, 51.34, 7.13, 51.53))
-#' e2 <- get_extent(c(353034.1, 5689295.3, 370288.6, 5710875.9), epsg = 25832)
+#' e2 <- get_extent(c(353034.1, 5689295.3, 370288.6, 5710875.9), crs = "epsg:25832")
 #' e3 <- get_extent("Essen")
 #' e4 <- get_extent("45145")
 get_extent <- function(x = NULL,
-                       epsg = 4326) {
+                       crs = "epsg:4326") {
 
   # debugging ------------------------------------------------------------------
 
@@ -22,7 +24,7 @@ get_extent <- function(x = NULL,
   # x <- c(353034.1, 5689295.3, 370288.6, 5710875.9)
   # x <- "Essen"
   # x <- "45145"
-  # epsg <- 4326
+  # crs <- "epsg:4326"
 
   # check arguments ------------------------------------------------------------
 
@@ -32,7 +34,7 @@ get_extent <- function(x = NULL,
     checkmate::testCharacter(x, len = 1),
   )
 
-  checkmate::assert_numeric(epsg, len = 1)
+  checkmate::assert_character(crs, len = 1, pattern = "epsg:[0-9]{4,6}")
 
   # main -----------------------------------------------------------------------
 
@@ -47,7 +49,7 @@ get_extent <- function(x = NULL,
                          c(x[1], x[2]))
 
     # construct object
-    bbox <- list(coordinates) |> sf::st_polygon() |> sf::st_sfc(crs = epsg)
+    bbox <- list(coordinates) |> sf::st_polygon() |> sf::st_sfc(crs = crs)
 
     # string of length 1 representing the name of a municipality ---------------
   } else if (inherits(x, "character") && length(x) == 1 && as.numeric(x) |> suppressWarnings() |> is.na()) {

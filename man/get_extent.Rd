@@ -4,14 +4,14 @@
 \alias{get_extent}
 \title{Construct an object of type bbox based on user input}
 \usage{
-get_extent(x = NULL, epsg = 4326)
+get_extent(x = NULL, crs = "epsg:4326")
 }
 \arguments{
 \item{x}{Vector of length 4 containing numeric representing coordinates (xmin, ymin, xmax, ymax),
 or character of length 1 representing the name of a municipality,
 or character of nchar 5 representing a postal zip code.}
 
-\item{epsg}{numeric. Coordinate reference system definition.}
+\item{crs}{numeric. Coordinate reference system definition.}
 }
 \value{
 Object of type \code{sfc_POLYGON}.
@@ -21,7 +21,10 @@ Construct an object of type bbox based on user input
 }
 \examples{
 e1 <- get_extent(c(6.89, 51.34, 7.13, 51.53))
-e2 <- get_extent(c(353034.1, 5689295.3, 370288.6, 5710875.9), epsg = 25832)
+e2 <- get_extent(c(353034.1, 5689295.3, 370288.6, 5710875.9), crs = "epsg:25832")
 e3 <- get_extent("Essen")
 e4 <- get_extent("45145")
+}
+\seealso{
+\code{\link[=get_publicdata]{get_publicdata()}}
 }
