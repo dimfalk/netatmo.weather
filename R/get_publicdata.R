@@ -1,11 +1,14 @@
 #' Retrieves publicly shared weather data from outdoor modules within a predefined area
 #'
 #' @param ext Object of type `sfc_POLYGON`, as provided by `get_extent()`.
-#' @param tiles logical. Should fetching be done in spatial slices? More results are to be expected using `TRUE`.
-#' @param meas logical. Should measurements returned by the API be included?
+#' @param tiles logical. Should fetching be done in separate chunks? More results are to be expected using `TRUE`.
+#' @param cellsize numeric. Edge length \code{[°]} of individual tiles to be used when `tiles = TRUE`.
+#' @param meas logical. Include measurements returned by the API per default?
 #'
-#' @return Sf object containing station metadata and geometries.
+#' @return Sf object containing station metadata.
 #' @export
+#'
+#' @seealso [get_extent()]
 #'
 #' @examples
 #' \dontrun{
@@ -14,11 +17,12 @@
 #' e <- get_extent(x = c(6.89, 51.34, 7.13, 51.53))
 #'
 #' stations <- get_publicdata(ext = e)
-#' stations <- get_publicdata(ext = e, tiles = TRUE)
-#' stations <- get_publicdata(ext = e, meas = TRUE)
+#' stations_tiles <- get_publicdata(ext = e, tiles = TRUE)
+#' stations_meas <- get_publicdata(ext = e, meas = TRUE)
 #' }
 get_publicdata <- function(ext = NULL,
                            tiles = FALSE,
+                           cellsize = 0.05,
                            meas = FALSE) {
 
   # debugging ------------------------------------------------------------------
@@ -26,7 +30,11 @@ get_publicdata <- function(ext = NULL,
   # ext <- get_extent(x = c(6.89, 51.34, 7.13, 51.53))
   # ext <- get_extent(x = "Essen")
   # ext <- get_extent(x = "45145")
+
   # tiles <- TRUE
+
+  # cellsize <- 0.05
+
   # meas <- TRUE
 
   # error handling -------------------------------------------------------------
@@ -45,6 +53,8 @@ get_publicdata <- function(ext = NULL,
   checkmate::assert_class(ext, c("sfc_POLYGON", "sfc"))
 
   checkmate::assert_logical(tiles)
+
+  checkmate::assert_numeric(cellsize, len = 1, lower = 0.01, upper = 1)
 
   checkmate::assert_logical(meas)
 
@@ -82,21 +92,24 @@ get_publicdata <- function(ext = NULL,
     # send request
     r_raw <- httr::GET(url = base_url, query = query, config = .sig)
 
-    # parse response: json to list
+    # parse response: raw to json to list
     r_list <- httr::content(r_raw, "text") |> jsonlite::fromJSON()
 
-    # parse raw response to sf object and return
+    # parse list to sf object and return
     r_sf <- unlist_response(r_list, meas = meas)
 
-    # trim stations to original bounding box again, return sf object
-    sf::st_intersection(x = r_sf, y = ext)
+    # trim stations to original bounding box again
+    r_sf <- sf::st_intersection(x = r_sf, y = ext)
+
+    # return sf object
+    r_sf
 
   } else if (tiles == TRUE) {
 
     # construct grid for query slicing
     grid <- sf::st_make_grid(ext,
-                             cellsize = 0.05,
-                             crs = 4326,
+                             cellsize = cellsize,
+                             crs = "epsg:4326",
                              square = TRUE)
 
     # get number of tiles, check for possible violations, initialize progress bar

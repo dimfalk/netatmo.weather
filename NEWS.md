@@ -1,4 +1,4 @@
-# version 0.5.20
+# version 0.5.21
 
 ## features
 
@@ -11,6 +11,7 @@
 - `get_publicdata()` now allows to include observations fetched from API response when `meas = TRUE`
 - `get_publicdata(tiles = TRUE)` and `get_measure()` now have a progress bar included
 - `get_publicdata()` now returns a `"NAMain"` column instead of `"base_station"`, in compliance with official naming convention
+- `get_publicdata()` now includes a `cellsize` argument for customization
 
 - `get_measure()` now internally splitting up large queries exceeding 1024 values into chunks
 - `get_measure()` now internally skipping iterations without data returned instead of failing

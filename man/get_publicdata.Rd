@@ -4,17 +4,19 @@
 \alias{get_publicdata}
 \title{Retrieves publicly shared weather data from outdoor modules within a predefined area}
 \usage{
-get_publicdata(ext = NULL, tiles = FALSE, meas = FALSE)
+get_publicdata(ext = NULL, tiles = FALSE, cellsize = 0.05, meas = FALSE)
 }
 \arguments{
 \item{ext}{Object of type \code{sfc_POLYGON}, as provided by \code{get_extent()}.}
 
-\item{tiles}{logical. Should fetching be done in spatial slices? More results are to be expected using \code{TRUE}.}
+\item{tiles}{logical. Should fetching be done in separate chunks? More results are to be expected using \code{TRUE}.}
 
-\item{meas}{logical. Should measurements returned by the API be included?}
+\item{cellsize}{numeric. Edge length \code{[°]} of individual tiles to be used when \code{tiles = TRUE}.}
+
+\item{meas}{logical. Include measurements returned by the API per default?}
 }
 \value{
-Sf object containing station metadata and geometries.
+Sf object containing station metadata.
 }
 \description{
 Retrieves publicly shared weather data from outdoor modules within a predefined area
@@ -26,7 +28,10 @@ fetch_token()
 e <- get_extent(x = c(6.89, 51.34, 7.13, 51.53))
 
 stations <- get_publicdata(ext = e)
-stations <- get_publicdata(ext = e, tiles = TRUE)
-stations <- get_publicdata(ext = e, meas = TRUE)
+stations_tiles <- get_publicdata(ext = e, tiles = TRUE)
+stations_meas <- get_publicdata(ext = e, meas = TRUE)
 }
+}
+\seealso{
+\code{\link[=get_extent]{get_extent()}}
 }
