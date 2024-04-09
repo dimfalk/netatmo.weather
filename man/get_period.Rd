@@ -9,7 +9,7 @@ get_period(x = NULL, res = 5)
 \arguments{
 \item{x}{NULL, or "recent", or character representation of an interval in accordance with ISO 8601.}
 
-\item{res}{numeric. Measurement resolution in minutes.}
+\item{res}{numeric. Measurement resolution \code{[min]}.}
 }
 \value{
 numeric. Vector of length 2 representing an interval definition in UNIX time.
@@ -22,5 +22,8 @@ get_period(res = 5)
 get_period(res = 60)
 get_period("recent")
 get_period("2024-03-01/2024-04-01")
-get_period("2024-04-01 12:00/2024-04-01 18:00")
+get_period("2024-03-01 18:00/2024-03-15 18:00")
+}
+\seealso{
+\code{\link[=get_measure]{get_measure()}}, \code{\link[=get_n_queries]{get_n_queries()}}
 }

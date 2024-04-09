@@ -98,7 +98,7 @@ Queries via `get_publicdata()` to obtain station locations and metadata require 
 
 ```{r}
 # using coordinates (xmin, ymin, xmax, ymax)
-e1 <- get_extent(c(6.89, 51.34, 7.13, 51.53), epsg = 4326)
+e1 <- get_extent(c(6.89, 51.34, 7.13, 51.53), crs = "epsg:4326")
 e1
 
 # using municipality names
@@ -118,23 +118,23 @@ stations <- get_publicdata(ext = e1)
 stations
 ```
 
-However, since the number of stations returned by **/getpublicdata** seems to be influenced by the size of the area queried, the logical argument `tiles` was implemented, slicing your area of interest in tiles à 0.05 degrees to be queried separately in order to ensure the maximum number of available stations.
+However, since the number of stations returned by **/getpublicdata** seems to be influenced by the size of the area queried, the logical argument `tiles` was implemented, slicing your area of interest in tiles à 0.05 degrees per default to be queried separately in order to ensure the maximum number of available stations.
 
 ```{r, message = FALSE}
-stations_tiled <- get_publicdata(ext = e1, tiles = TRUE)
+stations_tiles <- get_publicdata(ext = e1, tiles = TRUE)
 #> /getpublicdata: Fetching stations from the following area: 6.89, 51.34, 7.13, 51.53 ...
 
-stations_tiled
+stations_tiles
 ```
 
 ### /getmeasure
 
-Queries via `get_measure()` to obtain station observations basically require a base station MAC address to be queried (included in `stations`), the parameter to be queried (e.g. `temperature`, `humudity`, `sum_rain`, `...`), the measurement interval in minutes (e.g. `5`, `30`, `60`) and a period encompassing the timestamp of the first and last observation to retrieve in form of UNIX time (seconds since 1970-01-01 00:00 UTC). 
+Queries via `get_measure()` to obtain station observations basically require a base station MAC address to be queried (included in `stations` returned by `get_publicdata()`), the parameter to be queried (e.g. `temperature`, `humudity`, `sum_rain`, `...`), the measurement interval in minutes (e.g. `5`, `30`, `60`) and a period encompassing the timestamp of the first and last observation to retrieve in form of UNIX time (seconds since 1970-01-01 00:00 UTC). 
 
 To assist you with the latter going backwards from `lubridate::now("UTC")`, `get_period()` exists:
 
 ```{r}
-# per default returning the maximum number of observations (1024) as a function of `res` chosen
+# per default (with x = NULL) returning the maximum number of observations (1024) as a function of `res` chosen
 
 # 5-minutely data
 p1 <- get_period(res = 5)
@@ -152,15 +152,25 @@ as.POSIXct(p3, tz = "UTC")
 p4 <- get_period("2024-03-01/2024-04-01")
 as.POSIXct(p4, tz = "UTC")
 
-p5 <- get_period("2024-04-01 12:00/2024-04-01 18:00")
+p5 <- get_period("2024-03-01 18:00/2024-03-15 18:00")
 as.POSIXct(p5, tz = "UTC")
 ```
 
-This can now be used to acquire observations (iterating over previously identified stations) in form of listed `xts` objects. This might take some time to finish.
+Just to ensure you do not run into HTTP 429 because of API guideline violations, you can use another little helper in advance to make sure the number of your requests fired does not exceed 500 at one time.
+
+```{r}
+# 10 stations, hourly data
+get_n_queries(d = 10, res = 60, p = p4)
+
+# 20 stations, 5-minutely data
+get_n_queries(d = 20, res = 5, p = p5)
+```
+
+This last piece of information can now be used to finally acquire observations (iterating over previously identified stations) in form of listed `xts` objects. This might take some time to finish.
 
 ```{r, message = FALSE}
 # get subset of data for demonstration purposes
-obs <- get_measure(devices = stations_tiled[1:10, ], 
+obs <- get_measure(devices = stations_tiles[1:10, ], 
                    period = p2, 
                    par = "temperature", 
                    res = 60)

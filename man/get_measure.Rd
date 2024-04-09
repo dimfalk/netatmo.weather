@@ -9,11 +9,11 @@ get_measure(devices = NULL, period = NULL, par = NULL, res = 5)
 \arguments{
 \item{devices}{Sf object as provided by \code{get_publicdata()}.}
 
-\item{period}{numeric. From/to period vector as provided by \code{get_period()}.}
+\item{period}{numeric. Vector of length 2 representing an interval definition in UNIX time as provided by \code{get_period()}.}
 
 \item{par}{character. Meteorological parameter to query.}
 
-\item{res}{numeric. Measurement resolution in minutes.}
+\item{res}{numeric. Measurement resolution \code{[min]}.}
 }
 \value{
 List of \code{xts} objects.
@@ -37,4 +37,7 @@ obs <- get_measure(stations, period = p2, par = "pressure")
 obs <- get_measure(stations, period = p3, par = "temperature", res = 30)
 obs <- get_measure(stations, period = p4, par = "sum_rain", res = 60)
 }
+}
+\seealso{
+\code{\link[=get_publicdata]{get_publicdata()}}, \code{\link[=get_period]{get_period()}}
 }

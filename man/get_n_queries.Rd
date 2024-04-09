@@ -28,3 +28,6 @@ get_n_queries(d = 10, res = 60, p = period)
 # 20 stations, 5-minutely data
 get_n_queries(d = 20, res = 5, p = period)
 }
+\seealso{
+\code{\link[=get_period]{get_period()}}
+}

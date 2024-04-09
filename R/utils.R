@@ -178,7 +178,7 @@ unlist_response <- function(x, meas = FALSE) {
     }
   }
 
-  # return sf object
+  # coerce to sf object
   result <- tibble::as_tibble(temp) |> sf::st_as_sf(coords = c("x", "y"),
                                                     crs = "epsg:4326",
                                                     agr = "identity")

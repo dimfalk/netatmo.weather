@@ -22,9 +22,9 @@ set_device(
 
 \item{NAModule3}{character. MAC address of Netatmo precipitation module.}
 
-\item{lat}{(optional) numeric. Geodetic latitude in EPSG: 4326.}
+\item{lat}{(optional) numeric. Geodetic latitude in EPSG: 4326 \code{[°]}.}
 
-\item{lon}{(optional) numeric. Geodetic longitude in EPSG: 4326.}
+\item{lon}{(optional) numeric. Geodetic longitude in EPSG: 4326 \code{[°]}.}
 }
 \value{
 Sf object containing relevant MAC addresses for \code{get_measure()} queries.
@@ -35,4 +35,7 @@ Manually construct an sf object with user-provided MAC addresses
 \examples{
 set_device("70:ee:50:13:54:bc", "02:00:00:13:57:c8", lat = 51.5, lon = 7.0)
 set_device("70:ee:50:13:54:bc", "02:00:00:13:57:c8", "06:00:00:02:5f:54", "05:00:00:01:48:96")
+}
+\seealso{
+\code{\link[=get_measure]{get_measure()}}
 }

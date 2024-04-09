@@ -1,6 +1,5 @@
-#' Store Netatmo API credentials (id/secret) using `keyring`
+#' Store Netatmo API credentials (id/secret) using `{keyring}`
 #'
-#' @return Creates a keyring called `"netatmo"` with `"id"` and `"secret"` stored.
 #' @export
 #'
 #' @seealso \code{\link{keyring}}

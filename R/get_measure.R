@@ -1,12 +1,14 @@
 #' Retrieve data from a device or module
 #'
 #' @param devices Sf object as provided by `get_publicdata()`.
-#' @param period numeric. From/to period vector as provided by `get_period()`.
+#' @param period numeric. Vector of length 2 representing an interval definition in UNIX time as provided by `get_period()`.
 #' @param par character. Meteorological parameter to query.
-#' @param res numeric. Measurement resolution in minutes.
+#' @param res numeric. Measurement resolution \code{[min]}.
 #'
 #' @return List of `xts` objects.
 #' @export
+#'
+#' @seealso [get_publicdata()], [get_period()]
 #'
 #' @examples
 #' \dontrun{
@@ -265,12 +267,13 @@ get_measure <- function(devices = NULL,
 
       # send request
       r_raw <- httr::GET(url = base_url, query = query, config = .sig)
-      code <- httr::status_code(r_raw)
 
       # parse response
       r_list <- httr::content(r_raw, "text") |> jsonlite::fromJSON()
 
       # abort if no device was to be found
+      code <- httr::status_code(r_raw)
+
       if (code == 404) {
 
         msg <- r_list[["error"]][["message"]]

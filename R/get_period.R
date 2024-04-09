@@ -1,17 +1,19 @@
 #' Construct a vector of length 2 and integer type representing UNIX time
 #'
 #' @param x NULL, or "recent", or character representation of an interval in accordance with ISO 8601.
-#' @param res numeric. Measurement resolution in minutes.
+#' @param res numeric. Measurement resolution \code{[min]}.
 #'
 #' @return numeric. Vector of length 2 representing an interval definition in UNIX time.
 #' @export
+#'
+#' @seealso [get_measure()], [get_n_queries()]
 #'
 #' @examples
 #' get_period(res = 5)
 #' get_period(res = 60)
 #' get_period("recent")
 #' get_period("2024-03-01/2024-04-01")
-#' get_period("2024-04-01 12:00/2024-04-01 18:00")
+#' get_period("2024-03-01 18:00/2024-03-15 18:00")
 get_period <- function(x = NULL,
                        res = 5) {
 
@@ -19,8 +21,8 @@ get_period <- function(x = NULL,
 
   # x <- NULL
   # x <- "recent"
-  # x <- "2022-06-01/2022-06-04"
-  # x <- "2024-04-01 12:00/2024-04-01 18:00"
+  # x <- "2024-03-01/2024-04-01"
+  # x <- "2024-03-01 18:00/2024-03-15 18:00"
 
   # res <- 5
   # res <- 60

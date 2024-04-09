@@ -7,6 +7,8 @@
 #' @return numeric. Number of necessary requests.
 #' @export
 #'
+#' @seealso [get_period()]
+#'
 #' @examples
 #' period <- get_period("2024-02-01/2024-04-01")
 #'

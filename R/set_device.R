@@ -4,11 +4,13 @@
 #' @param NAModule1 character. MAC address of Netatmo outdoor module.
 #' @param NAModule2 character. MAC address of Netatmo wind module.
 #' @param NAModule3 character. MAC address of Netatmo precipitation module.
-#' @param lat (optional) numeric. Geodetic latitude in EPSG: 4326.
-#' @param lon (optional) numeric. Geodetic longitude in EPSG: 4326.
+#' @param lat (optional) numeric. Geodetic latitude in EPSG: 4326 \code{[°]}.
+#' @param lon (optional) numeric. Geodetic longitude in EPSG: 4326 \code{[°]}.
 #'
 #' @return Sf object containing relevant MAC addresses for `get_measure()` queries.
 #' @export
+#'
+#' @seealso [get_measure()]
 #'
 #' @examples
 #' set_device("70:ee:50:13:54:bc", "02:00:00:13:57:c8", lat = 51.5, lon = 7.0)
