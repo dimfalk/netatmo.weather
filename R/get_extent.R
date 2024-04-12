@@ -8,6 +8,8 @@
 #' @return Object of type `sfc_POLYGON`.
 #' @export
 #'
+#' @import sf
+#'
 #' @seealso [get_publicdata()]
 #'
 #' @examples
