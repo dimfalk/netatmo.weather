@@ -189,4 +189,4 @@ unlist_response <- function(x, meas = FALSE) {
 
 
 # quiets concerns of R CMD check
-utils::globalVariables(c("vg250_gem_bbox", "GEN", "osm_plz_bbox", "plz", ".sig"))
+utils::globalVariables(c("vg250_gem_bbox", "GEN", "osm_plz_bbox", "plz", ".sig", "menu"))

@@ -8,6 +8,8 @@
 #' @return Sf object containing station metadata.
 #' @export
 #'
+#' @import tibble
+#'
 #' @seealso [get_extent()]
 #'
 #' @examples
