@@ -45,7 +45,7 @@ get_publicdata <- function(ext = NULL,
   stopifnot("Internet connection is not available." = curl::has_internet())
 
   # abort if target host is not available
-  stopifnot("`api.netatmo.com` is not available." = curl::nslookup("api.netatmo.com") == "20.23.199.179")
+  stopifnot("'api.netatmo.com' is not available." = curl::nslookup("api.netatmo.com") == "20.23.199.179")
 
   # abort if token is not available
   stopifnot("OAuth 2.0 token is missing. Run `fetch_token()` first." = file.exists(".httr-oauth"))
