@@ -55,8 +55,9 @@ set_credentials()
 
 5) Run `fetch_token()` to cache Oauth 2.0 access credentials based on the specifications provided in 4). When asked, whether you want to use a local file to cache OAuth access credentials between R sessions, choose "1: Yes". You'll be redirected to your browser to grant access to your application. Accept and close the browser tab.
 
-```{r}
+```{r, message = FALSE}
 fetch_token()
+#> Note: OAuth 2.0 access credentials successfully cached in file `.httr-oauth`.
 ```
 Successful authentication is confirmed in the browser. Your token is now stored to disk as `.httr-oauth` in your working directory. 
 
