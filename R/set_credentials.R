@@ -1,5 +1,7 @@
 #' Store Netatmo API credentials (id/secret) using `{keyring}`
 #'
+#' @param update logical. Enforce setting new credentials despite of existing?
+#'
 #' @export
 #'
 #' @seealso \code{\link{keyring}}
@@ -8,7 +10,12 @@
 #' \dontrun{
 #' set_credentials()
 #' }
-set_credentials <- function() {
+set_credentials <- function(update = FALSE) {
+
+  # debugging ------------------------------------------------------------------
+
+  # update <- TRUE
+  # update <- FALSE
 
   # error handling -------------------------------------------------------------
 
@@ -17,13 +24,9 @@ set_credentials <- function() {
 
   # main -----------------------------------------------------------------------
 
-  if ("netatmo" %in% keyring::keyring_list()[["keyring"]]) {
+  if (update) {
 
-    message("Note: Keyring 'netatmo' already exists.")
-
-  } else {
-
-    keyring::keyring_create(keyring = "netatmo",
+    keyring::keyring_unlock(keyring = "netatmo",
                             password = Sys.getenv("KEYRING_PASSWORD"))
 
     keyring::key_set(service = "id",
@@ -36,6 +39,30 @@ set_credentials <- function() {
 
     keyring::keyring_lock("netatmo")
 
-    message("Note: Keyring 'netatmo' successfully created.")
+    message("Note: Keyring 'netatmo' successfully updated.")
+
+  } else {
+
+    if ("netatmo" %in% keyring::keyring_list()[["keyring"]]) {
+
+      message("Note: Keyring 'netatmo' already exists.")
+
+    } else {
+
+      keyring::keyring_create(keyring = "netatmo",
+                              password = Sys.getenv("KEYRING_PASSWORD"))
+
+      keyring::key_set(service = "id",
+                       keyring = "netatmo",
+                       prompt = "client_id")
+
+      keyring::key_set(service = "secret",
+                       keyring = "netatmo",
+                       prompt = "client_secret")
+
+      keyring::keyring_lock("netatmo")
+
+      message("Note: Keyring 'netatmo' successfully created.")
+    }
   }
 }

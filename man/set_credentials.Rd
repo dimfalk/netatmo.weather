@@ -4,7 +4,10 @@
 \alias{set_credentials}
 \title{Store Netatmo API credentials (id/secret) using \code{{keyring}}}
 \usage{
-set_credentials()
+set_credentials(update = FALSE)
+}
+\arguments{
+\item{update}{logical. Enforce setting new credentials despite of existing?}
 }
 \description{
 Store Netatmo API credentials (id/secret) using \code{{keyring}}
