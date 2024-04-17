@@ -19,7 +19,7 @@ and load the package via
 
 ``` r
 library(netatmo.weather)
-#> 0.5.23
+#> 0.5.26
 ```
 
 ## Getting Started
@@ -57,15 +57,15 @@ set_credentials()
 #> Note: Keyring 'netatmo' successfully created.
 ```
 
-5)  Run `fetch_token()` to create an Oauth 2 token based on the
-    specifications provided in 4). When asked, whether you want to use a
-    local file to cache OAuth access credentials between R sessions,
-    choose “1: Yes”. You’ll be redirected to your browser to grant
-    access to your application. Accept and close the browser tab.
+5)  Run `fetch_token()` to cache Oauth 2.0 access credentials based on
+    the specifications provided in 4). When asked, whether you want to
+    use a local file to cache OAuth access credentials between R
+    sessions, choose “1: Yes”. You’ll be redirected to your browser to
+    grant access to your application. Accept and close the browser tab.
 
 ``` r
 fetch_token()
-#> Note: OAuth 2.0 token successfully stored in file `.httr-oauth`.
+#> Note: OAuth 2.0 token is already available in file `.httr-oauth`. Delete it in case you want to re-authenticate.
 ```
 
 Successful authentication is confirmed in the browser. Your token is now
@@ -158,25 +158,25 @@ stations <- get_publicdata(ext = e1)
 #> /getpublicdata: Fetching stations from the following area: 6.89, 51.34, 7.13, 51.53 ...
 
 stations
-#> Simple feature collection with 308 features and 13 fields
+#> Simple feature collection with 307 features and 13 fields
 #> Geometry type: POINT
 #> Dimension:     XY
-#> Bounding box:  xmin: 6.890067 ymin: 51.34127 xmax: 7.129903 ymax: 51.52976
+#> Bounding box:  xmin: 6.890067 ymin: 51.34127 xmax: 7.129903 ymax: 51.52755
 #> Geodetic CRS:  WGS 84
-#> # A tibble: 308 × 14
+#> # A tibble: 307 × 14
 #>    status time_server         NAMain      timezone country altitude city  street
 #>  * <chr>  <dttm>              <chr>       <chr>    <chr>      <int> <chr> <chr> 
-#>  1 ok     2024-04-09 20:00:31 70:ee:50:0… Europe/… DE           111 Essen A 52  
-#>  2 ok     2024-04-09 20:00:31 70:ee:50:6… Europe/… DE           112 Essen Steel…
-#>  3 ok     2024-04-09 20:00:31 70:ee:50:0… Europe/… DE           114 Essen Steel…
-#>  4 ok     2024-04-09 20:00:31 70:ee:50:a… Europe/… DE           108 Essen Laure…
-#>  5 ok     2024-04-09 20:00:31 70:ee:50:a… Europe/… DE           108 Essen Eligi…
-#>  6 ok     2024-04-09 20:00:31 70:ee:50:0… Europe/… DE            60 Essen Hengl…
-#>  7 ok     2024-04-09 20:00:31 70:ee:50:a… Europe/… DE            69 Essen Notte…
-#>  8 ok     2024-04-09 20:00:31 70:ee:50:0… Europe/… DE            69 Essen Notte…
-#>  9 ok     2024-04-09 20:00:31 70:ee:50:3… Europe/… DE            77 Essen Lohmü…
-#> 10 ok     2024-04-09 20:00:31 70:ee:50:a… Europe/… DE           101 Essen Bochu…
-#> # ℹ 298 more rows
+#>  1 ok     2024-04-17 21:29:59 70:ee:50:0… Europe/… DE           111 Essen A 52  
+#>  2 ok     2024-04-17 21:29:59 70:ee:50:6… Europe/… DE           112 Essen Steel…
+#>  3 ok     2024-04-17 21:29:59 70:ee:50:0… Europe/… DE           114 Essen Steel…
+#>  4 ok     2024-04-17 21:29:59 70:ee:50:a… Europe/… DE           108 Essen Laure…
+#>  5 ok     2024-04-17 21:29:59 70:ee:50:a… Europe/… DE           108 Essen Eligi…
+#>  6 ok     2024-04-17 21:29:59 70:ee:50:0… Europe/… DE            60 Essen Hengl…
+#>  7 ok     2024-04-17 21:29:59 70:ee:50:a… Europe/… DE            69 Essen Notte…
+#>  8 ok     2024-04-17 21:29:59 70:ee:50:0… Europe/… DE            69 Essen Notte…
+#>  9 ok     2024-04-17 21:29:59 70:ee:50:3… Europe/… DE            77 Essen Lohmü…
+#> 10 ok     2024-04-17 21:29:59 70:ee:50:a… Europe/… DE           101 Essen Bochu…
+#> # ℹ 297 more rows
 #> # ℹ 6 more variables: mark <int>, n_modules <int>, NAModule1 <chr>,
 #> #   NAModule2 <chr>, NAModule3 <chr>, geometry <POINT [°]>
 ```
@@ -192,25 +192,25 @@ stations_tiles <- get_publicdata(ext = e1, tiles = TRUE)
 #> /getpublicdata: Fetching stations from the following area: 6.89, 51.34, 7.13, 51.53 ...
 
 stations_tiles
-#> Simple feature collection with 630 features and 13 fields
+#> Simple feature collection with 626 features and 13 fields
 #> Geometry type: POINT
 #> Dimension:     XY
-#> Bounding box:  xmin: 6.890067 ymin: 51.34127 xmax: 7.129903 ymax: 51.52976
+#> Bounding box:  xmin: 6.890067 ymin: 51.34127 xmax: 7.129903 ymax: 51.52922
 #> Geodetic CRS:  WGS 84
-#> # A tibble: 630 × 14
+#> # A tibble: 626 × 14
 #>    status time_server         NAMain      timezone country altitude city  street
 #>    <chr>  <dttm>              <chr>       <chr>    <chr>      <int> <chr> <chr> 
-#>  1 ok     2024-04-09 20:01:32 70:ee:50:8… Europe/… DE            45 Essen Volck…
-#>  2 ok     2024-04-09 20:01:32 70:ee:50:7… Europe/… DE            46 Essen Eva-H…
-#>  3 ok     2024-04-09 20:01:32 70:ee:50:a… Europe/… DE            63 Essen Am Mö…
-#>  4 ok     2024-04-09 20:01:32 70:ee:50:a… Europe/… DE            93 Essen Senge…
-#>  5 ok     2024-04-09 20:01:32 70:ee:50:1… Europe/… DE            48 Essen Johan…
-#>  6 ok     2024-04-09 20:01:32 70:ee:50:a… Europe/… DE            57 Essen Marti…
-#>  7 ok     2024-04-09 20:01:32 70:ee:50:1… Europe/… DE            81 Essen Akade…
-#>  8 ok     2024-04-09 20:01:32 70:ee:50:7… Europe/… DE            61 Essen Haupt…
-#>  9 ok     2024-04-09 20:01:32 70:ee:50:7… Europe/… DE            61 Essen Haupt…
-#> 10 ok     2024-04-09 20:01:32 70:ee:50:7… Europe/… DE            66 Essen Eiche…
-#> # ℹ 620 more rows
+#>  1 ok     2024-04-17 21:31:07 70:ee:50:8… Europe/… DE            45 Essen Volck…
+#>  2 ok     2024-04-17 21:31:07 70:ee:50:7… Europe/… DE            46 Essen Eva-H…
+#>  3 ok     2024-04-17 21:31:07 70:ee:50:a… Europe/… DE            63 Essen Am Mö…
+#>  4 ok     2024-04-17 21:31:07 70:ee:50:a… Europe/… DE            93 Essen Senge…
+#>  5 ok     2024-04-17 21:31:07 70:ee:50:1… Europe/… DE            48 Essen Johan…
+#>  6 ok     2024-04-17 21:31:07 70:ee:50:a… Europe/… DE            57 Essen Marti…
+#>  7 ok     2024-04-17 21:31:07 70:ee:50:1… Europe/… DE            81 Essen Akade…
+#>  8 ok     2024-04-17 21:31:07 70:ee:50:7… Europe/… DE            61 Essen Haupt…
+#>  9 ok     2024-04-17 21:31:07 70:ee:50:7… Europe/… DE            61 Essen Haupt…
+#> 10 ok     2024-04-17 21:31:07 70:ee:50:7… Europe/… DE            66 Essen Eiche…
+#> # ℹ 616 more rows
 #> # ℹ 6 more variables: mark <int>, n_modules <int>, NAModule1 <chr>,
 #> #   NAModule2 <chr>, NAModule3 <chr>, geometry <POINT [°]>
 ```
@@ -234,17 +234,17 @@ To assist you with the latter going backwards from
 # 5-minutely data
 p1 <- get_period(res = 5)
 as.POSIXct(p1, tz = "UTC")
-#> [1] "2024-04-06 06:40:00 UTC" "2024-04-09 20:00:00 UTC"
+#> [1] "2024-04-14 07:40:00 UTC" "2024-04-17 21:00:00 UTC"
 
 # hourly data
 p2 <- get_period(res = 60)
 as.POSIXct(p2, tz = "UTC")
-#> [1] "2024-02-27 04:00:00 UTC" "2024-04-09 20:00:00 UTC"
+#> [1] "2024-03-06 05:00:00 UTC" "2024-04-17 21:00:00 UTC"
 
 # querying the last 24 hours, maybe convenient for scheduled jobs
 p3 <- get_period("recent")
 as.POSIXct(p3, tz = "UTC")
-#> [1] "2024-04-08 20:00:00 UTC" "2024-04-09 20:00:00 UTC"
+#> [1] "2024-04-16 21:00:00 UTC" "2024-04-17 21:00:00 UTC"
 
 # self-defined periods
 p4 <- get_period("2024-03-01/2024-04-01")
@@ -300,7 +300,7 @@ class(xts)
 
 # inspect index range
 zoo::index(xts) |> range()
-#> [1] "2024-02-27 04:00:00 UTC" "2024-04-09 19:00:00 UTC"
+#> [1] "2024-03-06 05:00:00 UTC" "2024-04-17 20:00:00 UTC"
 
 # inspect index/coredata
 head(xts)
@@ -308,12 +308,12 @@ head(xts)
 #>   NOTE: set 'options(xts_check_TZ = FALSE)' to disable this warning
 #>     This note is displayed once per session
 #>                     temperature
-#> 2024-02-27 04:00:00         5.6
-#> 2024-02-27 05:00:00         5.4
-#> 2024-02-27 06:00:00         5.4
-#> 2024-02-27 07:00:00         5.6
-#> 2024-02-27 08:00:00         5.8
-#> 2024-02-27 09:00:00         6.2
+#> 2024-03-06 05:00:00         2.6
+#> 2024-03-06 06:00:00         2.9
+#> 2024-03-06 07:00:00         3.9
+#> 2024-03-06 08:00:00         6.1
+#> 2024-03-06 09:00:00         8.3
+#> 2024-03-06 10:00:00        10.0
 
 # inspect attribute names appended 
 attributes(xts) |> names() |> tail(-4)

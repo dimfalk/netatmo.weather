@@ -53,7 +53,7 @@ set_credentials()
 #> Note: Keyring 'netatmo' successfully created.
 ```
 
-5) Run `fetch_token()` to create an Oauth 2 token based on the specifications provided in 4). When asked, whether you want to use a local file to cache OAuth access credentials between R sessions, choose "1: Yes". You'll be redirected to your browser to grant access to your application. Accept and close the browser tab.
+5) Run `fetch_token()` to cache Oauth 2.0 access credentials based on the specifications provided in 4). When asked, whether you want to use a local file to cache OAuth access credentials between R sessions, choose "1: Yes". You'll be redirected to your browser to grant access to your application. Accept and close the browser tab.
 
 ```{r}
 fetch_token()

@@ -1,6 +1,6 @@
-#' Fetch an Oauth 2.0 token from api.netatmo.net
-
-#' @return Request object containing the Oauth 2.0 token.
+#' Fetch an Oauth 2.0 token from api.netatmo.com
+#'
+#' @return A `Token2.0` object.
 #' @export
 #'
 #' @examples
@@ -22,22 +22,30 @@ fetch_token <- function() {
 
   # main -----------------------------------------------------------------------
 
-  ep <- httr::oauth_endpoint(authorize = "https://api.netatmo.com/oauth2/authorize",
-                             access = "https://api.netatmo.com/oauth2/token")
+  # do nothing if the token is already available
+  if (file.exists(".httr-oauth")) {
 
-  keyring::keyring_unlock("netatmo", password = Sys.getenv("KEYRING_PASSWORD"))
+    message("Note: OAuth 2.0 token is already available in file `.httr-oauth`. Delete it in case you want to re-authenticate.")
 
-  app <- httr::oauth_app(appname = "netatmo.weather",
-                         key = keyring::key_get("id", keyring = "netatmo"),
-                         secret = keyring::key_get("secret", keyring = "netatmo"))
+  } else {
 
-  keyring::keyring_lock("netatmo")
+    ep <- httr::oauth_endpoint(authorize = "https://api.netatmo.com/oauth2/authorize",
+                               access = "https://api.netatmo.com/oauth2/token")
 
-  httr::oauth2.0_token(ep,
-                       app,
-                       scope = "read_station")
+    keyring::keyring_unlock("netatmo", password = Sys.getenv("KEYRING_PASSWORD"))
 
-  message("Note: OAuth 2.0 token successfully stored in file `.httr-oauth`.")
+    app <- httr::oauth_app(appname = "netatmo.weather",
+                           key = keyring::key_get("id", keyring = "netatmo"),
+                           secret = keyring::key_get("secret", keyring = "netatmo"))
+
+    keyring::keyring_lock("netatmo")
+
+    httr::oauth2.0_token(ep,
+                         app,
+                         scope = "read_station")
+
+    message("Note: OAuth 2.0 access credentials successfully cached in file `.httr-oauth`.")
+  }
 }
 
 
@@ -158,7 +166,6 @@ is_expired <- function() {
 
 #' Refresh your access token using the refresh token
 #'
-#' @return Refreshed token.
 #' @keywords internal
 #' @noRd
 #'

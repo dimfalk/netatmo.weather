@@ -2,15 +2,15 @@
 % Please edit documentation in R/fetch_token.R
 \name{fetch_token}
 \alias{fetch_token}
-\title{Fetch an Oauth 2.0 token from api.netatmo.net}
+\title{Fetch an Oauth 2.0 token from api.netatmo.com}
 \usage{
 fetch_token()
 }
 \value{
-Request object containing the Oauth 2.0 token.
+A \code{Token2.0} object.
 }
 \description{
-Fetch an Oauth 2.0 token from api.netatmo.net
+Fetch an Oauth 2.0 token from api.netatmo.com
 }
 \examples{
 \dontrun{
