@@ -120,7 +120,7 @@ get_publicdata <- function(ext = NULL,
     if (n > 500) {
 
       input <- menu(c("Yes", "No"),
-                    title = "You are about to exceed your hourly limit of 500 requests (and risking to be temporarily banned from the API).
+                    title = "You are about to exceed your hourly limit of 500 requests (and risking to be temporarily banned from using the API).
                     Do you really want to continue?")
 
       if (input == 2) {
@@ -152,6 +152,7 @@ get_publicdata <- function(ext = NULL,
         required_data = "temperature",
         filter = "false"
       )
+      # `filter = "true"` to exclude stations with abnormal temperature measurements
 
       # send request
       r_raw <- httr::GET(url = base_url, query = query, config = .sig)

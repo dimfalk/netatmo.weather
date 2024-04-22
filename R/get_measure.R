@@ -154,7 +154,7 @@ get_measure <- function(devices = NULL,
   if (nm > 500) {
 
     input <- menu(c("Yes", "No"),
-                  title = "You are about to exceed your hourly limit of 500 requests (and risking to be banned from using the API).
+                  title = "You are about to exceed your hourly limit of 500 requests (and risking to be temporarily banned from using the API).
                     Do you really want to continue?")
 
     if (input == 2) {
