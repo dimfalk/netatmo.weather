@@ -271,6 +271,13 @@ get_measure <- function(devices = NULL,
       # parse response
       r_list <- httr::content(r_raw, "text") |> jsonlite::fromJSON()
 
+      # updates current state of progress bar
+      pb$tick()
+
+      # sleep to prevent http 429: too many requests and
+      # http 403 (error code 26): user usage reached (50 req. per 10 s)
+      Sys.sleep(0.5)
+
       # abort if no device was to be found
       code <- httr::status_code(r_raw)
 
@@ -314,20 +321,13 @@ get_measure <- function(devices = NULL,
 
         xts_merge <- rbind(xts_merge, xts)
       }
-
-      # updates current state of progress bar
-      pb$tick()
-
-      # sleep to prevent http 429: too many requests and
-      # http 403 (error code 26): user usage reached (50 req. per 10 s)
-      Sys.sleep(0.5)
     }
 
     # post-processing ----------------------------------------------------------
 
     if (!exists("xts_merge")) {
 
-      "No data available for selected device(s) and defined period of time." |> stop()
+      "No data available for selected device(s) and defined period of time." |> next()
     }
 
     # meta data definition
