@@ -290,7 +290,7 @@ get_measure <- function(devices = NULL,
                "If you provided mac addresses by yourself using `set_device()`, check for typos.") |> stop()
       }
 
-      # skip iteration if no data is returned
+      # create an empty xts object if no time series data is returned
       if (length(r_list[["body"]]) == 0) {
 
         paste0("Query response for device '", devices_subset[1, ][["NAMain"]], "' and period ",
@@ -299,15 +299,22 @@ get_measure <- function(devices = NULL,
                  format("%Y-%m-%d %H:%M %Z") |>
                  paste(collapse =  " to "), " was returned without content.") |> warning()
 
-        next
+        # create dummy data
+        r_df <- data.frame(datetimes = datetimes_list[[j]] |> as.POSIXct(tz = "UTC"),
+                           values = NA)
+
+        # create xts
+        xts <- xts::xts(r_df[["values"]], order.by = r_df[["datetimes"]])
+
+      } else {
+
+        # parse json to df
+        r_df <- data.frame(datetimes = r_list[["body"]] |> names() |> as.numeric() |> as.POSIXct(origin = "1970-01-01", tz = "UTC"),
+                           values = r_list[["body"]] |> as.numeric())
+
+        # create xts
+        xts <- xts::xts(r_df[["values"]], order.by = r_df[["datetimes"]])
       }
-
-      # parse json to df
-      r_df <- data.frame(datetimes = r_list[["body"]] |> names() |> as.numeric() |> as.POSIXct(origin = "1970-01-01", tz = "UTC"),
-                         values = r_list[["body"]] |> as.numeric())
-
-      # create xts
-      xts <- xts::xts(r_df[["values"]], order.by = r_df[["datetimes"]])
 
       # assign column name
       names(xts) <- par
@@ -325,17 +332,14 @@ get_measure <- function(devices = NULL,
 
     # post-processing ----------------------------------------------------------
 
-    if (!exists("xts_merge")) {
-
-      "No data available for selected device(s) and defined period of time." |> next()
-    }
-
     # meta data definition
     # subset of basis parameters from `timeseriesIO::xts_init()`
     attr(xts_merge, "STAT_ID") <- devices_subset[["NAMain"]][i]
 
-    attr(xts_merge, "X") <- sf::st_coordinates(devices_subset[i, ])[1]
-    attr(xts_merge, "Y") <- sf::st_coordinates(devices_subset[i, ])[2]
+    coords <- sf::st_coordinates(devices_subset[i, ])
+
+    attr(xts_merge, "X") <- coords[1]
+    attr(xts_merge, "Y") <- coords[2]
     attr(xts_merge, "Z") <- devices_subset[["altitude"]][i]
     attr(xts_merge, "CRS_EPSG") <- "4326"
     attr(xts_merge, "TZONE") <- "UTC"
@@ -365,9 +369,11 @@ get_measure <- function(devices = NULL,
 
                                            "sum_rain" = "precipitation")
 
-    attr(xts_merge, "TS_START") <- zoo::index(xts_merge) |> utils::head(1)
+    rng <- zoo::index(xts_merge) |> range()
 
-    attr(xts_merge, "TS_END") <- zoo::index(xts_merge) |> utils::tail(1)
+    attr(xts_merge, "TS_START") <- rng[1]
+
+    attr(xts_merge, "TS_END") <- rng[2]
 
     attr(xts_merge, "TS_TYPE") <- "measurement"
 
