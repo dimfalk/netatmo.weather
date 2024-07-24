@@ -21,6 +21,7 @@ Construct a vector of length 2 and integer type representing UNIX time
 get_period(res = 5)
 get_period(res = 60)
 get_period("recent")
+get_period("2024-03-01")
 get_period("2024-03-01/2024-04-01")
 get_period("2024-03-01 18:00/2024-03-15 18:00")
 }

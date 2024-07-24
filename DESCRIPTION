@@ -1,6 +1,6 @@
 Package: netatmo.weather
 Title: R wrapper for Netatmo Weather API
-Version: 0.5.29
+Version: 0.5.30
 Date: 2024-07-24
 Authors@R: 
     person("Dimitri", "Falk", , "falk.dimitri@eglv.de", role = c("aut", "cre"))
@@ -8,7 +8,7 @@ Description: Obtain station locations, metadata and measurements from Netatmo st
 License: GPL (>= 3)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.1
+RoxygenNote: 7.3.2
 Depends: R (>= 4.2.0)
 Imports: 
     checkmate,
