@@ -14,9 +14,6 @@ fetch_token <- function() {
   # abort if no connection is available
   stopifnot("Internet connection is not available." = curl::has_internet())
 
-  # abort if target host is not available
-  stopifnot("'api.netatmo.com' is not available." = curl::nslookup("api.netatmo.com") == "20.23.199.179")
-
   # abort if app technical parameters are missing, c.f. https://dev.netatmo.com/
   stopifnot("Client ID and secret are missing. Run `set_credentials()` first." = "netatmo" %in% keyring::keyring_list()[["keyring"]])
 
@@ -123,9 +120,6 @@ is_expired <- function() {
   # abort if no connection is available
   stopifnot("Internet connection is not available." = curl::has_internet())
 
-  # abort if target host is not available
-  stopifnot("'api.netatmo.com' is not available." = curl::nslookup("api.netatmo.net") == "20.23.199.179")
-
   # abort if token is not available
   stopifnot("OAuth 2.0 token is missing. Run `fetch_token()` first." = file.exists(".httr-oauth"))
 
@@ -179,9 +173,6 @@ refresh_at <- function() {
 
   # abort if no connection is available
   stopifnot("Internet connection is not available." = curl::has_internet())
-
-  # abort if target host is not available
-  stopifnot("'api.netatmo.com' is not available." = curl::nslookup("api.netatmo.net") == "20.23.199.179")
 
   # abort if token is not available
   stopifnot("OAuth 2.0 token is missing. Run `fetch_token()` first." = file.exists(".httr-oauth"))
